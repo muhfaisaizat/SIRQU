@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import logo from "../../assets/Logo.svg";
 import { Eye, EyeSlash } from 'iconsax-react'; 
+import { useNavigate } from "react-router-dom";
 
 
 const Login = () => {
- 
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
 
     const togglePasswordVisibility = () => {
@@ -75,7 +76,7 @@ const Login = () => {
                             Forgot password?
                         </Link>
                     </div>
-                    <Button type="submit" className="w-full h-[40px] bg-teal-500 text-[14px] font-medium">
+                    <Button type="submit" className="w-full h-[40px] bg-teal-500 text-[14px] font-medium" onClick={() => navigate('/admin-panel')}>
                         Login
                     </Button>
                     <div className="text-center text-[14px] font-medium">
