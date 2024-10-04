@@ -55,7 +55,7 @@ const Register = () => {
                             <button
                                 type="button"
                                 onClick={togglePasswordVisibility}
-                                className="absolute inset-y-0 right-0 flex items-center pr-3" 
+                                className="absolute inset-y-0 right-0 flex items-center pr-3 focus-visible:ring-0 focus-visible:ring-offset-0" 
                             >
                                 {showPassword ? <EyeSlash size="16" color="#94A3B8"/> : <Eye size="16" color="#94A3B8"/>}
                             </button>
@@ -74,7 +74,7 @@ const Register = () => {
                             <button
                                 type="button"
                                 onClick={toggleConfirmPasswordVisibility}
-                                className="absolute inset-y-0 right-0 flex items-center pr-3" 
+                                className="absolute inset-y-0 right-0 flex items-center pr-3 focus-visible:ring-0 focus-visible:ring-offset-0" 
                             >
                                 {showConfirmPassword ? <EyeSlash size="16" color="#94A3B8"/> : <Eye size="16" color="#94A3B8"/>}
                             </button>

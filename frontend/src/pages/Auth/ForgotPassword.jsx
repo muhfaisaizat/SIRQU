@@ -237,7 +237,7 @@ const ForgotPassword = () => {
                                     <button
                                         type="button"
                                         onClick={togglePasswordVisibility}
-                                        className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600"
+                                        className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0"
                                     >
                                         {showPassword ? <Eye size="20" /> : <EyeSlash size="20" />}
                                     </button>
@@ -257,7 +257,7 @@ const ForgotPassword = () => {
                                     <button
                                         type="button"
                                         onClick={toggleConfirmPasswordVisibility}
-                                        className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600"
+                                        className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0"
                                     >
                                         {showConfirmPassword ? <Eye size="20" /> : <EyeSlash size="20" />}
                                     </button>

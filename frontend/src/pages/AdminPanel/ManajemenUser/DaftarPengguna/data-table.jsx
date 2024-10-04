@@ -30,7 +30,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { SearchNormal1, Filter, InfoCircle, Trash } from 'iconsax-react';
+import { SearchNormal1, Filter, InfoCircle, Trash, ArrowDown2 } from 'iconsax-react';
 import {
     Pagination,
     PaginationContent,
@@ -41,7 +41,8 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination"
 import { FiEdit2 } from "react-icons/fi";
-
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 
 // Define columns
@@ -56,7 +57,7 @@ const columns = [
                 }
                 onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
                 aria-label="Select all"
-                className="border-slate-400 border-2 h-[16px] w-[16px] rounded-md data-[state=checked]:bg-teal-500 data-[state=checked]:border-teal-500"
+                className="h-[16px] w-[16px]"
             />
         ),
         cell: ({ row }) => (
@@ -64,7 +65,7 @@ const columns = [
                 checked={row.getIsSelected()}
                 onCheckedChange={(value) => row.toggleSelected(!!value)}
                 aria-label="Select row"
-                className="border-slate-400 border-2 h-[16px] w-[16px] rounded-md data-[state=checked]:bg-teal-500 data-[state=checked]:border-teal-500"
+                className="h-[16px] w-[16px]"
             />
         ),
         enableSorting: false,
@@ -74,58 +75,51 @@ const columns = [
         accessorKey: "name",
         header: "Nama",
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("name")}</div>
+            <div className="capitalize font-medium">{row.getValue("name")}</div>
         ),
     },
     {
         accessorKey: "role",
         header: "Role",
+        cell: ({ row }) => (
+            <div className="capitalize font-medium">{row.getValue("role")}</div>
+        ),
+    },
+    {
+        accessorKey: "email",
+        header: "Email",
+        cell: ({ row }) => <div className="lowercase font-medium">{row.getValue("email")}</div>,
+    },
+    {
+        accessorKey: "status",
+        header: "Status",
         cell: ({ row }) => {
-            const role = row.getValue("role");
+            const role = row.getValue("status");
 
             // Conditional rendering based on the role value
             let roleClass = "";
             let roleText = "";
 
-            if (role === "Admin") {
-                roleClass = "bg-emerald-50 border-2 border-emerald-500 rounded-full text-emerald-500 font-medium pt-[2px] pb-[2px] ps-2 px-2";
-                roleText = "Admin";
-            } else if (role === "Manager") {
-                roleClass = "bg-sky-50 border-2 border-sky-500 rounded-full text-sky-500 font-medium pt-[2px] pb-[2px] ps-2 px-2";
-                roleText = "Manager";
-            } else if (role === "Kasir") {
-                roleClass = "bg-amber-50 border-2 border-amber-500 rounded-full text-amber-500 font-medium pt-[2px] pb-[2px] ps-2 px-2";
-                roleText = "Kasir";
-            } else {
-                // Default case if the role does not match any of the expected roles
-                roleClass = "bg-gray-50 border-2 border-gray-500 rounded-full text-gray-500 font-medium pt-[2px] pb-[2px] ps-2 px-2";
-                roleText = role; // Show role as-is
+            if (role === "Aktif") {
+                roleClass = "secondary";
+                roleText = "Aktif";
+            } else if (role === "Tidak Aktif") {
+                roleClass = "destructive";
+                roleText = "Tidak Aktif";
             }
 
             return (
                 <div className="capitalize">
-                    <span className={roleClass}>{roleText}</span>
+                    <Badge variant={roleClass} className="text-[12px]">{roleText}</Badge>
                 </div>
             );
         }
     },
     {
-        accessorKey: "email",
-        header: "Email",
-        cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-    },
-    {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("status")}</div>
-        ),
-    },
-    {
         accessorKey: "date",
         header: "Tanggal dibuat",
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("date")}</div>
+            <div className="capitalize font-medium">{row.getValue("date")}</div>
         ),
     },
     {
@@ -163,7 +157,7 @@ const data = [
         id: "m5gr84i9",
         name: 'jairo vernandes',
         role: "Admin",
-        status: "success",
+        status: "Aktif",
         email: "ken99@yahoo.com",
         date: "23 Oktober 2024",
     },
@@ -171,7 +165,7 @@ const data = [
         id: "3u1reuv4",
         name: 'jairo vernandes',
         role: "Manager",
-        status: "success",
+        status: "Aktif",
         email: "Abe45@gmail.com",
         date: "23 Oktober 2024",
     },
@@ -179,7 +173,7 @@ const data = [
         id: "derv1ws0",
         name: 'jairo vernandes',
         role: "Kasir",
-        status: "processing",
+        status: "Aktif",
         email: "Monserrat44@gmail.com",
         date: "23 Oktober 2024",
     },
@@ -187,7 +181,7 @@ const data = [
         id: "5kma53ae",
         name: 'jairo vernandes',
         role: "Kasir",
-        status: "success",
+        status: "Tidak Aktif",
         email: "Silas22@gmail.com",
         date: "23 Oktober 2024",
     },
@@ -195,7 +189,7 @@ const data = [
         id: "bhqecj4p",
         name: 'jairo vernandes',
         role: "Kasir",
-        status: "failed",
+        status: "Tidak Aktif",
         email: "carmella@hotmail.com",
         date: "23 Oktober 2024",
     },
@@ -203,7 +197,7 @@ const data = [
         id: "bhqecj4p234",
         name: 'jairo vernandes',
         role: "Kasir",
-        status: "failed",
+        status: "Tidak Aktif",
         email: "carmella@hotmail.com",
         date: "23 Oktober 2024",
     },
@@ -211,7 +205,7 @@ const data = [
         id: "bhqecj4p23467",
         name: 'jairo vernandes',
         role: "Kasir",
-        status: "failed",
+        status: "Tidak Aktif",
         email: "carmella@hotmail.com",
         date: "23 Oktober 2024",
     },
@@ -219,7 +213,7 @@ const data = [
         id: "bhqecj4p23467g",
         name: 'jairo vernandes',
         role: "Kasir",
-        status: "failed",
+        status: "Tidak Aktif",
         email: "carmella@hotmail.com",
         date: "23 Oktober 2024",
     },
@@ -227,7 +221,7 @@ const data = [
         id: "bhqecj4p23467g7",
         name: 'jairo vernandes',
         role: "Kasir",
-        status: "failed",
+        status: "Tidak Aktif",
         email: "carmella@hotmail.com",
         date: "23 Oktober 2024",
     },
@@ -235,7 +229,7 @@ const data = [
         id: "bhqecj4p23467g76",
         name: 'jairo vernandes',
         role: "Kasir",
-        status: "failed",
+        status: "Tidak Aktif",
         email: "carmella@hotmail.com",
         date: "23 Oktober 2024",
     },
@@ -243,7 +237,7 @@ const data = [
         id: "bhqecj4p23467g76",
         name: 'jairo vernandes',
         role: "Kasir",
-        status: "failed",
+        status: "Tidak Aktif",
         email: "carmella@hotmail.com",
         date: "23 Oktober 2024",
     },
@@ -295,27 +289,21 @@ const DataTableDemo = () => {
     const totalPages = Math.ceil(data.length / pagination.pageSize);
 
     return (
-        <div className="w-full">
-            <div className="flex items-center py-4 justify-between mt-8">
-                <h4 className='text-[20px] font-semibold '>Pengguna <span className="text-slate-400">{data.length}</span></h4>
-                <div className="flex">
-                    <div className="relative  mr-[12px]">
-                        <Input
-                            placeholder="Search"
-                            value={(table.getColumn("email")?.getFilterValue() || "")}
-                            onChange={(event) =>
-                                table.getColumn("email")?.setFilterValue(event.target.value)
-                            }
-                            className="text-[14px] rounded-lg border border-slate-300 pl-10 h-[40px] text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                        <div className="absolute inset-y-0 left-0 mt-[13px] items-center  pl-3 ">
-                            <SearchNormal1 className="w-5 h-5 text-slate-500" />
-                        </div>
-                    </div>
+        <div className="w-full grid gap-[16px] mt-[24px]">
+            <div className="flex items-center  justify-between">
+                <div className="flex gap-[12px]">
+                    <Input
+                        placeholder="Cari"
+                        value={(table.getColumn("email")?.getFilterValue() || "")}
+                        onChange={(event) =>
+                            table.getColumn("email")?.setFilterValue(event.target.value)
+                        }
+                        className="w-[266px] h-[32px]"
+                    />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto h-[40px] text-[14px] border-slate-300">
-                                <Filter size={16} className="mr-2" /> Filter
+                            <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
+                                <ChevronDown size={16} className="mr-2" /> All roles
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -336,13 +324,57 @@ const DataTableDemo = () => {
                                 ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button className='gap-2 h-[40px] ml-[12px] bg-teal-500 text-[14px] font-medium'>
-                        <GoPlus size={16} />
-                        Tambah pengguna
-                    </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
+                                <ChevronDown size={16} className="mr-2" /> All status
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((column) => column.getCanHide())
+                                .map((column) => (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.id}
+                                        className="capitalize"
+                                        checked={column.getIsVisible()}
+                                        onCheckedChange={(value) =>
+                                            column.toggleVisibility(!!value)
+                                        }
+                                    >
+                                        {column.id}
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
+                <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
+                                <ChevronDown size={16} className="mr-2" /> View
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((column) => column.getCanHide())
+                                .map((column) => (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.id}
+                                        className="capitalize"
+                                        checked={column.getIsVisible()}
+                                        onCheckedChange={(value) =>
+                                            column.toggleVisibility(!!value)
+                                        }
+                                    >
+                                        {column.id}
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                        </DropdownMenuContent>
+                </DropdownMenu>
             </div>
-            <div className="rounded-md border">
+            <div className="">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -390,8 +422,8 @@ const DataTableDemo = () => {
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
-                <div className="flex-1 text-sm text-muted-foreground">
+            <div className="flex items-center justify-end space-x-2 ">
+                <div className="flex-1 text-[14px] text-muted-foreground">
                     {table.getFilteredSelectedRowModel().rows.length} of{" "}
                     {table.getFilteredRowModel().rows.length} row(s) selected.
                 </div>
@@ -401,10 +433,10 @@ const DataTableDemo = () => {
                             {/* Tombol Previous */}
                             <PaginationItem>
                                 <Button
-                                variant="outline"
-                                onClick={() => table.previousPage()}
-                                disabled={pagination.pageIndex === 0}
-                                className="text-[14px]"
+                                    variant="outline"
+                                    onClick={() => table.previousPage()}
+                                    disabled={pagination.pageIndex === 0}
+                                    className="text-[14px]"
                                 >
                                     Previous
                                 </Button>
@@ -430,10 +462,10 @@ const DataTableDemo = () => {
                             {/* Tombol Next */}
                             <PaginationItem>
                                 <Button
-                                variant="outline"
-                                onClick={() => table.nextPage()}
-                                disabled={pagination.pageIndex >= totalPages - 1}
-                                className="text-[14px]"
+                                    variant="outline"
+                                    onClick={() => table.nextPage()}
+                                    disabled={pagination.pageIndex >= totalPages - 1}
+                                    className="text-[14px]"
                                 >
                                     Next
                                 </Button>
