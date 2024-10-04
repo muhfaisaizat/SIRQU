@@ -7,8 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import logo from "../../assets/Logo.svg";
 import { Eye, EyeSlash } from 'iconsax-react'; 
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false); 
 
@@ -22,33 +24,31 @@ const Register = () => {
 
     return (
         <div className="container mx-auto flex justify-center items-center min-h-screen">
-            <Card className="mx-auto w-full max-w-[442px] pt-10 pb-10 px-8 shadow-xl shadow-gray-100">
-                <div className="flex text-center justify-center gap-[14px]">
-                    <img src={logo} alt="Logo" />
-                    <p className='text-[24px] font-semibold'>Sirqu</p>
-                </div>
-                <p className="text-[30px] text-center font-semibold text-black mt-[32px] mb-[32px]">
-                Create New Account
+            <div className="mx-auto w-full max-w-[450px] pt-[52px] pb-[52px] ">
+                <h1 className='text-center text-[30px] font-semibold'>Daftar akun baru</h1>
+                <p className="text-[14px] text-center font-medium  text-gray-500 mt-[16px] mb-[36px]">
+                Silahkan melengkapi data berikut untuk mendaftar
                 </p>
 
-                <div className="grid gap-[32px]">
+                <div className="grid gap-[36px]">
+                    <div className='grid gap-4'>
                     <div className="grid gap-1">
                         <Label htmlFor="email" className="text-[14px]">Email</Label>
                         <Input
                             id="email"
                             type="email"
-                            placeholder="Enter email"
+                            placeholder="Masukkan email anda"
                             required
                             className="h-[40px] text-[14px] rounded-lg border-slate-300"
                         />
                     </div>
                     <div className="grid gap-1">
-                        <Label htmlFor="password" className="text-[14px]">Create Password</Label>
+                        <Label htmlFor="password" className="text-[14px]">Kata Sandi</Label>
                         <div className="relative">
                             <Input
                                 id="password"
                                 type={showPassword ? 'text' : 'password'} 
-                                placeholder="Enter password"
+                                placeholder="Tulis Kata Sandi baru"
                                 required
                                 className="h-[40px] text-[14px] rounded-lg border-slate-300 pr-10" 
                             />
@@ -62,12 +62,12 @@ const Register = () => {
                         </div>
                     </div>
                     <div className="grid gap-1">
-                        <Label htmlFor="confirm-password" className="text-[14px]">Confirm Password</Label>
+                        <Label htmlFor="confirm-password" className="text-[14px]">Ulangi Kata Sandi Anda</Label>
                         <div className="relative">
                             <Input
                                 id="confirm-password"
                                 type={showConfirmPassword ? 'text' : 'password'} 
-                                placeholder="Enter password"
+                                placeholder="Ulangi Kata Sandi diatas"
                                 required
                                 className="h-[40px] text-[14px] rounded-lg border-slate-300 pr-10" 
                             />
@@ -80,6 +80,7 @@ const Register = () => {
                             </button>
                         </div>
                     </div>
+                    </div>
                     <div className="flex items-center">
                         <div className="flex items-center space-x-2">
                             <Checkbox id="terms" />
@@ -87,24 +88,26 @@ const Register = () => {
                                 htmlFor="terms"
                                 className="text-[14px] font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             >
-                                Remember me
+                                Ingat Saya
                             </label>
                         </div>
-                        <Link to="/forgot" className="ml-auto inline-block text-[14px] font-medium text-teal-500">
-                            Forgot password?
+                        <Link to="/auth/forgot-password" className="ml-auto inline-block text-[14px] font-medium">
+                        Lupa Password?
                         </Link>
                     </div>
-                    <Button type="submit" className="w-full h-[40px] bg-teal-500 text-[14px] font-medium">
-                    Register
+                    <Button type="submit" className="w-full h-[40px] text-[14px] font-medium">
+                    Daftarkan Akun
                     </Button>
-                    <div className="text-center text-[14px] font-medium">
-                    Have an account?{" "}
-                        <Link to="/" className="text-teal-500">
-                        Login Here
-                        </Link>
+                    <div className="flex items-center text-center">
+                        <div className="flex-1 border-b border-gray-300"></div>
+                        <span className="px-2 text-gray-500 text-[14px]">atau</span>
+                        <div className="flex-1 border-b border-gray-300"></div>
                     </div>
+                    <Button  variant="outline"  type="submit" className="w-full h-[40px] text-[14px] font-medium" onClick={() => navigate('/auth/login')} >
+                    Sudah Memiliki Akun? Masuk
+                    </Button>
                 </div>
-            </Card>
+            </div>
         </div>
     );
 };

@@ -9,6 +9,14 @@ import { ArrowLeft } from 'iconsax-react';
 import { Eye, EyeSlash } from 'iconsax-react';
 import { useNavigate } from "react-router-dom";
 
+const obfuscateEmail = (email) => {
+    const [localPart, domain] = email.split('@'); // Memisahkan bagian sebelum dan sesudah '@'
+    if (localPart.length > 2) {
+        return `${localPart.slice(0, 2)}${'*'.repeat(localPart.length - 2)}@${domain}`;
+    }
+    return email; // Jika email terlalu pendek, kembalikan apa adanya
+};
+
 const ForgotPassword = () => {
     const navigate = useNavigate();
 
@@ -24,7 +32,7 @@ const ForgotPassword = () => {
     };
 
     // OTP
-    const [otp, setOtp] = useState(['', '', '', '']);
+    const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const inputsRef = useRef([]);
 
     // State untuk menampilkan tahap (1 = send email, 2 = otp, 3 = reset password)
@@ -38,7 +46,7 @@ const ForgotPassword = () => {
             newOtp[index] = value;
             setOtp(newOtp);
 
-            if (index < 3 && value) {
+            if (index < 5 && value) {
                 inputsRef.current[index + 1].focus();
             }
         }
@@ -60,10 +68,10 @@ const ForgotPassword = () => {
     const handleOtpPaste = (event) => {
         event.preventDefault();
         const text = event.clipboardData.getData('text');
-        if (/^\d{4}$/.test(text)) {
+        if (/^\d{6}$/.test(text)) {
             const newOtp = text.split('');
             setOtp(newOtp);
-            inputsRef.current[3].focus();
+            inputsRef.current[5].focus();
         }
     };
 
@@ -117,25 +125,21 @@ const ForgotPassword = () => {
     };
 
 
+    const obfuscatedEmail = obfuscateEmail(email);
 
     return (
         <div className="container mx-auto flex justify-center items-center min-h-screen">
             {step === 1 && (
                 // Tahap send email
-                <Card className="mx-auto w-full max-w-[442px] pt-10 pb-10 px-8 shadow-xl shadow-gray-100">
-                    <div className="flex w-full">
-                        <Link to="/" className='w-4/12 pt-2'><ArrowLeft size="24" /></Link>
-                        <div className='flex gap-[14px] w-8/12'>
-                            <img src={logo} alt="Logo" />
-                            <p className='text-[24px] font-semibold'>Sirqu</p>
-                        </div>
-                    </div>
-                    <p className="text-[30px] text-center font-semibold text-black mt-[32px] mb-[32px]">
-                        Forgot Password
+                <div className="mx-auto w-full max-w-[450px] pt-[52px] pb-[52px] ">
+                    <h1 className='text-center text-[30px] font-semibold'>Lupa password?</h1>
+                    <p className="text-[14px]  text-gray-500 mt-[16px] mb-[36px] self-stretch">
+                        Masukkan alamat email yang Anda gunakan saat bergabung dan kami akan mengirimkan instruksi untuk mengatur ulang kata sandi Anda.
+                        <br />
+                        <br />
+                        Demi alasan keamanan, kami TIDAK menyimpan kata sandi Anda. Jadi, yakinlah bahwa kami tidak akan pernah mengirimkan kata sandi Anda melalui email.
                     </p>
-                    <p className='mb-[32px] text-center font-medium text-[14px]'>Enter your email for instruction</p>
-
-                    <form onSubmit={handleEmailSubmit} className="grid gap-[32px]">
+                    <form onSubmit={handleEmailSubmit} className="grid gap-[36px]">
                         <div className="grid gap-1">
                             <Label htmlFor="email" className="text-[14px]">Email</Label>
                             <Input
@@ -148,27 +152,20 @@ const ForgotPassword = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
-                        <Button type="submit" className="w-full h-[40px] bg-teal-500 text-[14px] font-medium">
-                            Send Code
+                        <Button type="submit" className="w-full h-[40px]  font-medium">
+                            Kirim instruksi rubah Kata Sandi
                         </Button>
                     </form>
-                </Card>
+                </div>
             )}
 
             {step === 2 && (
                 // Tahap OTP
-                <Card className="mx-auto w-full max-w-[442px] pt-10 pb-10 px-8 shadow-xl shadow-gray-100">
-                    <div className="flex w-full">
-                        <button onClick={() => setStep(1)} className='w-4/12 pt-2'><ArrowLeft size="24" /></button>
-                        <div className='flex gap-[14px] w-8/12'>
-                            <img src={logo} alt="Logo" />
-                            <p className='text-[24px] font-semibold'>Sirqu</p>
-                        </div>
-                    </div>
-                    <p className="text-[30px] text-center font-semibold text-black mt-[32px] mb-[32px]">
-                        Verify Email
+                <div className="mx-auto w-full max-w-[450px] pt-[52px] pb-[52px] ">
+                    <h1 className='text-center text-[30px] font-semibold'>Lupa password?</h1>
+                    <p className="text-[16px] text-center  text-gray-500 mt-[16px] text-[400] mb-[36px] self-stretch">
+                        Silahkan memasukkan kode 6-digit angka yang dikirimkan ke <span className='text-black'>{obfuscatedEmail}</span>
                     </p>
-                    <p className='mb-[32px] text-center font-medium text-[14px]'>Code has been sent to {email}</p>
 
                     <form onSubmit={handleOtpSubmit} className="grid gap-[32px]">
                         <div className="flex items-center justify-center gap-3">
@@ -176,7 +173,7 @@ const ForgotPassword = () => {
                                 <input
                                     key={index}
                                     type="text"
-                                    className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border  hover:border-slate-200 appearance-none rounded-lg p-4 outline-none focus:bg-white focus:border-teal-400 focus:ring-2 focus:ring-teal-100"
+                                    className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border  hover:border-slate-200 appearance-none rounded-lg p-4 outline-none focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
                                     value={value}
                                     onChange={(e) => handleOtpInputChange(index, e)}
                                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
@@ -200,35 +197,40 @@ const ForgotPassword = () => {
 
                         <Button
                             type="submit"
-                            className="w-full h-[40px] bg-teal-500 text-[14px] font-medium"
+                            className="w-full h-[40px]  text-[14px] font-medium"
                         >
-                            Verify
+                            Verifikasi Akun
+                        </Button>
+                        <Button
+                            onClick={() => setStep(1)}
+                            variant="outline"
+                            className="w-full h-[40px]  text-[14px] font-medium"
+                        >
+                            Kembali ke Halaman Login
                         </Button>
                     </form>
-                </Card>
+                </div>
             )}
 
             {step === 3 && (
                 // Tahap reset password
-                <Card className="mx-auto w-full max-w-[442px] pt-10 pb-10 px-8 shadow-xl shadow-gray-100">
-                    <div className="flex justify-center">
-                        <div className='flex gap-[14px]'>
-                            <img src={logo} alt="Logo" />
-                            <p className='text-[24px] font-semibold'>Sirqu</p>
-                        </div>
-                    </div>
-                    <p className="text-[30px] text-center font-semibold text-black mt-[32px] mb-[32px]">
-                        Create New Password
+                <div className="mx-auto w-full max-w-[450px] pt-[52px] pb-[52px] ">
+
+                    <h1 className='text-center text-[30px] font-semibold'>Daftar akun baru</h1>
+                    <p className="text-[14px] text-center  text-gray-500 mt-[16px] text-[400] mb-[36px] self-stretch">
+                        Silahkan masukkan Kata Sandi baru anda
                     </p>
-                    <div>
-                        <div className="grid gap-[32px]">
+
+
+                    <div className="grid gap-[36px]">
+                        <div className='grid gap-4'>
                             <div className="grid gap-1">
-                                <Label htmlFor="password" className="text-[14px]">Create Password</Label>
+                                <Label htmlFor="password" className="text-[14px]">Kata Sandi</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
                                         type={showPassword ? 'text' : 'password'}
-                                        placeholder="Enter password"
+                                        placeholder="Tulis Kata Sandi baru"
                                         required
                                         className="h-[40px] text-[14px] rounded-lg border-slate-300 pr-10"
                                     />
@@ -243,12 +245,12 @@ const ForgotPassword = () => {
                             </div>
 
                             <div className="grid gap-1">
-                                <Label htmlFor="confirmPassword" className="text-[14px]">Confirm Password</Label>
+                                <Label htmlFor="confirmPassword" className="text-[14px]">Ulangi Kata Sandi Anda</Label>
                                 <div className="relative">
                                     <Input
                                         id="confirmPassword"
                                         type={showConfirmPassword ? 'text' : 'password'}
-                                        placeholder="Enter confirm password"
+                                        placeholder="Ulangi Kata Sandi diatas"
                                         required
                                         className="h-[40px] text-[14px] rounded-lg border-slate-300 pr-10"
                                     />
@@ -261,13 +263,27 @@ const ForgotPassword = () => {
                                     </button>
                                 </div>
                             </div>
-                            <Button type="submit" className="w-full h-[40px] bg-teal-500 text-[14px] font-medium" onClick={() => navigate('/')}>
-                                Reset Password
-                            </Button>
                         </div>
-
+                        <div className='grid gap-4'>
+                            <Button type="submit" className="w-full h-[40px]  text-[14px] font-medium" onClick={() => navigate('/')}>
+                                Konfirmasi Kata Sandi
+                            </Button>
+                            <div className="text-center text-[14px] font-medium text-slate-500">
+                            Dengan menekan tombol diatas, anda telah menyetujui{" "}
+                                <Link className='underline text-black'  >
+                                Syarat dan Ketentuan
+                                </Link>
+                                {" "}serta{" "}
+                                <Link className='underline text-black'  >
+                                Kebijakan Privasi
+                                </Link>
+                                {" "}kami
+                            </div>
+                        </div>
                     </div>
-                </Card>
+
+
+                </div>
             )}
         </div>
     );
