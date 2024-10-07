@@ -6,6 +6,7 @@ import DaftarPengguna from '../ManajemenUser/DaftarPengguna/DaftarPengguna';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Dashboard from '../Dashboard/Dashboard';
 import { Toaster } from "@/components/ui/toaster"
+import Kategori from '../ManajemenProduk&Stok/Kategori/Kategori';
 
 const MainPanel = () => {
     const navigate = useNavigate();
@@ -105,6 +106,7 @@ const MainPanel = () => {
                                             <Link
                                                 className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'kategori' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
                                                 onClick={() => handleLinkClick('kategori')}
+                                                to="/admin-panel/kategori"
                                             >
                                                 <span className='font-medium text-[14px]'>Kategori</span>
                                             </Link>
@@ -180,6 +182,7 @@ const MainPanel = () => {
                     <Routes>
                         <Route path="*" element={<Dashboard />} />
                         <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="kategori" element={<Kategori />} />
                         <Route path="daftar-pengguna" element={<DaftarPengguna />} />
                     </Routes>
                 </div>

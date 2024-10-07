@@ -30,7 +30,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { SearchNormal1, Filter, InfoCircle, Trash, ArrowDown2 } from 'iconsax-react';
 import {
     Pagination,
     PaginationContent,
@@ -57,7 +56,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import NoData from "./nodata";
+import NoData from "./NoData";
+import { CloseCircle } from 'iconsax-react';
 
 
 
@@ -73,110 +73,84 @@ const DataTableDemo = () => {
         {
             id: "m5gr84i9",
             name: 'jairo vernandes',
-            role: "Admin",
-            status: "Aktif",
-            email: "ken99@yahoo.com",
+            jumlah: "12",
+            outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
         },
         {
             id: "3u1reuv4",
             name: 'jairo vernandes',
-            role: "Manager",
-            status: "Aktif",
-            email: "Abe45@gmail.com",
+            jumlah: "12",
+            outlet: "Outlet 2",
             date: "23 Oktober 2024",
         },
         {
             id: "derv1ws0",
             name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Aktif",
-            email: "Monserrat44@gmail.com",
+            jumlah: "12",
+            outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
         },
         {
             id: "5kma53ae",
             name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "Silas22@gmail.com",
+            jumlah: "89",
+            outlet: "Outlet 2",
             date: "23 Oktober 2024",
         },
         {
             id: "bhqecj4p",
             name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
+            jumlah: "9",
+            outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
         },
         {
             id: "bhqecj4p234",
             name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
+            jumlah: "12",
+            outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
         },
         {
             id: "bhqecj4p23467",
             name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
+            jumlah: "12",
+            outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
         },
         {
             id: "bhqecj4p23467g",
             name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
+            jumlah: "12",
+            outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
         },
         {
             id: "bhqecj4p23467g7",
             name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
+            jumlah: "12",
+            outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
         },
         {
             id: "bhqecj4p23467g76",
             name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
+            jumlah: "12",
+            outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
         },
         {
             id: "bhqecj4p23467g76",
             name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
+            jumlah: "12",
+            outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
         },
     ]);
 
     // status
     const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
-
-    const handleStatusChange = (id) => {
-        setData(prevData =>
-            prevData.map(item =>
-                item.id === id ? { ...item, status: item.status === "Aktif" ? "Tidak Aktif" : "Aktif" } : item
-            )
-        );
-
-        // Update original data as well
-        setOriginalData(prevData =>
-            prevData.map(item =>
-                item.id === id ? { ...item, status: item.status === "Aktif" ? "Tidak Aktif" : "Aktif" } : item
-            )
-        );
-    };
 
     // Define columns
     const columns = [
@@ -206,47 +180,22 @@ const DataTableDemo = () => {
         },
         {
             accessorKey: "name",
-            header: "Nama",
+            header: "Nama kategori",
             cell: ({ row }) => (
                 <div className="capitalize font-medium">{row.getValue("name")}</div>
             ),
         },
         {
-            accessorKey: "role",
-            header: "Role",
+            accessorKey: "jumlah",
+            header: "Jumlah produk",
             cell: ({ row }) => (
-                <div className="capitalize font-medium">{row.getValue("role")}</div>
+                <div className="capitalize font-medium">{row.getValue("jumlah")}</div>
             ),
         },
         {
-            accessorKey: "email",
-            header: "Email",
-            cell: ({ row }) => <div className="lowercase font-medium">{row.getValue("email")}</div>,
-        },
-        {
-            accessorKey: "status",
-            header: "Status",
-            cell: ({ row }) => {
-                const role = row.getValue("status");
-
-                // Conditional rendering based on the role value
-                let roleClass = "";
-                let roleText = "";
-
-                if (role === "Aktif") {
-                    roleClass = "secondary";
-                    roleText = "Aktif";
-                } else if (role === "Tidak Aktif") {
-                    roleClass = "destructive";
-                    roleText = "Tidak Aktif";
-                }
-
-                return (
-                    <div className="capitalize">
-                        <Badge variant={roleClass} className="text-[12px]">{roleText}</Badge>
-                    </div>
-                );
-            }
+            accessorKey: "outlet",
+            header: "Outlet",
+            cell: ({ row }) => <div className="lowercase font-medium">{row.getValue("outlet")}</div>,
         },
         {
             accessorKey: "date",
@@ -268,7 +217,7 @@ const DataTableDemo = () => {
             enableHiding: false,
             cell: ({ row }) => {
                 const id = row.getValue("id");
-                const status = row.getValue("status")
+                const outlet = row.getValue("outlet")
 
                 return (
                     <DropdownMenu>
@@ -279,11 +228,7 @@ const DataTableDemo = () => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-[164px]">
-                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleviewClick(id)}>View profile</DropdownMenuItem>
-                            <DropdownMenuSeparator />
                             <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleEditClick(id)}>Edit profile</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleStatusChange(row.id)}> {status === "Aktif" ? "Deactivate" : "Activate"} </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
                         </DropdownMenuContent>
@@ -339,42 +284,20 @@ const DataTableDemo = () => {
 
     const [selectedId, setSelectedId] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isDialogOpenview, setIsDialogOpenview] = useState(false);
-    const [isEditPenggunaOpen, setIsEditPenggunaOpen] = useState(false);
-
-
-    const handleEditClick = (id) => {
-        setSelectedId(id);
-        setIsDialogOpen(true);
-    };
-    const handleviewClick = (id) => {
-        setSelectedId(id);
-        setIsDialogOpenview(true);
-    };
-
-    useEffect(() => {
-        setColumnVisibility((prev) => ({ ...prev, id: false }));
-    }, []);
-
-
-    // edit pengguna 
-    const { toast } = useToast()
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [selectedOutlets, setSelectedOutlets] = useState([]);
     const [formData, setFormData] = useState({
         nama: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        role: '',
     });
+    const { toast } = useToast();
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
-
-    const toggleConfirmPasswordVisibility = () => {
-        setShowConfirmPassword(!showConfirmPassword);
+    const handleEditClick = (id) => {
+        const selectedData = data.find(item => item.id === id);
+        if (selectedData) {
+            const outlets = selectedData.outlet.split(", ").map((name, index) => ({ id: `outlet-${index}`, name }));
+            setSelectedOutlets(outlets);
+            setSelectedId(id);
+            setIsDialogOpen(true);
+        }
     };
 
     const handleInputChange = (e) => {
@@ -382,58 +305,67 @@ const DataTableDemo = () => {
         setFormData({ ...formData, [id]: value });
     };
 
+    useEffect(() => {
+        const selectedData = data.find(item => item.id === selectedId);
+        if (selectedData) {
+            setFormData({
+                nama: selectedData.name,
+            });
+        }
+    }, [selectedId]);
 
+    const DataOutlet = [
+        { id: "m5gr84i9", name: 'Outlet 1' },
+        { id: "m5gr84i7", name: 'Outlet 2' },
+        { id: "m5gr84i8", name: 'Outlet 3' }
+    ];
+
+    const handleSelectOutlet = (outlet) => {
+        setSelectedOutlets((prevSelected) => {
+            // Memeriksa apakah outlet sudah terpilih
+            const isSelected = prevSelected.some((o) => o.id === outlet.id);
+            if (isSelected) {
+                // Jika outlet sudah terpilih, hapus dari selectedOutlets
+                return prevSelected.filter((o) => o.id !== outlet.id);
+            } else {
+                // Jika outlet belum terpilih, tambahkan ke selectedOutlets
+                return [...prevSelected, outlet];
+            }
+        });
+    };
+
+    const handleSelectAll = () => {
+        if (selectedOutlets.length === DataOutlet.length) {
+            setSelectedOutlets([]);
+        } else {
+            // Jika tidak semua outlet dipilih, pilih semua outlet
+            setSelectedOutlets(DataOutlet);
+        }
+    };
+
+    const handleRemoveOutlet = (id) => {
+        setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const { nama, email, password, confirmPassword, role } = formData;
+        const { nama } = formData;
 
         // Validasi
         if (!nama) {
             toast({
                 variant: "destructive",
                 title: "Error!",
-                description: "Nama pengguna harus diisi.",
+                description: "Nama kategori harus diisi.",
                 action: <ToastAction altText="Try again">Cancel</ToastAction>,
             });
             return;
         }
-
-        if (!email) {
+        if (selectedOutlets.length === 0) {
             toast({
                 variant: "destructive",
                 title: "Error!",
-                description: "Email harus diisi.",
-                action: <ToastAction altText="Try again">Cancel</ToastAction>,
-            });
-            return;
-        }
-
-        if (!password) {
-            toast({
-                variant: "destructive",
-                title: "Error!",
-                description: "Kata sandi harus diisi.",
-                action: <ToastAction altText="Try again">Cancel</ToastAction>,
-            });
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            toast({
-                variant: "destructive",
-                title: "Error!",
-                description: "Kata sandi tidak cocok.",
-                action: <ToastAction altText="Try again">Cancel</ToastAction>,
-            });
-            return;
-        }
-
-        if (!role) {
-            toast({
-                variant: "destructive",
-                title: "Error!",
-                description: "Role harus dipilih.",
+                description: "Anda harus memilih setidaknya satu outlet.",
                 action: <ToastAction altText="Try again">Cancel</ToastAction>,
             });
             return;
@@ -451,23 +383,9 @@ const DataTableDemo = () => {
         setIsDialogOpen(false);
     };
 
-    // Mengisi formData berdasarkan selectedId
     useEffect(() => {
-        const selectedData = data.find(item => item.id === selectedId);
-        if (selectedData) {
-            setFormData({
-                nama: selectedData.name,
-                email: selectedData.email,
-                role: selectedData.role,
-                status: selectedData.status,
-                date: selectedData.date,
-            });
-        }
-    }, [selectedId]);
-
-    const handleSelectChange = (value) => {
-        setFormData({ ...formData, role: value });
-    };
+        setColumnVisibility((prev) => ({ ...prev, id: false }));
+    }, []);
 
     return (
         <div className="w-full grid gap-[16px] mt-[24px]">
@@ -475,26 +393,16 @@ const DataTableDemo = () => {
                 <div className="flex gap-[12px]">
                     <Input
                         placeholder="Cari"
-                        value={(table.getColumn("email")?.getFilterValue() || "")}
+                        value={(table.getColumn("name")?.getFilterValue() || "")}
                         onChange={(event) =>
-                            table.getColumn("email")?.setFilterValue(event.target.value)
+                            table.getColumn("name")?.setFilterValue(event.target.value)
                         }
                         className="w-[266px] h-[32px]"
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
-                                <ChevronDown size={16} className="mr-2" /> Semua roles
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
-                                <ChevronDown size={16} className="mr-2" /> Semua status
+                                <ChevronDown size={16} className="mr-2" /> Semua outlet
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -528,7 +436,7 @@ const DataTableDemo = () => {
                 </DropdownMenu>
             </div>
             {pageData.length === 0 ? (
-                <NoData /> 
+                <NoData />
             ) : (
                 <div className="">
                     <Table>
@@ -641,14 +549,11 @@ const DataTableDemo = () => {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
-                        <DialogTitle>Edit Pengguna</DialogTitle>
+                        <DialogTitle>Edit Kategori</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-[16px] py-4">
-                        <div className='h-[154px] w-[154px]'>
-                            <ImageUpload />
-                        </div>
                         <div className="grid gap-1">
-                            <Label htmlFor="nama" className="text-[14px]">Nama pengguna<span className='text-rose-500'>*</span></Label>
+                            <Label htmlFor="nama" className="text-[14px]">Nama Kategori<span className='text-rose-500'>*</span></Label>
                             <Input
                                 id="nama"
                                 placeholder="Masukkan Nama pengguna"
@@ -659,77 +564,51 @@ const DataTableDemo = () => {
                             />
                         </div>
                         <div className="grid gap-1">
-                            <Label htmlFor="email" className="text-[14px]">Email<span className='text-rose-500'>*</span></Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="Masukkan email anda"
-                                required
-                                className="h-[36px] text-[14px] rounded-lg border-slate-300"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                            />
+                            <Label htmlFor="role" className="text-[14px]">Atur outlet<span className='text-rose-500'>*</span></Label>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="mr-auto w-full h-[36px] text-[14px] text-left border-slate-300 justify-between text-slate-500">
+                                        Pilih outlet <ChevronDown size={16} className="mr-2" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start" className='w-[239px]'>
+                                    <DropdownMenuItem className="capitalize p-[12px]" onClick={handleSelectAll}>
+                                        <Checkbox
+                                            checked={selectedOutlets.length === DataOutlet.length}
+                                            onCheckedChange={handleSelectAll}
+                                            className='w-[16px] h-[16px]'
+                                        />
+                                        <span className="ml-[12px] text-[14px]">Pilih Semua</span>
+                                    </DropdownMenuItem>
+                                    {DataOutlet.map((outlet) => (
+                                        <DropdownMenuItem key={outlet.id} className="capitalize p-[12px]" onClick={() => handleSelectOutlet(outlet)}>
+                                            <Checkbox
+                                                checked={selectedOutlets.some((o) => o.id === outlet.id)}
+                                                onChange={() => handleSelectOutlet(outlet)}
+                                                className='w-[16px] h-[16px]'
+                                            />
+                                            <span className="ml-[12px] text-[14px]">{outlet.name}</span>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
-                        <div className="grid gap-1">
-                            <Label htmlFor="password" className="text-[14px]">Kata Sandi<span className='text-rose-500'>*</span></Label>
-                            <div className="relative">
-                                <Input
-                                    id="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    placeholder="Tulis Kata Sandi baru"
-                                    required
-                                    className="h-[36px] text-[14px] rounded-lg border-slate-300 pr-10"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={togglePasswordVisibility}
-                                    className="absolute inset-y-0 right-0 flex items-center pr-3 focus-visible:ring-0 focus-visible:ring-offset-0"
-                                >
-                                    {showPassword ? <EyeSlash size="16" color="#94A3B8" /> : <Eye size="16" color="#94A3B8" />}
-                                </button>
-                            </div>
-                        </div>
-                        <div className="grid gap-1">
-                            <Label htmlFor="confirm-password" className="text-[14px]">Ulangi Kata Sandi Anda<span className='text-rose-500'>*</span></Label>
-                            <div className="relative">
-                                <Input
-                                    id="confirmPassword"
-                                    type={showConfirmPassword ? 'text' : 'password'}
-                                    placeholder="Ulangi Kata Sandi diatas"
-                                    required
-                                    className="h-[36px] text-[14px] rounded-lg border-slate-300 pr-10"
-                                    value={formData.confirmPassword}
-                                    onChange={handleInputChange}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={toggleConfirmPasswordVisibility}
-                                    className="absolute inset-y-0 right-0 flex items-center pr-3 focus-visible:ring-0 focus-visible:ring-offset-0"
-                                >
-                                    {showConfirmPassword ? <EyeSlash size="16" color="#94A3B8" /> : <Eye size="16" color="#94A3B8" />}
-                                </button>
-                            </div>
-                        </div>
-                        <div className="grid gap-1">
-                            <Label htmlFor="role" className="text-[14px]">Role<span className='text-rose-500'>*</span></Label>
-                            <Select onValueChange={handleSelectChange} value={formData.role}>
-                                <SelectTrigger className="w-full h-[36px] text-[14px] rounded-lg border-slate-300 ">
-                                    <SelectValue placeholder="Pilih Role" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectItem value="Admin" className='text-[14px]'>Admin</SelectItem>
-                                        <SelectItem value="Manager" className='text-[14px]'>Manager</SelectItem>
-                                        <SelectItem value="Kasir" className='text-[14px]'>Kasir</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
+                        <div className='flex flex-wrap gap-[12px]'>
+                            {selectedOutlets.map((outlet) => (
+                                <Badge key={outlet.id} variant="secondary" className="h-[36px] px-[12px] text-[14px] gap-[8px]">
+                                    {outlet.name}
+                                    <CloseCircle
+                                        size={16}
+                                        variant="Bold"
+                                        className='cursor-pointer'
+                                        onClick={() => handleRemoveOutlet(outlet.id)}
+                                    />
+                                </Badge>
+                            ))}
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="submit" onClick={handleSubmit}>Simpan</Button>
+                        <Button type="submit" onClick={handleSubmit} className='text-[14px] h-[36px]'>Simpan Perubahan</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -744,40 +623,6 @@ const DataTableDemo = () => {
 
 
 
-
-
-
-
-            {/* view */}
-            <Dialog open={isDialogOpenview} onOpenChange={setIsDialogOpenview}>
-                <DialogContent className="sm:max-w-[425px] p-[25px]">
-                    <DialogHeader>
-                        <DialogTitle className='text-[18px]'>Detail pengguna</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-[16px] text-[14px]">
-                        <div className="flex align-middle h-[36px]">
-                            <p className="w-[150px] text-slate-500">Nama</p>
-                            <p>{formData.nama}</p>
-                        </div>
-                        <div className="flex align-middle h-[36px]">
-                            <p className="w-[150px] text-slate-500">Role</p>
-                            <p>{formData.role}</p>
-                        </div>
-                        <div className="flex align-middle h-[36px]">
-                            <p className="w-[150px] text-slate-500">Email</p>
-                            <p>{formData.email}</p>
-                        </div>
-                        <div className="flex align-middle h-[36px]">
-                            <p className="w-[150px] text-slate-500">Status</p>
-                            <p>{formData.status}</p>
-                        </div>
-                        <div className="flex align-middle h-[36px]">
-                            <p className="w-[150px] text-slate-500">Tanggal Dibuat</p>
-                            <p>{formData.date}</p>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
         </div>
     )
 }

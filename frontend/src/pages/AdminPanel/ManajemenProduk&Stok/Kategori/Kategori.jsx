@@ -1,5 +1,5 @@
 import React from 'react'
-import DataTableDemo from './data-table';
+import DataTableDemo from './DataTable';
 import {
   Breadcrumb,
   BreadcrumbLink,
@@ -7,11 +7,11 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { ArrowRight2, } from 'iconsax-react';
-import AddPengguna from './AddPengguna';
+import AddKategori from './AddKategori';
 
 
 
-const DaftarPengguna = () => {
+const Kategori = () => {
   const [position, setPosition] = React.useState("bottom")
   return (
     <div>
@@ -21,7 +21,7 @@ const DaftarPengguna = () => {
             <BreadcrumbLink
               onClick={(e) => e.preventDefault()}
               className={`text-[14px] font-medium hover:text-slate-500`}>
-              Manajemen pengguna
+              Produk dan stok
             </BreadcrumbLink>
             <BreadcrumbSeparator>
               <ArrowRight2 size={20} color='#64748B' />
@@ -29,14 +29,14 @@ const DaftarPengguna = () => {
             <BreadcrumbLink
               onClick={(e) => e.preventDefault()}
               className={`text-[14px] font-medium text-black`}>
-              Daftar pengguna
+              Kategori
             </BreadcrumbLink>
 
           </BreadcrumbList>
         </Breadcrumb>
         <div className='flex justify-between'>
-        <h2 className='text-[36px] font-semibold '>List pengguna</h2>
-        <AddPengguna buttonProps={{ className: 'gap-2 h-[36px] text-[14px] font-medium' }}  title="Tambah pengguna" showIcon={true} />
+        <h2 className='text-[36px] font-semibold '>Kategori</h2>
+        <AddKategori buttonProps={{ className: 'gap-2 h-[36px] text-[14px] font-medium' }}  title="Tambah kategori" showIcon={true} />
         </div>
         
       </div>
@@ -46,5 +46,5 @@ const DaftarPengguna = () => {
   )
 }
 
-export default DaftarPengguna
+export default Kategori
 
