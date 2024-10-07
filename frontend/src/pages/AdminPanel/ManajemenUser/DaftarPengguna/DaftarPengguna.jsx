@@ -7,8 +7,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { ArrowRight2, } from 'iconsax-react';
+import AddPengguna from './AddPengguna';
 import { GoPlus } from "react-icons/go";
-import { Button } from "@/components/ui/button"
+
 
 const DaftarPengguna = () => {
   const [position, setPosition] = React.useState("bottom")
@@ -35,10 +36,7 @@ const DaftarPengguna = () => {
         </Breadcrumb>
         <div className='flex justify-between'>
         <h2 className='text-[36px] font-semibold '>List pengguna</h2>
-        <Button className='gap-2 h-[36px]  text-[14px] font-medium'>
-                        <GoPlus size={16} />
-                        Tambah pengguna
-                    </Button>
+        <AddPengguna buttonProps={{ className: 'gap-2 h-[36px] text-[14px] font-medium' }}  title="Tambah pengguna" showIcon={true} />
         </div>
         
       </div>

@@ -5,6 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import DaftarPengguna from '../ManajemenUser/DaftarPengguna/DaftarPengguna';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Dashboard from '../Dashboard/Dashboard';
+import { Toaster } from "@/components/ui/toaster"
 
 const MainPanel = () => {
     const navigate = useNavigate();
@@ -41,6 +42,7 @@ const MainPanel = () => {
 
     return (
         <div className='w-full'>
+            <Toaster />
             {/* header */}
             <div className='fixed flex justify-between items-center w-[100%] border h-[60px] px-[32px] ps-6 bg-white'>
                 <button className="flex text-center justify-center gap-[14px]">
