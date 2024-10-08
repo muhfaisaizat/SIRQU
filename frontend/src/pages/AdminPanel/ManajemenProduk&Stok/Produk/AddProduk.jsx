@@ -250,17 +250,6 @@ const AddProduk = ({ buttonProps, title, showIcon }) => {
             return;
         }
         
-        
-
-
-
-
-
-        toast({
-            title: "Sukses!",
-            description: "Kategori berhasil ditambahkan.",
-            action: <ToastAction altText="Try again">Cancel</ToastAction>,
-        });
 
 
 

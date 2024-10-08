@@ -14,7 +14,7 @@ import AddKategori from './AddKategori';
 const Kategori = () => {
   const [position, setPosition] = React.useState("bottom")
   return (
-    <div>
+    <div className="px-[24px]">
       <div className='grid gap-2 pt-[40px]  pb-[36px]'>
         <Breadcrumb>
           <BreadcrumbList>
