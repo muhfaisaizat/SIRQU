@@ -1,50 +1,47 @@
-const argon2 = require('argon2'); // Import argon2 for password hashing
+'use strict';
 const User = require('../models/user'); // Pastikan model User diimpor
+const argon2 = require('argon2');
 
-const seedRoles = async () => {
-    try {
-        // Hapus data yang ada
-        await User.destroy({ where: {}, truncate: true });
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const adminPassword = await argon2.hash('Admin123');
+    const managerPassword = await argon2.hash('Manager123');
+    const kasirPassword = await argon2.hash('Kasir123');
 
-        // Hash the passwords before saving them
-        const adminPassword = await argon2.hash('Admin123');
-        await User.create({
-            name: 'Admin',
-            email: 'admin@gmail.com',
-            password: adminPassword, // Simpan hashed password
-            role: 'Admin',
-            status: 'Active',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
-        console.log('User admin created!');
+    // Insert users into the database
+    await queryInterface.bulkInsert('Users', [
+      {
+        name: 'Admin',
+        email: 'admin@gmail.com',
+        password: adminPassword, // Simpan hashed password
+        role: 'Admin',
+        status: 'Active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: 'Manager',
+        email: 'manager@gmail.com',
+        password: managerPassword, // Simpan hashed password
+        role: 'Manager',
+        status: 'Active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: 'Kasir',
+        email: 'kasir@gmail.com',
+        password: kasirPassword, // Simpan hashed password
+        role: 'Kasir',
+        status: 'Active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ], {});
+  },
 
-        const managerPassword = await argon2.hash('Manager123');
-        await User.create({
-            name: 'Manager',
-            email: 'manager@gmail.com',
-            password: managerPassword, // Simpan hashed password
-            role: 'Manager',
-            status: 'Active',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
-        console.log('User manager created!');
-
-        const kasirPassword = await argon2.hash('Kasir123');
-        await User.create({
-            name: 'Kasir',
-            email: 'kasir@gmail.com',
-            password: kasirPassword, // Simpan hashed password
-            role: 'Kasir',
-            status: 'Active',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
-        console.log('User kasir created!');
-    } catch (error) {
-        console.error('Error seeding roles:', error);
-    }
+  down: async (queryInterface, Sequelize) => {
+    // Remove all users
+    await queryInterface.bulkDelete('Users', null, {});
+  }
 };
-
-module.exports = seedRoles;

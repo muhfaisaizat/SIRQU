@@ -33,16 +33,16 @@ const PORT = process.env.PORT || 5000;
 // Function to synchronize the database and seed initial data
 const initializeDatabase = async () => {
     try {
-        await sequelize.sync({ force: true }); // Hati-hati dengan force: true, ini akan menghapus tabel yang ada
+        await sequelize.sync({ force: true }); // Hati-hati, ini akan menghapus tabel yang ada
         console.log('Database synced');
-
-        // Call the seed function to insert roles after the database is ready
+        
+        // Jalankan seeder secara manual
         await seedRoles();
-        console.log('Seed roles completed.');
+        console.log('Role seeder completed');
     } catch (error) {
         console.error('Error syncing database:', error);
-        throw error; // Rethrow the error to be caught later
-    }
+        throw error; // Rethrow error untuk ditangkap nanti
+    }
 };
 
 // Start the server
