@@ -43,7 +43,7 @@ import {
 import { FiEdit2 } from "react-icons/fi";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import ImageUpload from '@/components/ui/ImageUpload'
 import { Eye, EyeSlash } from 'iconsax-react';
 import { useToast } from '@/hooks/use-toast'
@@ -58,6 +58,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import NoData from "./nodata";
+import { X } from "lucide-react"
 
 
 
@@ -528,7 +529,7 @@ const DataTableDemo = () => {
                 </DropdownMenu>
             </div>
             {pageData.length === 0 ? (
-                <NoData /> 
+                <NoData />
             ) : (
                 <div className="">
                     <Table>
@@ -640,9 +641,17 @@ const DataTableDemo = () => {
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit Pengguna</DialogTitle>
-                    </DialogHeader>
+                    <div className='flex justify-between'>
+                        <DialogHeader>
+                            <DialogTitle className='text-[18px] py-[16px]'>Edit Pengguna</DialogTitle>
+                        </DialogHeader>
+                        <DialogClose asChild>
+                            <Button type="button" variant="ghost">
+                                <X className='h-[16px] w-[16px]' />
+                            </Button>
+                        </DialogClose>
+
+                    </div>
                     <div className="grid gap-[16px] py-4">
                         <div className='h-[154px] w-[154px]'>
                             <ImageUpload />
@@ -751,9 +760,17 @@ const DataTableDemo = () => {
             {/* view */}
             <Dialog open={isDialogOpenview} onOpenChange={setIsDialogOpenview}>
                 <DialogContent className="sm:max-w-[425px] p-[25px]">
-                    <DialogHeader>
-                        <DialogTitle className='text-[18px]'>Detail pengguna</DialogTitle>
-                    </DialogHeader>
+                    <div className='flex justify-between'>
+                        <DialogHeader>
+                            <DialogTitle className='text-[18px] py-[16px]'>Detail Pengguna</DialogTitle>
+                        </DialogHeader>
+                        <DialogClose asChild>
+                            <Button type="button" variant="ghost">
+                                <X className='h-[16px] w-[16px]' />
+                            </Button>
+                        </DialogClose>
+
+                    </div>
                     <div className="grid gap-4 py-[16px] text-[14px]">
                         <div className="flex align-middle h-[36px]">
                             <p className="w-[150px] text-slate-500">Nama</p>

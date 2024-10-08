@@ -42,22 +42,13 @@ import {
 import { FiEdit2 } from "react-icons/fi";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import ImageUpload from '@/components/ui/ImageUpload'
-import { Eye, EyeSlash } from 'iconsax-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from "@/components/ui/toast"
 import { Label } from "@/components/ui/label"
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import NoData from "./NoData";
 import { CloseCircle } from 'iconsax-react';
+import { X } from "lucide-react"
 
 
 
@@ -548,9 +539,17 @@ const DataTableDemo = () => {
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit Kategori</DialogTitle>
-                    </DialogHeader>
+                    <div className='flex justify-between'>
+                        <DialogHeader>
+                            <DialogTitle className='text-[18px] py-[16px]'>Edit Kategori</DialogTitle>
+                        </DialogHeader>
+                        <DialogClose asChild>
+                            <Button type="button" variant="ghost">
+                                <X className='h-[16px] w-[16px]' />
+                            </Button>
+                        </DialogClose>
+
+                    </div>
                     <div className="grid gap-[16px] py-4">
                         <div className="grid gap-1">
                             <Label htmlFor="nama" className="text-[14px]">Nama Kategori<span className='text-rose-500'>*</span></Label>

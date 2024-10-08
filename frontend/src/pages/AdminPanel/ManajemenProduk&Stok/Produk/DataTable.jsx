@@ -44,7 +44,7 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import ImageUpload from '@/components/ui/ImageUpload'
-import {  GalleryAdd } from 'iconsax-react';
+import { GalleryAdd } from 'iconsax-react';
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from "@/components/ui/toast"
 import { Label } from "@/components/ui/label"
@@ -72,6 +72,8 @@ const DataTableDemo = () => {
             harga: "50000000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
+            deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "3u1reuv4",
@@ -80,6 +82,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Outlet 2",
             date: "23 Oktober 2024",
+             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "derv1ws0",
@@ -88,6 +92,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
+             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "5kma53ae",
@@ -96,6 +102,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Outlet 2",
             date: "23 Oktober 2024",
+             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p",
@@ -104,6 +112,8 @@ const DataTableDemo = () => {
             outlet: "Oulet 1, Outlet 2",
             harga: "50000",
             date: "23 Oktober 2024",
+             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p234",
@@ -112,6 +122,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
+             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p23467",
@@ -120,6 +132,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
+             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p23467g",
@@ -128,6 +142,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
+             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p23467g7",
@@ -136,6 +152,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
+             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p23467g76",
@@ -144,6 +162,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
+             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p23467g76",
@@ -152,6 +172,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
+             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
     ]);
 
@@ -206,9 +228,9 @@ const DataTableDemo = () => {
                 const formattedHarga = new Intl.NumberFormat('id-ID', {
                     style: 'currency',
                     currency: 'IDR',
-                    minimumFractionDigits: 0, 
+                    minimumFractionDigits: 0,
                 }).format(harga);
-            
+
                 return <div className=" font-medium">{formattedHarga}</div>;
             },
         },
@@ -248,6 +270,8 @@ const DataTableDemo = () => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-[164px]">
+                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleviewClick(id)}>View Produk</DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleEditClick(id)}>Edit Produk</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
@@ -304,9 +328,16 @@ const DataTableDemo = () => {
 
     const [selectedId, setSelectedId] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDialogOpenview, setIsDialogOpenview] = useState(false);
     const [selectedOutlets, setSelectedOutlets] = useState([]);
     const [formData, setFormData] = useState({
         nama: '',
+        deskripsi:'',
+        kategori:'',
+        harga:'',
+        outlet:'',
+        date:'',
+        foto:''
     });
     const { toast } = useToast();
     const [deskripsi, setdeskripsi] = useState('');
@@ -315,14 +346,13 @@ const DataTableDemo = () => {
         setdeskripsi(event.target.value);
     };
 
-   
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
     };
 
-   
+
 
     const DataOutlet = [
         { id: "m5gr84i9", name: 'Makanan ringan' },
@@ -425,37 +455,25 @@ const DataTableDemo = () => {
 
 
 
-     // untuk input uang
-     const [uang, setUang] = useState('');
+    // untuk input uang
+    const [uang, setUang] = useState('');
 
-     // Fungsi untuk memformat angka menjadi format ribuan
-     const formatNumber = (number) => {
-         return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-     };
- 
-     // Fungsi untuk menangani perubahan input dan membatasi hanya angka
-     const handleInputChangeuang = (e) => {
-         const value = e.target.value;
- 
-         // Hanya mengizinkan angka
-         const numberValue = value.replace(/\D/g, '');
-         setUang(numberValue);
-     };
+    // Fungsi untuk memformat angka menjadi format ribuan
+    const formatNumber = (number) => {
+        return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
 
-    //  stok
-     const [stock, setStock] = useState('');
-     const [isUnlimitedStock, setIsUnlimitedStock] = useState(false);
- 
- 
-     // Fungsi untuk menangani input angka stok
-     const handleStockChange = (e) => {
-         const { value } = e.target;
-         // Izinkan input angka dan tanda "-"
-         if (/^[0-9-]*$/.test(value)) {
-             setStock(value);
-         }
-     };
- 
+    // Fungsi untuk menangani perubahan input dan membatasi hanya angka
+    const handleInputChangeuang = (e) => {
+        const value = e.target.value;
+
+        // Hanya mengizinkan angka
+        const numberValue = value.replace(/\D/g, '');
+        setUang(numberValue);
+    };
+
+   
+
 
 
     const handleEditClick = (id) => {
@@ -470,19 +488,33 @@ const DataTableDemo = () => {
         }
     };
 
+    const handleviewClick = (id) => {
+        setSelectedId(id);
+        setIsDialogOpenview(true);
+    };
+
 
     useEffect(() => {
         const selectedData = data.find(item => item.id === selectedId);
         if (selectedData) {
             setFormData({
                 nama: selectedData.name,
-                uang: selectedData.harga
+                uang: selectedData.harga,
+                deskripsi: selectedData.deskripsi,
+                kategori: selectedData.kategori,
+                harga: selectedData.harga,
+                outlet: selectedData.outlet,
+                date: selectedData.date,
+                foto: selectedData.foto
             });
-    
+
             // Format dan set nilai uang ke dalam input
             const formattedUang = formatNumber(selectedData.harga.toString());
             setUang(formattedUang);
-        }    
+            setdeskripsi(selectedData.deskripsi);
+            const splittedFotos = selectedData.foto.split(', ');
+            setImages(splittedFotos);
+        }
     }, [selectedId]);
 
 
@@ -548,20 +580,11 @@ const DataTableDemo = () => {
             return;
         }
 
-        if (!isUnlimitedStock && (!stock || (stock !== "-" && (isNaN(stock) || Number(stock) < 0)))) {
-            toast({
-                variant: "destructive",
-                title: "Error!",
-                description: "Stok harus diisi dengan angka valid.",
-                action: <ToastAction altText="Try again">Cancel</ToastAction>,
-            });
-            return;
-        }
-        
+
 
         toast({
             title: "Sukses!",
-            description: "Pengguna berhasil ditambahkan.",
+            description: "Produk berhasil diperbarui.",
             action: <ToastAction altText="Try again">Cancel</ToastAction>,
         });
 
@@ -733,7 +756,7 @@ const DataTableDemo = () => {
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-[820px] my-[20px] p-[24px]">
-                <div className='flex justify-between'>
+                    <div className='flex justify-between'>
                         <DialogHeader>
                             <DialogTitle className='text-[18px] py-[16px]'>Edit produk</DialogTitle>
                         </DialogHeader>
@@ -744,7 +767,7 @@ const DataTableDemo = () => {
                         </DialogClose>
 
                     </div>
-                    <div className="grid gap-[16px] py-[32px] border-y border-slate-300">
+                    <div className="grid gap-[16px] py-[32px]">
                         <h3 className='text-[16px] font-semibold'>Detail produk</h3>
                         <div className="flex gap-1">
                             <Label htmlFor="role" className="text-[14px] w-[240px] py-[8px]">Daftar Outlet<span className='text-rose-500'>*</span></Label>
@@ -811,7 +834,7 @@ const DataTableDemo = () => {
                                     maxLength={200}
                                 />
                                 <p className="text-[14px] text-muted-foreground flex justify-end">
-                                {deskripsi.length}/200 char
+                                    {deskripsi.length}/200 char
                                 </p>
                             </div>
                         </div>
@@ -908,40 +931,75 @@ const DataTableDemo = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="grid gap-[16px] py-[32px]">
-                        <h3 className='text-[16px] font-semibold'>Tambah produk</h3>
-                        <div className="flex gap-1">
-                            <Label className="text-[14px] w-[240px] py-[8px]">Stok produk<span className='text-rose-500'>*</span></Label>
-                            <div className="grid gap-1 w-full">
-                                <p className={`text-[14px] ${isUnlimitedStock ? 'text-slate-300' : ''}`}>Stok awal produk</p>
-                                <Input
-                                    id="stokproduk"
-                                    placeholder="Masukkan stok produk"
-                                    required
-                                    disabled={isUnlimitedStock}
-                                    className="h-[36px] text-[14px] border-slate-300"
-                                    value={isUnlimitedStock ? '-' : stock}
-                                    onChange={handleStockChange}
-                                />
-                                <div className="flex items-center space-x-2 mt-[16px]">
-                                    <Switch
-                                        id="airplane-mode"
-                                        checked={isUnlimitedStock}
-                                        onCheckedChange={(checked) => setIsUnlimitedStock(checked)}
-                                    />
-                                    <Label htmlFor="airplane-mode" className='text-[14px] font-medium'>
-                                        Aktifkan stok tak terbatas
-                                    </Label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <DialogFooter>
+                    <p className='text-[14px] font-normal text-slate-500'>* Untuk mengelola <span className="text-black">Stok Produk</span> silahkan buka pada menu <span className="text-black">Kelola Stok</span></p>
+
+                    <DialogFooter className="gap-[12px]">
+                        <DialogClose asChild>
+                            <Button type="button" variant="outline" className='text-[14px] h-[36px]'>
+                                Batal
+                            </Button>
+                        </DialogClose>
                         <Button type="submit" onClick={handleSubmit} className='text-[14px] h-[36px]'>Simpan Perubahan</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
+
+
+            {/* detail produk */}
+            <Dialog open={isDialogOpenview} onOpenChange={setIsDialogOpenview}>
+                <DialogContent className="sm:max-w-[505px] my-[20px] p-[25px]">
+                    <div className='flex justify-between'>
+                        <DialogHeader>
+                            <DialogTitle className='text-[18px] py-[16px]'>Detail Produk</DialogTitle>
+                        </DialogHeader>
+                        <DialogClose asChild>
+                            <Button type="button" variant="ghost">
+                                <X className='h-[16px] w-[16px]' />
+                            </Button>
+                        </DialogClose>
+
+                    </div>
+                    <div className="grid gap-[16px] py-[16px] text-[14px]">
+                        <div className='w-full flex flex-wrap gap-[12px]'>
+                        {images.map((image, index) => (
+                                    <div key={index} className="relative w-[120px] h-[120px]">
+                                        <img
+                                            src={image}
+                                            alt={`Pilih gambar ${index + 1}`}
+                                            className="w-full h-full border object-cover rounded-[8px]"
+                                        />
+                                        
+                                    </div>
+                                ))}
+                        </div>
+                        <div className="flex align-middle h-[36px]">
+                            <p className="w-[150px] text-slate-500">Nama Produk</p>
+                            <p>{formData.nama}</p>
+                        </div>
+                        <div className="flex align-middle h-auto">
+                            <p className="w-[150px] text-slate-500">Deskripsi</p>
+                            <p className="h-auto w-[305px]">{formData.deskripsi}</p>
+                        </div>
+                        <div className="flex align-middle h-[36px]">
+                            <p className="w-[150px] text-slate-500">Kategori</p>
+                            <p>{formData.kategori}</p>
+                        </div>
+                        <div className="flex align-middle h-[36px]">
+                            <p className="w-[150px] text-slate-500">Harga</p>
+                            <p>Rp {uang}</p>
+                        </div>
+                        <div className="flex align-middle h-[36px]">
+                            <p className="w-[150px] text-slate-500">Daftar Outlet</p>
+                            <p>{formData.outlet}</p>
+                        </div>
+                        <div className="flex align-middle h-[36px]">
+                            <p className="w-[150px] text-slate-500">Tanggal Dibuat</p>
+                            <p>{formData.date}</p>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
