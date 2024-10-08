@@ -7,6 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
+    DialogOverlay
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -102,11 +103,11 @@ const AddKategori = ({ buttonProps, title, showIcon }) => {
                 <DialogTrigger asChild>
                     <Button {...buttonProps}>{showIcon && <GoPlus size={16} />} {title}</Button>
                 </DialogTrigger>
+                <DialogOverlay>
                 <DialogContent className="sm:max-w-[505px]">
                     <DialogHeader>
                         <DialogTitle className='text-[18px]'>Tambah kategori</DialogTitle>
                     </DialogHeader>
-                    <form onSubmit={handleSubmit}>
                         <div className="grid gap-[16px] py-[16px]">
                             <div className="grid gap-1">
                                 <Label htmlFor="Kategori" className="text-[14px]">Nama kategori<span className='text-rose-500'>*</span></Label>
@@ -167,10 +168,10 @@ const AddKategori = ({ buttonProps, title, showIcon }) => {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="submit" className='text-[14px] h-[36px]'>Simpan</Button>
+                            <Button onClick={handleSubmit} className='text-[14px] h-[36px]'>Simpan</Button>
                         </DialogFooter>
-                    </form>
                 </DialogContent>
+                </DialogOverlay>
             </Dialog>
         </div>
     );

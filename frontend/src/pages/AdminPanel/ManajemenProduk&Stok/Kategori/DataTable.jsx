@@ -228,7 +228,7 @@ const DataTableDemo = () => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-[164px]">
-                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleEditClick(id)}>Edit profile</DropdownMenuItem>
+                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleEditClick(id)}>Edit Kategori</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
                         </DropdownMenuContent>
@@ -612,16 +612,6 @@ const DataTableDemo = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-
-
-
-
-
-
-
-
-
-
 
         </div>
     )
