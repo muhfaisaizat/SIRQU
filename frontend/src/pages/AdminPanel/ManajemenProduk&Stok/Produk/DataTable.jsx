@@ -72,8 +72,8 @@ const DataTableDemo = () => {
             harga: "50000000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
-            deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "3u1reuv4",
@@ -82,8 +82,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Outlet 2",
             date: "23 Oktober 2024",
-             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "derv1ws0",
@@ -92,8 +92,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
-             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "5kma53ae",
@@ -102,8 +102,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Outlet 2",
             date: "23 Oktober 2024",
-             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p",
@@ -112,8 +112,8 @@ const DataTableDemo = () => {
             outlet: "Oulet 1, Outlet 2",
             harga: "50000",
             date: "23 Oktober 2024",
-             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p234",
@@ -122,8 +122,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
-             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p23467",
@@ -132,8 +132,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
-             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p23467g",
@@ -142,8 +142,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
-             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p23467g7",
@@ -152,8 +152,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
-             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p23467g76",
@@ -162,8 +162,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
-             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
         {
             id: "bhqecj4p23467g76",
@@ -172,8 +172,8 @@ const DataTableDemo = () => {
             harga: "50000",
             outlet: "Oulet 1, Outlet 2",
             date: "23 Oktober 2024",
-             deskripsi:'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto:'https://github.com/shadcn.png, https://github.com/shadcn.png'
+            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
         },
     ]);
 
@@ -289,6 +289,17 @@ const DataTableDemo = () => {
     const [columnVisibility, setColumnVisibility] = useState({})
     const [rowSelection, setRowSelection] = useState({})
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
+    const [selectedOutlets, setSelectedOutlets] = useState([]); // State untuk menyimpan outlet yang dipilih
+
+const handleOutletChange = (outletId) => {
+    setSelectedOutlets((prevSelected) => {
+        if (prevSelected.includes(outletId)) {
+            return prevSelected.filter(id => id !== outletId); // Hapus outlet jika sudah ada
+        } else {
+            return [...prevSelected, outletId]; // Tambah outlet yang baru dipilih
+        }
+    });
+};
 
 
     // Tentukan jumlah halaman berdasarkan total data dan pageSize
@@ -329,15 +340,14 @@ const DataTableDemo = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDialogOpenview, setIsDialogOpenview] = useState(false);
-    const [selectedOutlets, setSelectedOutlets] = useState([]);
     const [formData, setFormData] = useState({
         nama: '',
-        deskripsi:'',
-        kategori:'',
-        harga:'',
-        outlet:'',
-        date:'',
-        foto:''
+        deskripsi: '',
+        kategori: '',
+        harga: '',
+        outlet: '',
+        date: '',
+        foto: ''
     });
     const { toast } = useToast();
     const [deskripsi, setdeskripsi] = useState('');
@@ -355,8 +365,8 @@ const DataTableDemo = () => {
 
 
     const DataOutlet = [
-        { id: "m5gr84i9", name: 'Makanan ringan' },
-        { id: "m5gr84i7", name: 'Populer' },
+        { id: "m5gr84i9", name: 'Outlet 1' },
+        { id: "m5gr84i7", name: 'Outlet 2' },
     ];
 
     const handleSelectOutlet = (outlet) => {
@@ -424,9 +434,9 @@ const DataTableDemo = () => {
 
     // kategori
     const DataKategori = [
-        { id: "m5gr84i9", name: 'Favorit' },
-        { id: "m5gr84i7", name: 'best sale' },
-        { id: "m5gr84i8", name: 'sayur-sayuran' }
+        { id: "m5gr84i9", name: 'Makanan Ringan' },
+        { id: "m5gr84i7", name: 'Populer' },
+        { id: "m5gr84i8", name: 'Best sale' }
     ]
 
     const [selectedKategori, setSelectedKategori] = useState([]);
@@ -472,7 +482,7 @@ const DataTableDemo = () => {
         setUang(numberValue);
     };
 
-   
+
 
 
 
@@ -595,6 +605,19 @@ const DataTableDemo = () => {
         setColumnVisibility((prev) => ({ ...prev, id: false }));
     }, []);
 
+    const [checkedOutlets, setCheckedOutlets] = useState([]);
+
+const handleCheckboxChange = (outletName, isChecked) => {
+  const updatedCheckedOutlets = isChecked
+    ? [...checkedOutlets, outletName] // Tambah outlet yang dicentang
+    : checkedOutlets.filter((name) => name !== outletName); // Hapus outlet yang tidak dicentang
+
+  setCheckedOutlets(updatedCheckedOutlets);
+
+  // Munculkan alert berisi outlet yang sudah dicentang
+  alert(`Outlet yang dicentang: ${updatedCheckedOutlets.join(", ")}`);
+};
+
     return (
         <div className="w-full grid gap-[16px] mt-[24px]">
             <div className="flex items-center  justify-between">
@@ -605,16 +628,42 @@ const DataTableDemo = () => {
                         onChange={(event) =>
                             table.getColumn("name")?.setFilterValue(event.target.value)
                         }
-                        className="w-[266px] h-[32px]"
+                        className="w-[266px] h-[36px]"
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
-                                <ChevronDown size={16} className="mr-2" /> Semua outlet
+                            <Button variant="outline" className="ml-auto h-[36px] text-[14px] border-slate-300">
+                                <ChevronDown size={16} className="mr-2" /> Kategori
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-
+                        <DropdownMenuContent align="start" className="w-[184px]">
+                            {DataKategori.map((kategori) => (
+                                <DropdownMenuItem key={kategori.id} className="h-[36px] p-[12px]">
+                                    <Checkbox 
+                                    
+                                    className="capitalize" 
+                                    />
+                                    <span className="ml-[8px] text-[14px]">{kategori.name}</span>
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto h-[36px] text-[14px] border-slate-300">
+                                <ChevronDown size={16} className="mr-2" /> Outlet
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-[184px]">
+                            {DataOutlet.map((outlet) => (
+                                <DropdownMenuItem key={outlet.id} className="h-[36px] p-[12px]">
+                                    <Checkbox 
+                                    
+                                    className="capitalize" 
+                                    />
+                                    <span className="ml-[8px] text-[14px]">{outlet.name}</span>
+                                </DropdownMenuItem>
+                            ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -624,21 +673,22 @@ const DataTableDemo = () => {
                             <ChevronDown size={16} className="mr-2" /> View
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="w-[184px]">
                         {table
                             .getAllColumns()
                             .filter((column) => column.getCanHide() && column.id !== 'id')
                             .map((column) => (
-                                <DropdownMenuCheckboxItem
-                                    key={column.id}
-                                    className="capitalize"
-                                    checked={column.getIsVisible()}
-                                    onCheckedChange={(value) =>
-                                        column.toggleVisibility(!!value)
-                                    }
-                                >
-                                    {column.id}
-                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]">
+                                    <Checkbox
+                                        
+                                        className="capitalize"
+                                        checked={column.getIsVisible()}
+                                        onCheckedChange={(value) =>
+                                            column.toggleVisibility(!!value)
+                                        }
+                                    />
+                                    <span className="ml-[8px] text-[14px]">{column.id}</span>
+                                </DropdownMenuItem>
                             ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -687,7 +737,7 @@ const DataTableDemo = () => {
                                         colSpan={columns.length}
                                         className="h-24 text-center"
                                     >
-                                        No results.
+                                        <NoData/>
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -962,16 +1012,16 @@ const DataTableDemo = () => {
                     </div>
                     <div className="grid gap-[16px] py-[16px] text-[14px]">
                         <div className='w-full flex flex-wrap gap-[12px]'>
-                        {images.map((image, index) => (
-                                    <div key={index} className="relative w-[120px] h-[120px]">
-                                        <img
-                                            src={image}
-                                            alt={`Pilih gambar ${index + 1}`}
-                                            className="w-full h-full border object-cover rounded-[8px]"
-                                        />
-                                        
-                                    </div>
-                                ))}
+                            {images.map((image, index) => (
+                                <div key={index} className="relative w-[120px] h-[120px]">
+                                    <img
+                                        src={image}
+                                        alt={`Pilih gambar ${index + 1}`}
+                                        className="w-full h-full border object-cover rounded-[8px]"
+                                    />
+
+                                </div>
+                            ))}
                         </div>
                         <div className="flex align-middle h-[36px]">
                             <p className="w-[150px] text-slate-500">Nama Produk</p>

@@ -105,7 +105,7 @@ const AddKategori = ({ buttonProps, title, showIcon }) => {
                 <DialogTrigger asChild>
                     <Button {...buttonProps}>{showIcon && <GoPlus size={16} />} {title}</Button>
                 </DialogTrigger>
-                <DialogOverlay>
+                
                     <DialogContent className="sm:max-w-[505px]">
                         <div className='flex justify-between'>
                             <DialogHeader>
@@ -181,7 +181,7 @@ const AddKategori = ({ buttonProps, title, showIcon }) => {
                             <Button onClick={handleSubmit} className='text-[14px] h-[36px]'>Simpan</Button>
                         </DialogFooter>
                     </DialogContent>
-                </DialogOverlay>
+                
             </Dialog>
         </div>
     );

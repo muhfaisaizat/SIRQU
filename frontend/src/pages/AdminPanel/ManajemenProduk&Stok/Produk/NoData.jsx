@@ -12,7 +12,7 @@ const NoData = () => {
     <p className="text-center text-[14px] font-normal text-slate-500">Belum ada data yang tersedia untuk halaman ini</p>
     </div>
     
-    <AddProduk buttonProps={{ variant: "outline", className: 'gap-2 h-[36px] text-[14px] font-medium' }} title="Tambah Kategori" showIcon={false}/>
+    <AddProduk buttonProps={{ variant: "outline", className: 'gap-2 h-[36px] text-[14px] font-medium' }} title="Tambah Produk" showIcon={false}/>
    </div>
 
   )

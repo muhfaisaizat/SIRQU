@@ -5,7 +5,9 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
     DropdownMenuCheckboxItem,
-    DropdownMenuLabel
+    DropdownMenuLabel,
+    DropdownMenuItem,
+    DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from "lucide-react";
@@ -27,6 +29,7 @@ import { Add, Minus } from 'iconsax-react';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from "@/components/ui/toast";
 import NoData from './NoData';
+import { Checkbox } from '@/components/ui/checkbox';
 
 
 
@@ -35,6 +38,16 @@ const DataTable = () => {
         { id: "m5gr84i9", name: 'Outlet 1' },
         { id: "m5gr84i7", name: 'Outlet 2' },
         { id: "m5gr84i8", name: 'Outlet 3' }
+    ];
+    const DataKategori = [
+        { id: "m5gr84i9", name: 'Makanan' },
+        { id: "m5gr84i7", name: 'Buah' },
+        { id: "m5gr84i8", name: 'Sayuran' }
+    ];
+    const DataStatus = [
+        { id: "m5gr84i9", name: 'Aktif' },
+        { id: "m5gr84i7", name: 'Tidak Aktif' },
+        { id: "m5gr84i8", name: 'Habis' }
     ];
 
     const { toast } = useToast();
@@ -49,32 +62,64 @@ const DataTable = () => {
         stok: '',
         foto: ''
     });
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState(null);
+
+    const handleCheckboxChange = (kategori) => {
+        setSelectedCategory(kategori);
+    };
+    const handleCheckboxChangestatus = (status) => {
+        setSelectedStatus(status);
+    };
 
 
     const handleSelectOutlet = (outlet) => {
         setSelectedOutlet(outlet);
     };
 
+    const handleRemoveFilter = () => {
+        setSelectedCategory(null);
+    }
+    const handleRemoveFilterstatus = () => {
+        setSelectedStatus(null);
+    }
+
     const Data = [
         { id: "m5gr84i9", outlet: 'Outlet 1', nama: 'Sate taichan extracombo', kategori: 'Makanan', status: 'Aktif', stok: '4', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr84ig", outlet: 'Outlet 1', nama: 'Mangga', kategori: 'Makanan', status: 'Aktif', stok: '99', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr8478", outlet: 'Outlet 1', nama: 'Sate taichan extracombo', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
+        { id: "m5gr84ig", outlet: 'Outlet 1', nama: 'Mangga', kategori: 'Buah', status: 'Aktif', stok: '99', foto: 'https://github.com/shadcn.png' },
+        { id: "m5gr8478", outlet: 'Outlet 1', nama: 'Bubur ', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
         { id: "m5gr8498", outlet: 'Outlet 1', nama: 'Sate taichan extracombo', kategori: 'Makanan', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
         { id: "m5gr84e2", outlet: 'Outlet 2', nama: 'Sate taichan ', kategori: 'Makanan', status: 'Aktif', stok: '4', foto: 'https://github.com/shadcn.png' },
         { id: "m5gr847d", outlet: 'Outlet 2', nama: 'Sate taichan ', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr840d", outlet: 'Outlet 2', nama: 'Melon ', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
+        { id: "m5gr840d", outlet: 'Outlet 2', nama: 'Melon ', kategori: 'Buah', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
         { id: "m5gr849w", outlet: 'Outlet 2', nama: 'Sate taichan ', kategori: 'Makanan', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
         { id: "m5gr84iv", outlet: 'Outlet 3', nama: 'Sate ', kategori: 'Makanan', status: 'Aktif', stok: '4', foto: 'https://github.com/shadcn.png' },
         { id: "m5gr847w", outlet: 'Outlet 3', nama: 'Sate ', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
         { id: "m5gr849i", outlet: 'Outlet 3', nama: 'Sate ', kategori: 'Makanan', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr849o", outlet: 'Outlet 3', nama: 'Pepaya ', kategori: 'Makanan', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
+        { id: "m5gr849o", outlet: 'Outlet 3', nama: 'Sawi ', kategori: 'Sayuran', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
     ];
 
-    // Filter data berdasarkan outlet dan kata kunci pencarian
-    const filteredData = Data.filter(item =>
-        item.outlet === selectedOutlet.name &&
-        item.nama.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filter data 
+    const filteredData = Data.filter(item => {
+        // Filter berdasarkan searchTerm
+        const matchesSearchTerm = searchTerm
+            ? item.nama.toLowerCase().includes(searchTerm.toLowerCase())
+            : true; // Jika searchTerm kosong, selalu cocok
+
+        // Filter berdasarkan selectedCategory
+        const matchesCategory = selectedCategory
+            ? item.kategori.toLowerCase() === selectedCategory.name.toLowerCase()
+            : true; // Jika tidak ada kategori terpilih, selalu cocok
+
+        // Filter berdasarkan selectedCategory
+        const matchesStatus = selectedStatus
+            ? item.status.toLowerCase() === selectedStatus.name.toLowerCase()
+            : true; // Jika tidak ada kategori terpilih, selalu cocok
+
+        // Kembalikan hasil filter berdasarkan outlet, searchTerm, dan selectedCategory
+        return item.outlet === selectedOutlet.name && matchesSearchTerm && matchesCategory && matchesStatus;
+    });
+
 
     const handleEditClick = (id) => {
         setSelectedId(id);
@@ -148,17 +193,54 @@ const DataTable = () => {
                 <div className='flex gap-[12px] w-[416px]'>
                     <Input
                         placeholder="Cari"
-                        className="w-[266px] h-[32px] border-slate-300"
+                        className="w-[266px] h-[36px] border-slate-300"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
-                                <ChevronDown size={16} className="mr-2" /> Semua outlet
+                            <Button variant="outline" className="ml-auto h-[36px] text-[14px] border-slate-300">
+                                <ChevronDown size={16} className="mr-2" /> Kategori
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="start" className="w-[184px]">
+                            {DataKategori.map((kategori) => (
+                                <DropdownMenuItem key={kategori.id} className="h-[36px] p-[12px]"  onClick={() => handleCheckboxChange(kategori)}>
+                                    <Checkbox
+                                        className="capitalize"
+                                        checked={selectedCategory?.id === kategori.id} // Cek jika kategori ini dipilih
+                                        onCheckedChange={() => handleCheckboxChange(kategori)}
+                                    />
+                                    <span className="ml-[8px] text-[14px] font-medium">{kategori.name}</span>
+                                </DropdownMenuItem>
+                            ))}
+                            <DropdownMenuSeparator className="border-[1px] border-slate-200" />
+                            <DropdownMenuItem className="h-[36px] font-medium  p-[12px] flex items-center justify-center text-[14px]"  onClick={handleRemoveFilter}>
+                                Hapus Filter
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto h-[36px] text-[14px] border-slate-300">
+                                <ChevronDown size={16} className="mr-2" /> Status
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-[184px]">
+                            {DataStatus.map((status) => (
+                                <DropdownMenuItem key={status.id} className="h-[36px] p-[12px]" onClick={() => handleCheckboxChangestatus(status)}>
+                                    <Checkbox
+                                        className="capitalize"
+                                        checked={selectedStatus?.id === status.id} // Cek jika kategori ini dipilih
+                                        onCheckedChange={() => handleCheckboxChangestatus(status)}
+                                    />
+                                    <span className="ml-[8px] text-[14px]">{status.name}</span>
+                                </DropdownMenuItem>
+                            ))}
+                            <DropdownMenuSeparator className="border-[1px] border-slate-200" />
+                            <DropdownMenuItem className="h-[36px] font-medium  p-[12px] flex items-center justify-center text-[14px]"  onClick={handleRemoveFilterstatus}>
+                                Hapus Filter
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -190,8 +272,8 @@ const DataTable = () => {
                     ))
                 ) : (
                     <div className='w-full h-full'>
-                   <NoData/>
-                   </div>
+                        <NoData />
+                    </div>
                 )}
             </div>
 

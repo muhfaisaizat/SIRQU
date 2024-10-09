@@ -77,8 +77,8 @@ const AddProduk = ({ buttonProps, title, showIcon }) => {
 
 
     const DataKategori = [
-        { id: "m5gr84i9", name: 'Favorit' },
-        { id: "m5gr84i7", name: 'best sale' },
+        { id: "m5gr84i9", name: 'Makanan Ringan' },
+        { id: "m5gr84i7", name: 'Populer' },
         { id: "m5gr84i8", name: 'sayur-sayuran' }
     ]
 

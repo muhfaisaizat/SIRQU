@@ -161,6 +161,16 @@ const DataTableDemo = () => {
         },
     ]);
 
+    const DataStatus = [
+        { id: "m5gr84i9", name: 'Aktif' },
+        { id: "m5gr84i7", name: 'Tidak Aktif' },
+    ];
+    const DataRole = [
+        { id: "m5gr84i9", name: 'Admin' },
+        { id: "m5gr84i7", name: 'Manajer' },
+        { id: "m5gr84i7", name: 'Kasir' },
+    ];
+
     // status
     const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
 
@@ -485,21 +495,37 @@ const DataTableDemo = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
-                                <ChevronDown size={16} className="mr-2" /> Semua roles
+                                <ChevronDown size={16} className="mr-2" />Roles
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-
+                        <DropdownMenuContent align="start" className="w-[184px]">
+                            {DataRole.map((role) => (
+                                <DropdownMenuItem key={role.id} className="h-[36px] p-[12px]" >
+                                    <Checkbox
+                                        className="capitalize"
+                                      
+                                    />
+                                    <span className="ml-[8px] text-[14px]">{role.name}</span>
+                                </DropdownMenuItem>
+                            ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
-                                <ChevronDown size={16} className="mr-2" /> Semua status
+                            <Button variant="outline" className="ml-auto h-[36px] text-[14px] border-slate-300">
+                                <ChevronDown size={16} className="mr-2" /> Status
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-
+                        <DropdownMenuContent align="start" className="w-[184px]">
+                            {DataStatus.map((status) => (
+                                <DropdownMenuItem key={status.id} className="h-[36px] p-[12px]" >
+                                    <Checkbox
+                                        className="capitalize"
+                                      
+                                    />
+                                    <span className="ml-[8px] text-[14px]">{status.name}</span>
+                                </DropdownMenuItem>
+                            ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -509,21 +535,22 @@ const DataTableDemo = () => {
                             <ChevronDown size={16} className="mr-2" /> View
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="w-[184px]">
                         {table
                             .getAllColumns()
                             .filter((column) => column.getCanHide() && column.id !== 'id')
                             .map((column) => (
-                                <DropdownMenuCheckboxItem
-                                    key={column.id}
-                                    className="capitalize"
-                                    checked={column.getIsVisible()}
-                                    onCheckedChange={(value) =>
-                                        column.toggleVisibility(!!value)
-                                    }
-                                >
-                                    {column.id}
-                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]">
+                                    <Checkbox
+                                           
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value) =>
+                                                column.toggleVisibility(!!value)
+                                            }
+                                        />
+                                    <span className="ml-[12px] text-[14px]">{column.id}</span>
+                                </DropdownMenuItem>
                             ))}
                     </DropdownMenuContent>
                 </DropdownMenu>

@@ -390,14 +390,22 @@ const DataTableDemo = () => {
                         }
                         className="w-[266px] h-[32px]"
                     />
-                    <DropdownMenu>
+                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
-                                <ChevronDown size={16} className="mr-2" /> Semua outlet
+                            <Button variant="outline" className="ml-auto h-[36px] text-[14px] border-slate-300">
+                                <ChevronDown size={16} className="mr-2" /> Outlet
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-
+                        <DropdownMenuContent align="start" className="w-[184px]">
+                            {DataOutlet.map((outlet) => (
+                                <DropdownMenuItem key={outlet.id} className="h-[36px] p-[12px]">
+                                    <Checkbox 
+                                    
+                                    className="capitalize" 
+                                    />
+                                    <span className="ml-[8px] text-[14px]">{outlet.name}</span>
+                                </DropdownMenuItem>
+                            ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -407,21 +415,22 @@ const DataTableDemo = () => {
                             <ChevronDown size={16} className="mr-2" /> View
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="w-[184px]">
                         {table
                             .getAllColumns()
                             .filter((column) => column.getCanHide() && column.id !== 'id')
                             .map((column) => (
-                                <DropdownMenuCheckboxItem
-                                    key={column.id}
-                                    className="capitalize"
-                                    checked={column.getIsVisible()}
-                                    onCheckedChange={(value) =>
-                                        column.toggleVisibility(!!value)
-                                    }
-                                >
-                                    {column.id}
-                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]">
+                                    <Checkbox
+                                            
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value) =>
+                                                column.toggleVisibility(!!value)
+                                            }
+                                        />
+                                    <span className="ml-[12px] text-[14px]">{column.id}</span>
+                                </DropdownMenuItem>
                             ))}
                     </DropdownMenuContent>
                 </DropdownMenu>

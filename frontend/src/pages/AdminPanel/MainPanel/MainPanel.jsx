@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/toaster"
 import Kategori from '../ManajemenProduk&Stok/Kategori/Kategori';
 import Produk from '../ManajemenProduk&Stok/Produk/Produk';
 import Stok from '../ManajemenProduk&Stok/Stok/Stok';
+import Outlet from '../ManajemenToko/Outlet/Outlet';
 
 const MainPanel = () => {
     const navigate = useNavigate();
@@ -171,7 +172,7 @@ const MainPanel = () => {
                                     </ul>
                                 )}
                             </li>
-                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'toko' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => handlemenu('toko')}>
+                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'toko' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('toko'); navigate('/admin-panel/kelola-outlet'); }}>
                                 <Link className='flex gap-3 justify-center'>
                                     <Shop  size={16} />
                                     <span className="font-medium text-[14px]">Kelola Outlet</span>
@@ -189,6 +190,7 @@ const MainPanel = () => {
                         <Route path="kategori" element={<Kategori />} />
                         <Route path="produk" element={<Produk />} />
                         <Route path="stok" element={<Stok />} />
+                        <Route path="kelola-outlet" element={<Outlet />} />
                         <Route path="daftar-pengguna" element={<DaftarPengguna />} />
                     </Routes>
                 </div>
