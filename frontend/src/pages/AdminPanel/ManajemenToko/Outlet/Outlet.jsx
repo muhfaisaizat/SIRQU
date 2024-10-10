@@ -3,12 +3,14 @@ import {
     Breadcrumb,
     BreadcrumbLink,
     BreadcrumbList,
-    BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { ArrowRight2, } from 'iconsax-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Routes, Route } from 'react-router-dom';
+import SyaratKetentuan from './SyaratKetentuan';
+import DataTable from './DataTable';
 
 const Outlet = () => {
+    
     return (
         <ScrollArea className='w-full h-[90vh]'>
             <div className="px-[24px]">
@@ -26,7 +28,10 @@ const Outlet = () => {
                         <h2 className='text-[36px] font-semibold '>Kelola outlet</h2>
                     </div>
                 </div>
-               
+                <Routes>
+                        <Route path="syarat-ketentuan" element={<SyaratKetentuan/>} />
+                        <Route path="data" element={<DataTable/>} />
+                </Routes>
             </div>
         </ScrollArea>
     )

@@ -53,6 +53,7 @@ import { X } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import NoData from "./NoData";
 import { CloseCircle } from 'iconsax-react';
+import { Trash } from 'iconsax-react';
 
 
 
@@ -897,16 +898,18 @@ const handleCheckboxChange = (outletName, isChecked) => {
                             </div>
                             <div className='w-full flex flex-wrap gap-[12px]' onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
                                 {images.map((image, index) => (
-                                    <div key={index} className="relative w-[120px] h-[120px]">
+                                    <div key={index} className="relative w-[120px] h-[120px] group">
                                         <img
                                             src={image}
                                             alt={`Pilih gambar ${index + 1}`}
                                             className="w-full h-full border object-cover rounded-[8px]"
                                         />
-                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                                            <Button onClick={() => handleDelete(index)} className="mr-2 bg-red-500 text-white rounded-[8px]">Delete</Button>
-                                            <Button onClick={() => handleEdit(index)} className="bg-blue-500 text-white rounded-[8px]">Ubah</Button>
-                                        </div>
+                                        <button  onClick={() => handleEdit(index)}  className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                            <div className='bg-white text-[12px] px-[8px] rounded-full'>Ubah</div>
+                                        </button>
+                                        <button onClick={() => handleDelete(index)} className="absolute top-2 right-2 bg-white text-red-500 text-xs p-[4px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                            <Trash size="12" />
+                                        </button>
                                     </div>
                                 ))}
                                 <Button
