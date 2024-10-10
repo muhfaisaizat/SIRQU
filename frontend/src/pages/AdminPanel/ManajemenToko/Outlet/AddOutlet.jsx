@@ -239,13 +239,13 @@ const AddOutlet = ({ onAddOutlet }) => {
                                 <div className="flex align-middle h-[36px] gap-[16px] my-[16px]">
                                     <Label className="text-[14px] w-[200px] py-[8px]">Koordinator cabang</Label>
                                     <Select>
-                                        <SelectTrigger className="w-[416px] ">
-                                            <SelectValue placeholder="Pilih nama" />
+                                        <SelectTrigger className="w-[416px] h-[36px] text-[14px]">
+                                            <SelectValue className='text-slate-500' placeholder="Pilih nama" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
                                                 {dataKordinator.map((koordinator) => (
-                                                    <SelectItem key={koordinator.id} value={koordinator.id}>
+                                                    <SelectItem className="text-[14px]" key={koordinator.id} value={koordinator.id}>
                                                         {koordinator.nama}
                                                     </SelectItem>
                                                 ))}

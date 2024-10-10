@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Category, ShoppingCart, Diagram, User, Box, ArrowDown2, ArrowUp2, Celo, Shop, } from 'iconsax-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import DaftarPengguna from '../ManajemenUser/DaftarPengguna/DaftarPengguna';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,12 +10,15 @@ import Kategori from '../ManajemenProduk&Stok/Kategori/Kategori';
 import Produk from '../ManajemenProduk&Stok/Produk/Produk';
 import Stok from '../ManajemenProduk&Stok/Stok/Stok';
 import Outlet from '../ManajemenToko/Outlet/Outlet';
+import AddToko from '../ManajemenToko/Toko/AddToko';
 
 const MainPanel = () => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [isOpen2, setIsOpen2] = useState(false);
     const [activeLink, setActiveLink] = useState('');
+    const location = useLocation();
+    const [showAddToko, setShowAddToko] = useState(false);
 
     useEffect(() => {
         const savedLink = localStorage.getItem('activeLink');
@@ -25,6 +28,14 @@ const MainPanel = () => {
             setActiveLink('dashboard');
         }
     }, []);
+
+    useEffect(() => {
+        if (location.pathname === '/admin-panel/wellcome') {
+            setShowAddToko(true); 
+        } else {
+            setShowAddToko(false); 
+        }
+    }, [location.pathname]);
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
@@ -194,6 +205,7 @@ const MainPanel = () => {
                         <Route path="daftar-pengguna" element={<DaftarPengguna />} />
                     </Routes>
                 </div>
+                {showAddToko && <AddToko open={showAddToko} onClose={() => setShowAddToko(false)} />}
             </div>
         </div>
     );
