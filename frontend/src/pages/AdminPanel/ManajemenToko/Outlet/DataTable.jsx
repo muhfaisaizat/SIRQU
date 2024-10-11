@@ -6,7 +6,7 @@ import AddOutlet from './AddOutlet'
 
 const DataTable = () => {
   const [data, setData] = useState([
-    { id: "000000001", outlet: 'Toko Utama', nama: 'Sate taichan pak bambamng subiatno yak', alamat: 'Jl. Kendalsari No.06, Jatimulyo ngantruu kabupaten', foto: 'https://github.com/shadcn.png' },
+    { id: "001", outlet: 'Toko Utama', nama: 'Sate taichan pak bambamng subiatno yak', alamat: 'Jl. Kendalsari No.06, Jatimulyo ngantruu kabupaten', foto: 'https://github.com/shadcn.png' },
   ]);
   const [selectedOutlet, setSelectedOutlet] = useState(null);
 
@@ -17,7 +17,7 @@ const DataTable = () => {
         item.id === updatedOutlet.id ? updatedOutlet : item
       )
     );
-    setSelectedOutlet(null); // Kosongkan setelah simpan
+    setSelectedOutlet(null); 
   };
 
   const handleViewOutlet = (outlet) => {
@@ -25,7 +25,7 @@ const DataTable = () => {
   };
 
   const handleAddOutlet = (newOutlet) => {
-    const newId = (data.length + 1).toString().padStart(9, '0');
+    const newId = (data.length + 1).toString().padStart(3, '0');
     const newOutletData = {
       id: newId,
       outlet: `Cabang ${data.length}`,
@@ -41,7 +41,7 @@ const DataTable = () => {
           <div className='flex gap-[17px]'>
             <img src={item.foto} alt={item.nama} className='w-[86px] h-[86px] rounded-[6px]' />
             <div className='grid gap-[12px]'>
-              <div className='flex gap-[12px] h-[22px]'>
+              <div className='flex justify-between h-[22px] w-full'>
                 <Badge variant="secondary" className="text-[12px] px-[11px] text-slate-500 font-medium">No. {item.id}</Badge>
                 <Badge variant="secondary" className="text-[12px] px-[11px]">{item.outlet}</Badge>
               </div>
