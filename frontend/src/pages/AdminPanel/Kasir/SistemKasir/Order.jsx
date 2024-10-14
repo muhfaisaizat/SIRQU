@@ -14,8 +14,21 @@ import { Button } from "@/components/ui/button"
 import { FiEdit2 } from "react-icons/fi";
 import { Textarea } from "@/components/ui/textarea"
 import { Add, Minus } from 'iconsax-react';
+import Bayar from './Bayar'
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from "@/components/ui/toast";
 
-const Order = ({ DetailOrder, setDetailOrder }) => {
+const Order = ({ DetailOrder, setDetailOrder, setTransaksi, Transaksi, DaftarOrder, setDaftarOrder }) => {
+    const { toast } = useToast();
+    const [isOpen, setIsOpen] = useState(false);
+
+    const openDialog = () => {
+        setIsOpen(true);
+    };
+
+    const closeDialog = () => {
+        setIsOpen(false);
+    };
 
     const [showTextarea, setShowTextarea] = useState(false);
 
@@ -85,15 +98,15 @@ const Order = ({ DetailOrder, setDetailOrder }) => {
     const totalHarga = DetailOrder.reduce((acc, order) => acc + order.harga * order.count, 0);
 
     // Menghitung pajak
-    let pajak = 0; 
-    if (Tax.length > 0) { 
+    let pajak = 0;
+    if (Tax.length > 0) {
         const taxPercentage = parseFloat(Tax[0].pajak) / 100;
         pajak = totalHarga * taxPercentage;
     }
 
     // Menghitung diskon
-    let diskon = 0; 
-    if (Discont.length > 0) { 
+    let diskon = 0;
+    if (Discont.length > 0) {
         const discountPercentage = parseFloat(Discont[0].diskon) / 100;
         diskon = totalHarga * discountPercentage;
     }
@@ -102,26 +115,207 @@ const Order = ({ DetailOrder, setDetailOrder }) => {
     const totalAkhir = totalHarga + pajak - diskon;
 
 
+
+    // Inisialisasi state untuk persentase
+    const [persen, setPersen] = useState({ top: '72%', bottom: '28%' });
+    const [clicked, setClicked] = useState(false);
+    const [tipeOrder, setTipeOrder] = useState('');
+
+    // Fungsi untuk menangani perubahan persentase
+    const handleSelectChange = (value) => {
+        setTipeOrder(value);
+        if (value === 'Open Bill') {
+            setPersen({ top: '65%', bottom: '35%' });
+            setClicked(true);
+        } else if (value === 'Langsung bayar') {
+            setPersen({ top: '72%', bottom: '28%' });
+            setClicked(false);
+        }
+    };
+
+    const [namaCustomer, setNamaCustomer] = useState('');
+    const [catatan, setCatatan] = useState('');
+
+    const handleAddTransaction = () => {
+
+
+        if (!tipeOrder) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Tipe order harus diisi.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        if (!namaCustomer) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Nama customer harus diisi.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        if (DetailOrder.length === 0) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Tambahkan detail order minimal satu.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        setTransaksi((prevTransaksi) => {
+            // Ambil ID transaksi terakhir
+            let lastId = 0;
+
+            // Cek apakah prevTransaksi tidak kosong
+            if (DaftarOrder.length > 0) {
+                const lastOrder = DaftarOrder[DaftarOrder.length - 1];
+                lastId = parseInt(lastOrder.id, 10);
+            }
+
+            // Set ID baru, dimulai dari 1 jika tidak ada transaksi sebelumnya
+            const newId = (lastId + 1).toString().padStart(5, '0');
+
+            // Buat transaksi baru
+            const newTransaction = {
+                id: newId,
+                nama: namaCustomer,
+                tipeOrder: tipeOrder,
+                detailTransaksi: DetailOrder,
+            };
+
+            // Tambahkan transaksi baru ke state Transaksi
+            return [...prevTransaksi, newTransaction];
+        });
+
+        setIsOpen(true);
+    };
+
+
+    const saveBill = () => {
+
+        if (!tipeOrder) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Tipe order harus diisi.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        if (!namaCustomer) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Nama customer harus diisi.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        if (DetailOrder.length === 0) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Tambahkan detail order minimal satu.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        setTransaksi((prevTransaksi) => {
+            // Ambil ID transaksi terakhir
+            let lastId = 0;
+
+            // Cek apakah prevTransaksi tidak kosong
+            if (DaftarOrder.length > 0) {
+                const lastOrder = DaftarOrder[DaftarOrder.length - 1];
+                lastId = parseInt(lastOrder.id, 10);
+            }
+
+            // Set ID baru, dimulai dari 1 jika tidak ada transaksi sebelumnya
+            const newId = (lastId + 1).toString().padStart(5, '0');
+
+            // Buat transaksi baru
+            const newTransaction = {
+                id: newId,
+                nama: namaCustomer,
+                tipeOrder: tipeOrder,
+                detailTransaksi: DetailOrder,
+            };
+
+            // Tambahkan transaksi baru ke state Transaksi
+            return [...prevTransaksi, newTransaction];
+        });
+        if (Transaksi.length > 0) {
+            const newTransaction = Transaksi[Transaksi.length - 1];
+
+            const orderData = {
+                id: newTransaction?.id || 0,
+                nama: newTransaction?.nama || ' ',
+                tipeOrder: newTransaction?.tipeOrder || ' ',
+                KetBayar: 'Open bill',
+                detailTransaksi: newTransaction?.detailTransaksi.map((item) => ({
+                    id: item.id,
+                    foto: item.foto,
+                    count: item.count,
+                    name: item.name,
+                    harga: item.harga,
+                })) || [],
+                subtotal: totalHarga,
+                tax: null,
+                diskon: null,
+                total: totalAkhir,
+                bayar: null,
+                kembalian: null,
+            };
+
+            // Simpan data ke DaftarOrder
+            setDaftarOrder((prevOrder) => [...prevOrder, orderData]);
+
+            // Reset state setelah transaksi ditambahkan
+            setTransaksi([]);
+            setNamaCustomer('');
+            setDetailOrder([]);
+            setCatatan('');
+            toast({
+                title: "Bill berhasil disimpan",
+                description: "Anda dapat mengedit bill pada bagian order list",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
+    }
+
+
     return (
         <div className='w-full h-full' >
-            <ScrollArea ref={scrollAreaRef} className=' h-[72%] '>
+            <ScrollArea ref={scrollAreaRef} style={{ height: persen.top }}>
                 <div className='px-[16px] pb-[24px] mt-[32px] grid gap-[16px] border-b border-slate-200'>
                     <h1 className='text-[16px] font-semibold'>Tipe Order</h1>
-                    <Select>
+                    <Select onValueChange={(value) => handleSelectChange(value)}>
                         <SelectTrigger className="w-full h-[36px] text-[14px]">
                             <SelectValue placeholder="Pilih tipe Order" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
                                 <SelectItem value="Langsung bayar" className='text-[14px]'>Langsung bayar</SelectItem>
-                                <SelectItem value="banana" className='text-[14px]'>Open Bill</SelectItem>
+                                <SelectItem value="Open Bill" className='text-[14px]'>Open Bill</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
                 </div>
                 <div className='px-[16px] py-[24px] grid gap-[16px] border-b border-slate-200'>
                     <h1 className='text-[16px] font-semibold'>Customer Information</h1>
-                    <Input className=" text-[14px] h-[36px]" placeholder="Nama customer" />
+                    <Input className=" text-[14px] h-[36px]" placeholder="Nama customer"
+                        value={namaCustomer}
+                        onChange={(e) => setNamaCustomer(e.target.value)} />
                     {!showTextarea ? (
                         <Button
                             variant="secondary"
@@ -188,7 +382,7 @@ const Order = ({ DetailOrder, setDetailOrder }) => {
                     )}
                 </div>
             </ScrollArea>
-            <div className='px-[16px] py-[24px] border-t h-[28%] grid gap-[16px]'>
+            <div className="px-[16px] py-[24px] border-t grid gap-[16px]" style={{ height: persen.bottom }}  >
                 <div>
                     <div className='flex justify-between pb-[8px] border-dashed border-b-2'>
                         <p className='text-[14px] text-slate-500'>Sub Total</p>
@@ -199,7 +393,16 @@ const Order = ({ DetailOrder, setDetailOrder }) => {
                         <p>Rp {totalAkhir.toLocaleString('id-ID')}</p>
                     </div>
                 </div>
-                <Button className="w-full h-[36px] text-[14px]">Bayar</Button>
+                <div className='grid gap-[8px]'>
+                    {clicked && (
+                        <Button variant="outline" className="h-[36px] text-[14px]" onClick={() => {
+
+                            saveBill(); // Kemudian kirim data ke daftarOrder setelah transaksi ditambahkan
+                        }}>Simpan Tagihan</Button>
+                    )}
+                    <Button className="w-full h-[36px] text-[14px]" onClick={handleAddTransaction}>Bayar</Button>
+                    <Bayar isOpen={isOpen} setIsOpen={setIsOpen} Transaksi={Transaksi} setTransaksi={setTransaksi} DaftarOrder={DaftarOrder} setDaftarOrder={setDaftarOrder} setNamaCustomer={setNamaCustomer}  setDetailOrder={setDetailOrder} setCatatan={setCatatan} />
+                </div>
             </div>
         </div>
     )

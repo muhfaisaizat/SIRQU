@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { SearchNormal1 } from 'iconsax-react';
 import NoData from '../../ManajemenProduk&Stok/Produk/NoData';
 
-const Menu = ({ setDetailOrder }) => {
+const Menu = ({ setDetailOrder, DaftarOrder }) => {
     const DataOutlet = [
         { id: "m5gr84i9", name: 'Cabang 1' },
         { id: "m5gr84i7", name: 'Cabang 2' },
@@ -34,7 +34,7 @@ const Menu = ({ setDetailOrder }) => {
         { id: "m5gr84ia", name: 'snak' },
     ];
     const DataMenu = [
-        { id: "m5gr84i9", name: 'Sate', outlet: 'Cabang 1', kategori: 'Makanan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: 99 , harga: 20000, foto: 'https://github.com/shadcn.png' },
+        { id: "m5gr84i9", name: 'Sate', outlet: 'Cabang 1', kategori: 'Makanan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: 99, harga: 20000, foto: 'https://github.com/shadcn.png' },
         { id: "m5gr84uh", name: 'Onde-onde', outlet: 'Cabang 1', kategori: 'Cemilan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
         { id: "m5gr8468", name: 'Kopi', outlet: 'Cabang 1', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
         { id: "m5gr8456", name: 'Le mineral', outlet: 'Cabang 1', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
@@ -77,7 +77,7 @@ const Menu = ({ setDetailOrder }) => {
     const handleAddToOrder = (menu) => {
         setDetailOrder((prevOrders) => {
             const existingOrderIndex = prevOrders.findIndex(order => order.id === menu.id);
-            
+
             if (existingOrderIndex !== -1) {
                 // Jika item sudah ada, update count-nya
                 const updatedOrders = [...prevOrders];
@@ -131,12 +131,30 @@ const Menu = ({ setDetailOrder }) => {
                 </div>
                 <div className='px-[24px] grid gap-[16px]'>
                     <div className='flex justify-between'>
-                        <h1 className='text-[18px] font-semibold'>Daftar Order <span className='text-slate-500'>0</span></h1>
+                        <h1 className='text-[18px] font-semibold'>Daftar Order <span className='text-slate-500'>{DaftarOrder.length}</span></h1>
                         <Link to="/auth/forgot-password" className=" text-[14px] font-medium flex gap-[12px]">Lihat lainnya <ArrowRight size={18} /></Link>
                     </div>
-                    <div className='w-full h-[66px] p-[16px] flex justify-center items-center'>
-                        <p className='text-[14px] text-slate-500'>Data order tidak tersedia</p>
-                    </div>
+                    <ScrollArea className="w-[100%]  ">
+                        {DaftarOrder.length === 0 ? (
+                            <div className="text-center flex justify-center items-center text-slate-500 text-[14px] h-[66px]" >Data order tidak tersedia</div>
+                        ) : (
+                            <div className='flex gap-[12px]'>
+                                {DaftarOrder.map((daftarOrder) => (
+                                    <div key={daftarOrder.id} className=' p-[16px] w-[208px] grid gap-[12px] bg-white rounded-[6px] cursor-pointer hover:bg-slate-50'>
+                                        <div className='flex justify-between'>
+                                            <h1 className='text-[16px] font-semibold'>{daftarOrder.nama}</h1>
+                                            <h1 className='text-[12px] font-medium text-slate-500 mt-[5px]'>#{daftarOrder.id}</h1>
+                                        </div>
+                                        <div className='flex justify-between'>
+                                            <Badge  variant={daftarOrder.KetBayar === 'Open bill' ? undefined : 'outline'} className='h-[22px] rounded-full text-[12px] font-medium'>{daftarOrder.KetBayar}</Badge>
+                                            <h3 className='text-[14px] font-medium text-slate-500'>{daftarOrder.detailTransaksi.reduce((sum, item) => sum + item.count, 0)} Item</h3>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <ScrollBar orientation="horizontal" />
+                    </ScrollArea>
                 </div>
             </div>
             <div className='py-[16px] grid gap-[16px] border-t border-slate-300'>
