@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { SearchNormal1 } from 'iconsax-react';
 import NoData from '../../ManajemenProduk&Stok/Produk/NoData';
 
-const Menu = ({ setDetailOrder, DaftarOrder }) => {
+const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder }) => {
     const DataOutlet = [
         { id: "m5gr84i9", name: 'Cabang 1' },
         { id: "m5gr84i7", name: 'Cabang 2' },
@@ -140,7 +140,7 @@ const Menu = ({ setDetailOrder, DaftarOrder }) => {
                         ) : (
                             <div className='flex gap-[12px]'>
                                 {DaftarOrder.map((daftarOrder) => (
-                                    <div key={daftarOrder.id} className=' p-[16px] w-[208px] grid gap-[12px] bg-white rounded-[6px] cursor-pointer hover:bg-slate-50'>
+                                    <div key={daftarOrder.id} onClick={() => handleSelectChange(daftarOrder.tipeOrder, daftarOrder.id, daftarOrder.KetBayar, daftarOrder.detailTransaksi, daftarOrder.nama, daftarOrder.tax ? daftarOrder.tax.harga : null, daftarOrder.diskon)}  className=' p-[16px] w-[208px] grid gap-[12px] bg-white rounded-[6px] cursor-pointer hover:bg-slate-50'>
                                         <div className='flex justify-between'>
                                             <h1 className='text-[16px] font-semibold'>{daftarOrder.nama}</h1>
                                             <h1 className='text-[12px] font-medium text-slate-500 mt-[5px]'>#{daftarOrder.id}</h1>

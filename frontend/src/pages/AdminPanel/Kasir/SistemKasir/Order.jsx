@@ -17,18 +17,17 @@ import { Add, Minus } from 'iconsax-react';
 import Bayar from './Bayar'
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from "@/components/ui/toast";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion"
 
-const Order = ({ DetailOrder, setDetailOrder, setTransaksi, Transaksi, DaftarOrder, setDaftarOrder }) => {
+const Order = ({ DetailOrder, setDetailOrder, setTransaksi, textButton, Transaksi, orderDiskon, DaftarOrder, setDaftarOrder,taxData, persen, namaCustomer, setNamaCustomer, setPersen, clicked, setClicked, tipeOrder, setTipeOrder, handleSelectChange, viewOrder }) => {
     const { toast } = useToast();
     const [isOpen, setIsOpen] = useState(false);
 
-    const openDialog = () => {
-        setIsOpen(true);
-    };
-
-    const closeDialog = () => {
-        setIsOpen(false);
-    };
 
     const [showTextarea, setShowTextarea] = useState(false);
 
@@ -96,44 +95,38 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, Transaksi, DaftarOrd
 
     // menghitung sub total
     const totalHarga = DetailOrder.reduce((acc, order) => acc + order.harga * order.count, 0);
-
-    // Menghitung pajak
     let pajak = 0;
+    let diskon = 0;
+    if (viewOrder.ketBayar === 'Sudah Bayar') {
+         pajak = taxData;
+         diskon = orderDiskon;
+    } else {
+         // Menghitung pajak
+    
     if (Tax.length > 0) {
         const taxPercentage = parseFloat(Tax[0].pajak) / 100;
         pajak = totalHarga * taxPercentage;
     }
 
     // Menghitung diskon
-    let diskon = 0;
+   
     if (Discont.length > 0) {
         const discountPercentage = parseFloat(Discont[0].diskon) / 100;
         diskon = totalHarga * discountPercentage;
     }
 
+    };
+    
     // Menghitung total akhir
     const totalAkhir = totalHarga + pajak - diskon;
 
+   
 
 
-    // Inisialisasi state untuk persentase
-    const [persen, setPersen] = useState({ top: '72%', bottom: '28%' });
-    const [clicked, setClicked] = useState(false);
-    const [tipeOrder, setTipeOrder] = useState('');
 
-    // Fungsi untuk menangani perubahan persentase
-    const handleSelectChange = (value) => {
-        setTipeOrder(value);
-        if (value === 'Open Bill') {
-            setPersen({ top: '65%', bottom: '35%' });
-            setClicked(true);
-        } else if (value === 'Langsung bayar') {
-            setPersen({ top: '72%', bottom: '28%' });
-            setClicked(false);
-        }
-    };
 
-    const [namaCustomer, setNamaCustomer] = useState('');
+
+   
     const [catatan, setCatatan] = useState('');
 
     const handleAddTransaction = () => {
@@ -179,8 +172,15 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, Transaksi, DaftarOrd
                 lastId = parseInt(lastOrder.id, 10);
             }
 
-            // Set ID baru, dimulai dari 1 jika tidak ada transaksi sebelumnya
-            const newId = (lastId + 1).toString().padStart(5, '0');
+            let newId;
+
+            if (viewOrder.idOrder > 0) {
+                // Jika idOrder lebih dari 0, gunakan id tersebut
+                newId = viewOrder.idOrder.toString().padStart(5, '0');
+            } else {
+                // Jika idOrder sama dengan 0, buat ID baru
+                newId = (lastId + 1).toString().padStart(5, '0');
+            }
 
             // Buat transaksi baru
             const newTransaction = {
@@ -299,7 +299,7 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, Transaksi, DaftarOrd
             <ScrollArea ref={scrollAreaRef} style={{ height: persen.top }}>
                 <div className='px-[16px] pb-[24px] mt-[32px] grid gap-[16px] border-b border-slate-200'>
                     <h1 className='text-[16px] font-semibold'>Tipe Order</h1>
-                    <Select onValueChange={(value) => handleSelectChange(value)}>
+                    <Select value={tipeOrder} onValueChange={handleSelectChange}>
                         <SelectTrigger className="w-full h-[36px] text-[14px]">
                             <SelectValue placeholder="Pilih tipe Order" />
                         </SelectTrigger>
@@ -311,36 +311,42 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, Transaksi, DaftarOrd
                         </SelectContent>
                     </Select>
                 </div>
-                <div className='px-[16px] py-[24px] grid gap-[16px] border-b border-slate-200'>
-                    <h1 className='text-[16px] font-semibold'>Customer Information</h1>
-                    <Input className=" text-[14px] h-[36px]" placeholder="Nama customer"
-                        value={namaCustomer}
-                        onChange={(e) => setNamaCustomer(e.target.value)} />
-                    {!showTextarea ? (
-                        <Button
-                            variant="secondary"
-                            className="text-[14px] h-[36px] gap-[8px]"
-                            onClick={handleTambahCatatan}
-                        >
-                            <FiEdit2 size={16} />Tambah catatan
-                        </Button>
-                    ) : (
-                        <div>
-                            <Textarea placeholder="Catatan" className="text-[14px]" />
-                            <div className='flex justify-end gap-[12px] mt-[16px]'>
-                                <Button
-                                    variant="outline"
-                                    className="text-[14px] h-[36px]"
-                                    onClick={handleBatal}
-                                >
-                                    Batal
-                                </Button>
-                                <Button className="text-[14px] h-[36px]">
-                                    Simpan
-                                </Button>
-                            </div>
-                        </div>
-                    )}
+                <div className='px-[16px] py-[24px]  border-b border-slate-200'>
+                    <Accordion type="single" collapsible className="w-full">
+                        <AccordionItem value="item-1">
+                            <AccordionTrigger className='text-[16px] font-semibold'>Informasi Pelanggan</AccordionTrigger>
+                            <AccordionContent className='grid gap-[16px] p-[4px]'>
+                                <Input className=" text-[14px] h-[36px]" placeholder="Nama customer"
+                                    value={namaCustomer}
+                                    onChange={(e) => setNamaCustomer(e.target.value)} />
+                                {!showTextarea ? (
+                                    <Button
+                                        variant="secondary"
+                                        className="text-[14px] h-[36px] gap-[8px]"
+                                        onClick={handleTambahCatatan}
+                                    >
+                                        <FiEdit2 size={16} />Tambah catatan
+                                    </Button>
+                                ) : (
+                                    <div>
+                                        <Textarea placeholder="Catatan" className="text-[14px]" />
+                                        <div className='flex justify-end gap-[12px] mt-[16px]'>
+                                            <Button
+                                                variant="outline"
+                                                className="text-[14px] h-[36px]"
+                                                onClick={handleBatal}
+                                            >
+                                                Batal
+                                            </Button>
+                                            <Button className="text-[14px] h-[36px]">
+                                                Simpan
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
                 </div>
                 <div className='px-[16px] pt-[24px]  grid gap-[16px]'>
                     <h1 className='text-[16px] font-semibold'>Detail Order</h1>
@@ -384,25 +390,41 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, Transaksi, DaftarOrd
             </ScrollArea>
             <div className="px-[16px] py-[24px] border-t grid gap-[16px]" style={{ height: persen.bottom }}  >
                 <div>
-                    <div className='flex justify-between pb-[8px] border-dashed border-b-2'>
+                    <div className='flex justify-between py-[8px] '>
                         <p className='text-[14px] text-slate-500'>Sub Total</p>
                         <p className='text-[14px] font-semibold'>Rp {totalHarga.toLocaleString('id-ID')}</p>
                     </div>
-                    <div className='flex justify-between pt-[8px] text-[16px] font-semibold'>
+                    {viewOrder.ketBayar === 'Sudah Bayar' && (
+                        <>
+                            <div className='flex justify-between py-[8px]'>
+                                <p className='text-[14px] text-slate-500'>Pajak</p>
+                                <p className='text-[14px] font-semibold'>Rp {taxData.toLocaleString('id-ID')}</p>
+                            </div>
+                            <div className='flex justify-between py-[8px] '>
+                                <p className='text-[14px] text-slate-500'>Diskon</p>
+                                <p className='text-[14px] font-semibold'>-Rp {orderDiskon.toLocaleString('id-ID')}</p>
+                            </div>
+                        </>
+                    )}
+                    <div className='flex justify-between pt-[8px] text-[16px] font-semibold border-dashed border-t-2'>
                         <p>Total</p>
                         <p>Rp {totalAkhir.toLocaleString('id-ID')}</p>
                     </div>
                 </div>
-                <div className='grid gap-[8px]'>
-                    {clicked && (
-                        <Button variant="outline" className="h-[36px] text-[14px]" onClick={() => {
+                {viewOrder.ketBayar !== 'Sudah Bayar' && (
+                    <>
+                        <div className='grid gap-[8px]'>
+                            {clicked && (
+                                <Button variant="outline" className="h-[36px] text-[14px]" onClick={() => {
 
-                            saveBill(); // Kemudian kirim data ke daftarOrder setelah transaksi ditambahkan
-                        }}>Simpan Tagihan</Button>
-                    )}
-                    <Button className="w-full h-[36px] text-[14px]" onClick={handleAddTransaction}>Bayar</Button>
-                    <Bayar isOpen={isOpen} setIsOpen={setIsOpen} Transaksi={Transaksi} setTransaksi={setTransaksi} DaftarOrder={DaftarOrder} setDaftarOrder={setDaftarOrder} setNamaCustomer={setNamaCustomer}  setDetailOrder={setDetailOrder} setCatatan={setCatatan} />
-                </div>
+                                    saveBill(); // Kemudian kirim data ke daftarOrder setelah transaksi ditambahkan
+                                }}>Simpan Tagihan</Button>
+                            )}
+                            <Button className="w-full h-[36px] text-[14px]" onClick={handleAddTransaction}>{textButton}</Button>
+                            <Bayar isOpen={isOpen} setIsOpen={setIsOpen} Transaksi={Transaksi} setTransaksi={setTransaksi} DaftarOrder={DaftarOrder} setDaftarOrder={setDaftarOrder} setNamaCustomer={setNamaCustomer} setDetailOrder={setDetailOrder} setCatatan={setCatatan} />
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     )

@@ -20,7 +20,7 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CloseCircle, GalleryAdd } from 'iconsax-react';
+import { CloseCircle, ProfileCircle } from 'iconsax-react';
 import { ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -210,7 +210,19 @@ const Bayar = ({ Transaksi, setTransaksi, setDaftarOrder, DaftarOrder, setNamaCu
         };
       
         // Simpan data ke DaftarOrder
-        setDaftarOrder((prevOrder) => [...prevOrder, orderData]);
+        setDaftarOrder((prevOrder) => {
+            const existingOrderIndex = prevOrder.findIndex(order => order.id === orderData.id);
+    
+            if (existingOrderIndex !== -1) {
+                // Jika ID sudah ada, update data transaksi yang sesuai
+                const updatedOrder = [...prevOrder];
+                updatedOrder[existingOrderIndex] = { ...updatedOrder[existingOrderIndex], ...orderData };
+                return updatedOrder;
+            } else {
+                // Jika ID belum ada, tambahkan transaksi baru
+                return [...prevOrder, orderData];
+            }
+        });
         setTransaksi([]);
         setidDaftarOrder(Transaksi[0]?.id)
         // Reset state setelah transaksi ditambahkan
@@ -247,10 +259,7 @@ const Bayar = ({ Transaksi, setTransaksi, setDaftarOrder, DaftarOrder, setNamaCu
                                     <div className='flex justify-between'>
                                         <h1 className='text-[14px] font-semibold'>#{Transaksi[0]?.id ? Transaksi[0].id : 0}</h1>
                                         <div className='flex gap-3'>
-                                            <Avatar className="w-[24px] h-[24px]">
-                                                <AvatarImage src="https://github.com/shadcn.png" />
-                                                <AvatarFallback>CN</AvatarFallback>
-                                            </Avatar>
+                                        <ProfileCircle size="24" variant="Bulk"/>
                                             <p className='text-[14px] font-medium pt-1 pb-1'>  {Transaksi[0]?.nama ? Transaksi[0].nama : ' '}</p>
                                         </div>
                                     </div>
