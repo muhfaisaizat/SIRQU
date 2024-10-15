@@ -42,6 +42,14 @@ User.init({
     },
     deletedAt: {
         type: DataTypes.DATE,
+    },
+    ResetPasswordToken: { // Field untuk menyimpan token reset password
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    ResetTokenExpires: { // Field untuk menyimpan waktu kedaluwarsa token
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
     sequelize,

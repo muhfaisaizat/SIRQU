@@ -10,39 +10,48 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false // Tambahkan if necessary
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true // Tambahkan jika email harus unik
       },
       password: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false // Tambahkan if necessary
       },
       role: {
-        type: Sequelize.STRING
+        type: Sequelize.ENUM('Admin', 'Manager', 'Kasir'), // Menggunakan ENUM jika hanya ada beberapa pilihan
+        allowNull: false
       },
       status: {
-        type: Sequelize.STRING
+        type: Sequelize.ENUM('Active', 'Inactive'),
+        allowNull: false,
+        defaultValue: 'Active'
       },
       image: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true // Jika image opsional
       },
-      createdAt: {
-        type: Sequelize.DATE
+      ResetPasswordToken: {
+        type: Sequelize.TEXT,
+        allowNull: true // Menambahkan kolom untuk token reset password
       },
-      updatedAt: {
-        type: Sequelize.DATE
-      },
-      deletedAt: {
-        type: Sequelize.DATE
+      ResetTokenExpires: {
+        type: Sequelize.DATE,
+        allowNull: true // Menambahkan kolom untuk tanggal kedaluwarsa token
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW // Set default value to current date
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW // Set default value to current date
       }
     });
   },
