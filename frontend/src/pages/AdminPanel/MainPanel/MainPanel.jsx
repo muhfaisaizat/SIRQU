@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Category, ShoppingCart, Diagram, User, Box, ArrowDown2, ArrowUp2, Celo, Shop, } from 'iconsax-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Category, ShoppingCart, Diagram, User, Box, ArrowDown2, ArrowUp2, Celo, Shop,ReceiptItem, } from 'iconsax-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import DaftarPengguna from '../ManajemenUser/DaftarPengguna/DaftarPengguna';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Dashboard from '../Dashboard/Dashboard';
 import { Toaster } from "@/components/ui/toaster"
 import Kategori from '../ManajemenProduk&Stok/Kategori/Kategori';
+import Produk from '../ManajemenProduk&Stok/Produk/Produk';
+import Stok from '../ManajemenProduk&Stok/Stok/Stok';
+import Outlet from '../ManajemenToko/Outlet/Outlet';
+import AddToko from '../ManajemenToko/Toko/AddToko';
+import Kasir from '../Kasir/SistemKasir/Kasir';
+import DaftarOrder from '../Kasir/ManajemenKasir/DaftarOrder';
+import PajakStruk from '../Pengaturan/Pajak&Struk/PajakStruk';
 
 const MainPanel = () => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [isOpen2, setIsOpen2] = useState(false);
+    const [isOpen3, setIsOpen3] = useState(false);
     const [activeLink, setActiveLink] = useState('');
+    const location = useLocation();
+    const [showAddToko, setShowAddToko] = useState(false);
 
     useEffect(() => {
         const savedLink = localStorage.getItem('activeLink');
@@ -23,12 +33,24 @@ const MainPanel = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (location.pathname === '/admin-panel/wellcome') {
+            setShowAddToko(true); 
+        } else {
+            setShowAddToko(false); 
+        }
+    }, [location.pathname]);
+
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
 
     const toggleDropdown2 = () => {
         setIsOpen2(!isOpen2);
+    };
+
+    const toggleDropdown3 = () => {
+        setIsOpen3(!isOpen3);
     };
 
     const handleLinkClick = (linkName) => {
@@ -42,7 +64,7 @@ const MainPanel = () => {
     };
 
     return (
-        <div className='w-full'>
+        <div >
             <Toaster />
             {/* header */}
             <div className='fixed flex justify-between items-center w-[100%] border h-[60px] px-[32px] ps-6 bg-white'>
@@ -59,9 +81,9 @@ const MainPanel = () => {
                 </div>
             </div>
 
-            <div className='flex w-full h-screen pt-[60px]'>
+            <div className='flex w-[100%] h-screen pt-[60px]'>
                 {/* Sidebar */}
-                <div className='w-[264px] p-[12px]'>
+                <div className='w-[18.33%] p-[12px]'>
                     <div>
                         <ul>
                             <li  className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'dashboard' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('dashboard'); navigate('/admin-panel/dashboard'); }}>
@@ -70,7 +92,7 @@ const MainPanel = () => {
                                     <span className="font-medium text-[14px]">Dashboard</span>
                                 </Link>
                             </li>
-                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'kasir' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => handlemenu('kasir')}>
+                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'kasir' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('kasir'); navigate('/admin-panel/sistem-kasir'); }}>
                                 <Link className='flex gap-3 justify-center'>
                                     <ShoppingCart size={16} />
                                     <span className="font-medium text-[14px]">Sistem Kasir</span>
@@ -78,13 +100,51 @@ const MainPanel = () => {
                             </li>
                             <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'uang' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => handlemenu('uang')}>
                                 <Link className='flex gap-3 justify-center'>
-                                    <Diagram size={16} />
-                                    <span className="font-medium text-[14px]">Keuangan</span>
+                                    <ReceiptItem size={16} />
+                                    <span className="font-medium text-[14px]">Penjualan</span>
                                 </Link>
                             </li>
                         </ul>
 
                         <ul>
+                            <li>
+                                <Link
+                                    className={`flex justify-between ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px]`}
+                                    onClick={toggleDropdown3}
+                                >
+                                    <div className='flex gap-3'>
+                                        <Box size={16} />
+                                        <span className='font-medium text-[14px]'>Pengaturan</span>
+                                    </div>
+                                    {isOpen3 ? (
+                                        <ArrowUp2 size={16} className='mt-1' />
+                                    ) : (
+                                        <ArrowDown2 size={16} className='mt-1' />
+                                    )}
+                                </Link>
+                                {isOpen3 && (
+                                    <ul>
+                                        <li className='pl-[25px]'>
+                                            <Link
+                                                className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'pajak&struk' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
+                                                onClick={() => handleLinkClick('pajak&struk')}
+                                                to="/admin-panel/pajak&struk"
+                                            >
+                                                <span className='font-medium text-[14px]'>Pajak &  Struk</span>
+                                            </Link>
+                                        </li>
+                                        <li className='pl-[25px]'>
+                                            <Link
+                                                className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'produk' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
+                                                onClick={() => handleLinkClick('produk')}
+                                                to="/admin-panel/produk"
+                                            >
+                                                <span className='font-medium text-[14px]'>Promosi</span>
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                )}
+                            </li>
                             <li>
                                 <Link
                                     className={`flex justify-between ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px]`}
@@ -95,9 +155,9 @@ const MainPanel = () => {
                                         <span className='font-medium text-[14px]'>Produk dan stok</span>
                                     </div>
                                     {isOpen ? (
-                                        <ArrowDown2 size={16} className='mt-1' />
-                                    ) : (
                                         <ArrowUp2 size={16} className='mt-1' />
+                                    ) : (
+                                        <ArrowDown2 size={16} className='mt-1' />
                                     )}
                                 </Link>
                                 {isOpen && (
@@ -115,6 +175,7 @@ const MainPanel = () => {
                                             <Link
                                                 className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'produk' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
                                                 onClick={() => handleLinkClick('produk')}
+                                                to="/admin-panel/produk"
                                             >
                                                 <span className='font-medium text-[14px]'>Produk</span>
                                             </Link>
@@ -123,6 +184,7 @@ const MainPanel = () => {
                                             <Link
                                                 className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'stok' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
                                                 onClick={() => handleLinkClick('stok')}
+                                                 to="/admin-panel/stok"
                                             >
                                                 <span className='font-medium text-[14px]'>Kelola stok</span>
                                             </Link>
@@ -140,9 +202,9 @@ const MainPanel = () => {
                                         <span className='font-medium text-[14px]'>Manajemen pengguna</span>
                                     </div>
                                     {isOpen2 ? (
-                                        <ArrowDown2 size={16} className='mt-1' />
-                                    ) : (
                                         <ArrowUp2 size={16} className='mt-1' />
+                                    ) : (
+                                        <ArrowDown2 size={16} className='mt-1' />
                                     )}
                                 </Link>
                                 {isOpen2 && (
@@ -167,7 +229,7 @@ const MainPanel = () => {
                                     </ul>
                                 )}
                             </li>
-                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'toko' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => handlemenu('toko')}>
+                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'toko' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('toko'); navigate('/admin-panel/kelola-outlet/syarat-ketentuan'); }}>
                                 <Link className='flex gap-3 justify-center'>
                                     <Shop  size={16} />
                                     <span className="font-medium text-[14px]">Kelola Outlet</span>
@@ -178,14 +240,21 @@ const MainPanel = () => {
                 </div>
 
                 {/* Main Panel */}
-                <div className='flex-1   px-[24px] bg-white border-l border-gray-200'>
+                <div className='flex-1 w-[81.67%]  bg-white border-l border-gray-200 '>
                     <Routes>
                         <Route path="*" element={<Dashboard />} />
                         <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="pajak&struk" element={<PajakStruk />} />
+                        <Route path="sistem-kasir" element={<Kasir />} />
+                        <Route path="sistem-kasir/daftar-order" element={<DaftarOrder />} />
                         <Route path="kategori" element={<Kategori />} />
+                        <Route path="produk" element={<Produk />} />
+                        <Route path="stok" element={<Stok />} />
+                        <Route path="kelola-outlet/*" element={<Outlet />} />
                         <Route path="daftar-pengguna" element={<DaftarPengguna />} />
                     </Routes>
                 </div>
+                {showAddToko && <AddToko open={showAddToko} onClose={() => setShowAddToko(false)} />}
             </div>
         </div>
     );

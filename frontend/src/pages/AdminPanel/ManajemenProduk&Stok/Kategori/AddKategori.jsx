@@ -7,6 +7,8 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
+    DialogOverlay,
+    DialogClose
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +25,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+import { X } from "lucide-react"
 
 const AddKategori = ({ buttonProps, title, showIcon }) => {
     const { toast } = useToast();
@@ -102,11 +105,19 @@ const AddKategori = ({ buttonProps, title, showIcon }) => {
                 <DialogTrigger asChild>
                     <Button {...buttonProps}>{showIcon && <GoPlus size={16} />} {title}</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[505px]">
-                    <DialogHeader>
-                        <DialogTitle className='text-[18px]'>Tambah kategori</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit}>
+                
+                    <DialogContent className="sm:max-w-[505px]">
+                        <div className='flex justify-between'>
+                            <DialogHeader>
+                                <DialogTitle className='text-[18px] py-[16px]'>Edit Kategori</DialogTitle>
+                            </DialogHeader>
+                            <DialogClose asChild>
+                                <Button type="button" variant="ghost">
+                                    <X className='h-[16px] w-[16px]' />
+                                </Button>
+                            </DialogClose>
+
+                        </div>
                         <div className="grid gap-[16px] py-[16px]">
                             <div className="grid gap-1">
                                 <Label htmlFor="Kategori" className="text-[14px]">Nama kategori<span className='text-rose-500'>*</span></Label>
@@ -167,10 +178,10 @@ const AddKategori = ({ buttonProps, title, showIcon }) => {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="submit" className='text-[14px] h-[36px]'>Simpan</Button>
+                            <Button onClick={handleSubmit} className='text-[14px] h-[36px]'>Simpan</Button>
                         </DialogFooter>
-                    </form>
-                </DialogContent>
+                    </DialogContent>
+                
             </Dialog>
         </div>
     );

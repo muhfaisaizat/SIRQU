@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,8 +24,9 @@ import {
 } from "@/components/ui/select"
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from "@/components/ui/toast"
+import { X } from "lucide-react"
 
-const AddPengguna = ({ buttonProps, title, showIcon  }) => {
+const AddPengguna = ({ buttonProps, title, showIcon }) => {
   const { toast } = useToast()
   const [isOpen, setIsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -128,9 +130,17 @@ const AddPengguna = ({ buttonProps, title, showIcon  }) => {
           <Button  {...buttonProps}>{showIcon && <GoPlus size={16} />} {title}</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[505px]">
-          <DialogHeader>
-            <DialogTitle className='text-[18px]'>Tambah pengguna</DialogTitle>
-          </DialogHeader>
+          <div className='flex justify-between'>
+            <DialogHeader>
+              <DialogTitle className='text-[18px] py-[16px]'>Tambah Pengguna</DialogTitle>
+            </DialogHeader>
+            <DialogClose asChild>
+              <Button type="button" variant="ghost">
+                <X className='h-[16px] w-[16px]' />
+              </Button>
+            </DialogClose>
+
+          </div>
           <div className="grid gap-[16px] py-4">
             <div className='h-[154px] w-[154px]'>
               <ImageUpload />

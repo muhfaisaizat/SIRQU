@@ -7,12 +7,11 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { ArrowRight2, } from 'iconsax-react';
-import AddKategori from './AddKategori';
+import AddProduk from './AddProduk';
 
 
 
-const Kategori = () => {
-  const [position, setPosition] = React.useState("bottom")
+const Produk = () => {
   return (
     <div className="px-[24px]">
       <div className='grid gap-2 pt-[40px]  pb-[36px]'>
@@ -29,14 +28,14 @@ const Kategori = () => {
             <BreadcrumbLink
               onClick={(e) => e.preventDefault()}
               className={`text-[14px] font-medium text-black`}>
-              Kategori
+              Produk
             </BreadcrumbLink>
 
           </BreadcrumbList>
         </Breadcrumb>
         <div className='flex justify-between'>
-        <h2 className='text-[36px] font-semibold '>Kategori</h2>
-        <AddKategori buttonProps={{ className: 'gap-2 h-[36px] text-[14px] font-medium' }}  title="Tambah kategori" showIcon={true} />
+        <h2 className='text-[36px] font-semibold '>Produk</h2>
+        <AddProduk buttonProps={{ className: 'gap-2 h-[36px] text-[14px] font-medium' }}  title="Tambah Produk" showIcon={true} />
         </div>
         
       </div>
@@ -46,5 +45,5 @@ const Kategori = () => {
   )
 }
 
-export default Kategori
+export default Produk
 

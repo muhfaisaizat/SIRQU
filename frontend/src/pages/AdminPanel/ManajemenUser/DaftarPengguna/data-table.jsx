@@ -43,7 +43,7 @@ import {
 import { FiEdit2 } from "react-icons/fi";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import ImageUpload from '@/components/ui/ImageUpload'
 import { Eye, EyeSlash } from 'iconsax-react';
 import { useToast } from '@/hooks/use-toast'
@@ -58,6 +58,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import NoData from "./nodata";
+import { X } from "lucide-react"
 
 
 
@@ -159,6 +160,16 @@ const DataTableDemo = () => {
             date: "23 Oktober 2024",
         },
     ]);
+
+    const DataStatus = [
+        { id: "m5gr84i9", name: 'Aktif' },
+        { id: "m5gr84i7", name: 'Tidak Aktif' },
+    ];
+    const DataRole = [
+        { id: "m5gr84i9", name: 'Admin' },
+        { id: "m5gr84i7", name: 'Manajer' },
+        { id: "m5gr84i7", name: 'Kasir' },
+    ];
 
     // status
     const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
@@ -484,21 +495,37 @@ const DataTableDemo = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
-                                <ChevronDown size={16} className="mr-2" /> Semua roles
+                                <ChevronDown size={16} className="mr-2" />Roles
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-
+                        <DropdownMenuContent align="start" className="w-[184px]">
+                            {DataRole.map((role) => (
+                                <DropdownMenuItem key={role.id} className="h-[36px] p-[12px]" >
+                                    <Checkbox
+                                        className="capitalize"
+                                      
+                                    />
+                                    <span className="ml-[8px] text-[14px]">{role.name}</span>
+                                </DropdownMenuItem>
+                            ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
-                                <ChevronDown size={16} className="mr-2" /> Semua status
+                            <Button variant="outline" className="ml-auto h-[36px] text-[14px] border-slate-300">
+                                <ChevronDown size={16} className="mr-2" /> Status
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-
+                        <DropdownMenuContent align="start" className="w-[184px]">
+                            {DataStatus.map((status) => (
+                                <DropdownMenuItem key={status.id} className="h-[36px] p-[12px]" >
+                                    <Checkbox
+                                        className="capitalize"
+                                      
+                                    />
+                                    <span className="ml-[8px] text-[14px]">{status.name}</span>
+                                </DropdownMenuItem>
+                            ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -508,27 +535,28 @@ const DataTableDemo = () => {
                             <ChevronDown size={16} className="mr-2" /> View
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="w-[184px]">
                         {table
                             .getAllColumns()
                             .filter((column) => column.getCanHide() && column.id !== 'id')
                             .map((column) => (
-                                <DropdownMenuCheckboxItem
-                                    key={column.id}
-                                    className="capitalize"
-                                    checked={column.getIsVisible()}
-                                    onCheckedChange={(value) =>
-                                        column.toggleVisibility(!!value)
-                                    }
-                                >
-                                    {column.id}
-                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]">
+                                    <Checkbox
+                                           
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value) =>
+                                                column.toggleVisibility(!!value)
+                                            }
+                                        />
+                                    <span className="ml-[12px] text-[14px]">{column.id}</span>
+                                </DropdownMenuItem>
                             ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
             {pageData.length === 0 ? (
-                <NoData /> 
+                <NoData />
             ) : (
                 <div className="">
                     <Table>
@@ -640,9 +668,17 @@ const DataTableDemo = () => {
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit Pengguna</DialogTitle>
-                    </DialogHeader>
+                    <div className='flex justify-between'>
+                        <DialogHeader>
+                            <DialogTitle className='text-[18px] py-[16px]'>Edit Pengguna</DialogTitle>
+                        </DialogHeader>
+                        <DialogClose asChild>
+                            <Button type="button" variant="ghost">
+                                <X className='h-[16px] w-[16px]' />
+                            </Button>
+                        </DialogClose>
+
+                    </div>
                     <div className="grid gap-[16px] py-4">
                         <div className='h-[154px] w-[154px]'>
                             <ImageUpload />
@@ -751,9 +787,17 @@ const DataTableDemo = () => {
             {/* view */}
             <Dialog open={isDialogOpenview} onOpenChange={setIsDialogOpenview}>
                 <DialogContent className="sm:max-w-[425px] p-[25px]">
-                    <DialogHeader>
-                        <DialogTitle className='text-[18px]'>Detail pengguna</DialogTitle>
-                    </DialogHeader>
+                    <div className='flex justify-between'>
+                        <DialogHeader>
+                            <DialogTitle className='text-[18px] py-[16px]'>Detail Pengguna</DialogTitle>
+                        </DialogHeader>
+                        <DialogClose asChild>
+                            <Button type="button" variant="ghost">
+                                <X className='h-[16px] w-[16px]' />
+                            </Button>
+                        </DialogClose>
+
+                    </div>
                     <div className="grid gap-4 py-[16px] text-[14px]">
                         <div className="flex align-middle h-[36px]">
                             <p className="w-[150px] text-slate-500">Nama</p>
