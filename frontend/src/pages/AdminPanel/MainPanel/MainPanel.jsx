@@ -57,7 +57,7 @@ const MainPanel = () => {
     };
 
     return (
-        <div className='w-full'>
+        <div >
             <Toaster />
             {/* header */}
             <div className='fixed flex justify-between items-center w-[100%] border h-[60px] px-[32px] ps-6 bg-white'>
@@ -74,9 +74,9 @@ const MainPanel = () => {
                 </div>
             </div>
 
-            <div className='flex w-full h-screen pt-[60px]'>
+            <div className='flex w-[100%] h-screen pt-[60px]'>
                 {/* Sidebar */}
-                <div className='w-[264px] p-[12px]'>
+                <div className='w-[18.33%] p-[12px]'>
                     <div>
                         <ul>
                             <li  className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'dashboard' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('dashboard'); navigate('/admin-panel/dashboard'); }}>
@@ -195,7 +195,7 @@ const MainPanel = () => {
                 </div>
 
                 {/* Main Panel */}
-                <div className='flex-1  bg-white border-l border-gray-200 '>
+                <div className='flex-1 w-[81.67%]  bg-white border-l border-gray-200 '>
                     <Routes>
                         <Route path="*" element={<Dashboard />} />
                         <Route path="dashboard" element={<Dashboard />} />

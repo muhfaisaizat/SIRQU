@@ -18,8 +18,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { SearchNormal1 } from 'iconsax-react';
 import NoData from '../../ManajemenProduk&Stok/Produk/NoData';
+import { Door } from 'akar-icons';
 
-const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder }) => {
+const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, isDialogOpen, setIsDialogOpen , setnamaToko, setIsDialogOpenbukatoko ,setuangModal}) => {
     const DataOutlet = [
         { id: "m5gr84i9", name: 'Cabang 1' },
         { id: "m5gr84i7", name: 'Cabang 2' },
@@ -45,9 +46,15 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder })
 
     const [selectedOutlet, setSelectedOutlet] = useState(DataOutlet[0]);
     const [searchTerm, setSearchTerm] = useState("");
+    useEffect(() => {
+        setnamaToko(selectedOutlet.name);  
+      }, [selectedOutlet]);
 
     const handleSelectOutlet = (outlet) => {
+        setIsDialogOpenbukatoko(true); 
         setSelectedOutlet(outlet);
+        setnamaToko(outlet.name);
+        setuangModal('')
     };
 
 
@@ -127,7 +134,10 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder })
                             ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
+                    <div className='flex gap-[12px]'>
                     <BadgeDateTime />
+                    <Button  onClick={() => setIsDialogOpen(true)} className='text-[14px] h-[35px] rounded-full font-medium'><Door strokeWidth={1} size={24} />Tutup Kasir</Button>
+                    </div>
                 </div>
                 <div className='px-[24px] grid gap-[16px]'>
                     <div className='flex justify-between'>

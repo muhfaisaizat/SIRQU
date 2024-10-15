@@ -1,20 +1,52 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Menu from './Menu'
 import Order from './Order'
+import BukaToko from '../BukaTutupToko/BukaToko'
+import TutupToko from '../BukaTutupToko/TutupToko'
 
 const Kasir = () => {
   const [DetailOrder, setDetailOrder] = useState([]);
   const [Transaksi, setTransaksi] = useState([]);
-  const [DaftarOrder, setDaftarOrder] = useState([])
+  const [DaftarOrder, setDaftarOrder] = useState([]);
   const [persen, setPersen] = useState({ top: '72%', bottom: '28%' });
   const [clicked, setClicked] = useState(false);
   const [tipeOrder, setTipeOrder] = useState('');
   const [viewOrder, setViewOrder] = useState({ idOrder: 0, ketBayar: '' });
   const [namaCustomer, setNamaCustomer] = useState('');
   const [taxtdata, setTaxdata] = useState(0);
-  const [orderDiskon, setOrderDiskon]= useState(0);
-  const [textButton, setTextButton]=useState('Bayar');
+  const [orderDiskon, setOrderDiskon] = useState(0);
+  const [textButton, setTextButton] = useState('Bayar');
+  const [isDialogOpen, setIsDialogOpen] = useState(true);
+  const [isDialogOpentutup, setIsDialogOpentutup] = useState(false);
+  const [tanggalSekarang, setTanggalSekarang] = useState('');
+  const [waktuSekarang, setWaktuSekarang] = useState('');
+  const [waktuBuka, setWaktuBuka] = useState('');
+  const [waktuTutup, setWaktuTutup] = useState('');
+  const [uang, setUang] = useState('');
+  const [item, setItem] = useState(0);
+  const [pendapatanKotor, setPendapatanKotor]= useState(0);
+  const [pendapatanBersih, setPendapatanBersih]= useState(0);
+  const [namaToko, setnamaToko]=useState('');
+
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+      const formattedDate = new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      }).format(now);
+      const formattedTime = now.toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      setTanggalSekarang(formattedDate);
+      setWaktuSekarang(formattedTime);
+    };
+    const interval = setInterval(updateDateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Fungsi untuk menangani perubahan persentase
   const handleSelectChange = (value, id, ketBayar, detailTransaksi, nama, Tax, diskon) => {
@@ -28,17 +60,17 @@ const Kasir = () => {
       setClicked(false);
       setTextButton('Bayar')
     }
-  
+
     setTipeOrder(value);
     setViewOrder({
       idOrder: id,
       ketBayar: ketBayar
     });
-  
+
     setNamaCustomer(nama || '');
-  
+
     setDetailOrder([]);
-  
+
     // Pastikan detailTransaksi adalah array sebelum memanggil map
     if (Array.isArray(detailTransaksi)) {
       const newTransaction = {
@@ -52,10 +84,10 @@ const Kasir = () => {
       };
       setDetailOrder(newTransaction.detailTransaksi);
     }
-  
+
     // Set nilai Tax jika ada, jika tidak, set ke 0
     setTaxdata(Tax || 0);
-  
+
     // Proses diskon
     if (Array.isArray(diskon)) {
       const diskonList = diskon.map(item => item.hargaDiskon || 0);
@@ -65,7 +97,39 @@ const Kasir = () => {
       setOrderDiskon(0); // Set ke 0 jika diskon tidak valid
     }
   };
-  
+
+  const Buka = () => {
+    setWaktuBuka(`${tanggalSekarang}, ${waktuSekarang}`)
+  }
+  const Tutup = () => {
+    setWaktuTutup(`${tanggalSekarang}, ${waktuSekarang}`);
+    const totalCount = DaftarOrder.reduce((accOrder, order) => {
+      const orderTotalCount = order.detailTransaksi.reduce((accItem, item) => {
+        return accItem + item.count;
+      }, 0);
+      return accOrder + orderTotalCount;
+    }, 0);
+    setItem(totalCount)
+
+    const totalSemuaOrder = DaftarOrder.reduce((accumulator, currentOrder) => {
+      return accumulator + currentOrder.total;
+    }, 0);
+
+    setPendapatanKotor(totalSemuaOrder)
+
+    const totalTax = DaftarOrder.reduce((accumulator, currentOrder) => {
+      if (currentOrder.tax && currentOrder.tax.harga) {
+        return accumulator + currentOrder.tax.harga;
+      }
+      return accumulator;
+    }, 0);
+
+    const totalAkhir = totalSemuaOrder === 0 ? 0 : totalSemuaOrder - parseInt(uang) - totalTax;
+
+    setPendapatanBersih(totalAkhir);
+
+  }
+
 
 
 
@@ -73,7 +137,7 @@ const Kasir = () => {
   return (
     <div className='w-full h-full flex bg-slate-100'>
       <ScrollArea className='w-[72.8%] h-[100%]'>
-        <Menu setDetailOrder={setDetailOrder} DaftarOrder={DaftarOrder} handleSelectChange={handleSelectChange} setViewOrder={setViewOrder} />
+        <Menu setDetailOrder={setDetailOrder} DaftarOrder={DaftarOrder} handleSelectChange={handleSelectChange} setViewOrder={setViewOrder} isDialogOpen={isDialogOpentutup} setIsDialogOpen={setIsDialogOpentutup} setnamaToko={setnamaToko} setIsDialogOpenbukatoko={setIsDialogOpen}  setuangModal={setUang}/>
       </ScrollArea>
       <div className='w-[27.2%] h-[100%] bg-white border-l'>
         <Order
@@ -98,6 +162,12 @@ const Kasir = () => {
           textButton={textButton}
         />
       </div>
+      {isDialogOpen && (
+        <BukaToko setIsDialogOpen={setIsDialogOpen} Buka={Buka} uang={uang} setUang={setUang} namaToko={namaToko}  />
+      )}
+      {isDialogOpentutup && (
+        <TutupToko setIsDialogOpentutup={setIsDialogOpentutup} waktuBuka={waktuBuka} uang={uang} waktuTutup={waktuTutup} Tutup={Tutup} item={item} pendapatanKotor={pendapatanKotor} pendapatanBersih={pendapatanBersih} setUang={setUang} setIsDialogOpenbuka={setIsDialogOpen}/>
+      )}
     </div>
   )
 }
