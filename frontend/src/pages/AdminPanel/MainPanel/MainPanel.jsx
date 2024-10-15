@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Category, ShoppingCart, Diagram, User, Box, ArrowDown2, ArrowUp2, Celo, Shop, } from 'iconsax-react';
+import { Category, ShoppingCart, Diagram, User, Box, ArrowDown2, ArrowUp2, Celo, Shop,ReceiptItem, } from 'iconsax-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import DaftarPengguna from '../ManajemenUser/DaftarPengguna/DaftarPengguna';
@@ -13,11 +13,13 @@ import Outlet from '../ManajemenToko/Outlet/Outlet';
 import AddToko from '../ManajemenToko/Toko/AddToko';
 import Kasir from '../Kasir/SistemKasir/Kasir';
 import DaftarOrder from '../Kasir/ManajemenKasir/DaftarOrder';
+import PajakStruk from '../Pengaturan/Pajak&Struk/PajakStruk';
 
 const MainPanel = () => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [isOpen2, setIsOpen2] = useState(false);
+    const [isOpen3, setIsOpen3] = useState(false);
     const [activeLink, setActiveLink] = useState('');
     const location = useLocation();
     const [showAddToko, setShowAddToko] = useState(false);
@@ -45,6 +47,10 @@ const MainPanel = () => {
 
     const toggleDropdown2 = () => {
         setIsOpen2(!isOpen2);
+    };
+
+    const toggleDropdown3 = () => {
+        setIsOpen3(!isOpen3);
     };
 
     const handleLinkClick = (linkName) => {
@@ -94,13 +100,51 @@ const MainPanel = () => {
                             </li>
                             <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'uang' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => handlemenu('uang')}>
                                 <Link className='flex gap-3 justify-center'>
-                                    <Diagram size={16} />
-                                    <span className="font-medium text-[14px]">Keuangan</span>
+                                    <ReceiptItem size={16} />
+                                    <span className="font-medium text-[14px]">Penjualan</span>
                                 </Link>
                             </li>
                         </ul>
 
                         <ul>
+                            <li>
+                                <Link
+                                    className={`flex justify-between ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px]`}
+                                    onClick={toggleDropdown3}
+                                >
+                                    <div className='flex gap-3'>
+                                        <Box size={16} />
+                                        <span className='font-medium text-[14px]'>Pengaturan</span>
+                                    </div>
+                                    {isOpen3 ? (
+                                        <ArrowUp2 size={16} className='mt-1' />
+                                    ) : (
+                                        <ArrowDown2 size={16} className='mt-1' />
+                                    )}
+                                </Link>
+                                {isOpen3 && (
+                                    <ul>
+                                        <li className='pl-[25px]'>
+                                            <Link
+                                                className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'pajak&struk' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
+                                                onClick={() => handleLinkClick('pajak&struk')}
+                                                to="/admin-panel/pajak&struk"
+                                            >
+                                                <span className='font-medium text-[14px]'>Pajak &  Struk</span>
+                                            </Link>
+                                        </li>
+                                        <li className='pl-[25px]'>
+                                            <Link
+                                                className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'produk' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
+                                                onClick={() => handleLinkClick('produk')}
+                                                to="/admin-panel/produk"
+                                            >
+                                                <span className='font-medium text-[14px]'>Promosi</span>
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                )}
+                            </li>
                             <li>
                                 <Link
                                     className={`flex justify-between ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px]`}
@@ -111,9 +155,9 @@ const MainPanel = () => {
                                         <span className='font-medium text-[14px]'>Produk dan stok</span>
                                     </div>
                                     {isOpen ? (
-                                        <ArrowDown2 size={16} className='mt-1' />
-                                    ) : (
                                         <ArrowUp2 size={16} className='mt-1' />
+                                    ) : (
+                                        <ArrowDown2 size={16} className='mt-1' />
                                     )}
                                 </Link>
                                 {isOpen && (
@@ -158,9 +202,9 @@ const MainPanel = () => {
                                         <span className='font-medium text-[14px]'>Manajemen pengguna</span>
                                     </div>
                                     {isOpen2 ? (
-                                        <ArrowDown2 size={16} className='mt-1' />
-                                    ) : (
                                         <ArrowUp2 size={16} className='mt-1' />
+                                    ) : (
+                                        <ArrowDown2 size={16} className='mt-1' />
                                     )}
                                 </Link>
                                 {isOpen2 && (
@@ -200,6 +244,7 @@ const MainPanel = () => {
                     <Routes>
                         <Route path="*" element={<Dashboard />} />
                         <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="pajak&struk" element={<PajakStruk />} />
                         <Route path="sistem-kasir" element={<Kasir />} />
                         <Route path="sistem-kasir/daftar-order" element={<DaftarOrder />} />
                         <Route path="kategori" element={<Kategori />} />
