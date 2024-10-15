@@ -142,7 +142,7 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
                 <div className='px-[24px] grid gap-[16px]'>
                     <div className='flex justify-between'>
                         <h1 className='text-[18px] font-semibold'>Daftar Order <span className='text-slate-500'>{DaftarOrder.length}</span></h1>
-                        <Link to="/auth/forgot-password" className=" text-[14px] font-medium flex gap-[12px]">Lihat lainnya <ArrowRight size={18} /></Link>
+                        <Link to="/admin-panel/sistem-kasir/daftar-order" className=" text-[14px] font-medium flex gap-[12px]">Lihat lainnya <ArrowRight size={18} /></Link>
                     </div>
                     <ScrollArea className="w-[100%]  ">
                         {DaftarOrder.length === 0 ? (

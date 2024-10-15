@@ -12,6 +12,7 @@ import Stok from '../ManajemenProduk&Stok/Stok/Stok';
 import Outlet from '../ManajemenToko/Outlet/Outlet';
 import AddToko from '../ManajemenToko/Toko/AddToko';
 import Kasir from '../Kasir/SistemKasir/Kasir';
+import DaftarOrder from '../Kasir/ManajemenKasir/DaftarOrder';
 
 const MainPanel = () => {
     const navigate = useNavigate();
@@ -85,7 +86,7 @@ const MainPanel = () => {
                                     <span className="font-medium text-[14px]">Dashboard</span>
                                 </Link>
                             </li>
-                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'kasir' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('kasir'); navigate('/admin-panel/kasir'); }}>
+                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'kasir' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('kasir'); navigate('/admin-panel/sistem-kasir'); }}>
                                 <Link className='flex gap-3 justify-center'>
                                     <ShoppingCart size={16} />
                                     <span className="font-medium text-[14px]">Sistem Kasir</span>
@@ -199,7 +200,8 @@ const MainPanel = () => {
                     <Routes>
                         <Route path="*" element={<Dashboard />} />
                         <Route path="dashboard" element={<Dashboard />} />
-                        <Route path="kasir" element={<Kasir />} />
+                        <Route path="sistem-kasir" element={<Kasir />} />
+                        <Route path="sistem-kasir/daftar-order" element={<DaftarOrder />} />
                         <Route path="kategori" element={<Kategori />} />
                         <Route path="produk" element={<Produk />} />
                         <Route path="stok" element={<Stok />} />
