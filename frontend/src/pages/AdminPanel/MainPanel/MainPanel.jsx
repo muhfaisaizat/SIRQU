@@ -14,6 +14,7 @@ import AddToko from '../ManajemenToko/Toko/AddToko';
 import Kasir from '../Kasir/SistemKasir/Kasir';
 import DaftarOrder from '../Kasir/ManajemenKasir/DaftarOrder';
 import PajakStruk from '../Pengaturan/Pajak&Struk/PajakStruk';
+import Promosi from '../Pengaturan/Promosi/Promosi';
 
 const MainPanel = () => {
     const navigate = useNavigate();
@@ -135,9 +136,9 @@ const MainPanel = () => {
                                         </li>
                                         <li className='pl-[25px]'>
                                             <Link
-                                                className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'produk' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
-                                                onClick={() => handleLinkClick('produk')}
-                                                to="/admin-panel/produk"
+                                                className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'promosi' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
+                                                onClick={() => handleLinkClick('promosi')}
+                                                to="/admin-panel/promosi"
                                             >
                                                 <span className='font-medium text-[14px]'>Promosi</span>
                                             </Link>
@@ -245,6 +246,7 @@ const MainPanel = () => {
                         <Route path="*" element={<Dashboard />} />
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="pajak&struk" element={<PajakStruk />} />
+                        <Route path="promosi" element={<Promosi />} />
                         <Route path="sistem-kasir" element={<Kasir />} />
                         <Route path="sistem-kasir/daftar-order" element={<DaftarOrder />} />
                         <Route path="kategori" element={<Kategori />} />
