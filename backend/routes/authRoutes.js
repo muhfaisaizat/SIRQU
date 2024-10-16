@@ -24,7 +24,7 @@ const router = express.Router();
  *                 type: string
  *               email:
  *                 type: string
- *                 example: user@example.com
+ *                 example: user@gmail.com
  *               password:
  *                 type: string
  *               role:
@@ -56,7 +56,7 @@ router.post('/register', register);
  *             properties:
  *               email:
  *                 type: string
- *                 example: user@example.com
+ *                 example: user@gmail.com
  *               password:
  *                 type: string
  *     responses:
@@ -75,7 +75,8 @@ router.post('/login', login);
  * @swagger
  * /api/auth/forgot-password:
  *   post:
- *     summary: Request password reset
+ *     summary: Request a password reset link
+ *     description: Sends a password reset link to the user's email.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -83,17 +84,18 @@ router.post('/login', login);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - email
  *             properties:
  *               email:
  *                 type: string
- *                 example: admin@gmail.com
+ *                 format: email
+ *                 example: user@example.com
  *     responses:
  *       200:
- *         description: Password reset request sent
+ *         description: Reset link sent to email.
+ *       404:
+ *         description: User not found.
  *       500:
- *         description: Failed to process request
+ *         description: Server error.
  */
 router.post('/forgot-password', forgotPassword);
 
@@ -101,7 +103,8 @@ router.post('/forgot-password', forgotPassword);
  * @swagger
  * /api/auth/reset-password:
  *   post:
- *     summary: Reset a user's password
+ *     summary: Reset the user's password
+ *     description: Resets the user's password using the provided token.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -109,20 +112,20 @@ router.post('/forgot-password', forgotPassword);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - token
- *               - newPassword
  *             properties:
  *               token:
  *                 type: string
+ *                 example: your-reset-token
  *               newPassword:
  *                 type: string
- *                 example: NewPassword123
+ *                 example: newPassword123
  *     responses:
  *       200:
- *         description: Password reset successful
+ *         description: Password has been reset.
+ *       400:
+ *         description: Invalid or expired token.
  *       500:
- *         description: Failed to reset password
+ *         description: Server error.
  */
 router.post('/reset-password', resetPassword);
 
