@@ -245,7 +245,7 @@ const MainPanel = () => {
                 <div className='flex-1 w-[81.67%]  bg-white border-l border-gray-200 '>
                     <Routes>
                         <Route path="*" element={<Dashboard />} />
-                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="dashboard" element={<Dashboard handlemenu={handlemenu} />} />
                         <Route path="penjualan" element={<Penjualan />} />
                         <Route path="pajak&struk" element={<PajakStruk />} />
                         <Route path="promosi" element={<Promosi />} />

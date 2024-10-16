@@ -12,7 +12,7 @@ import DataTable from './DataTable';
 const Outlet = () => {
     
     return (
-        <ScrollArea className='w-full h-[90vh]'>
+        <ScrollArea className='w-full h-[100%]'>
             <div className="px-[24px]">
                 <div className='grid gap-2 pt-[40px]  pb-[16px]'>
                     <Breadcrumb>

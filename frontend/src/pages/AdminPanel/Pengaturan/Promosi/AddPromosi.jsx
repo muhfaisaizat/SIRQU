@@ -393,13 +393,12 @@ const AddPromosi = ({ isOpen, setIsOpen }) => {
                             <div className='w-full flex gap-[8px]'>
                                 <Select>
                                     <SelectTrigger className="w-[169px] h-[36px] text-[14px]" >
-                                        <SelectValue placeholder="Potongan  (%)" />
+                                        <SelectValue placeholder="Pilih Potongan" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectItem className='text-[14px]' value="Facebook">FB</SelectItem>
-                                            <SelectItem className='text-[14px]' value="Instragram">IG</SelectItem>
-                                            <SelectItem className='text-[14px]' value="Twiter">TW</SelectItem>
+                                            <SelectItem className='text-[14px]' value="Facebook">Potongan  (%)</SelectItem>
+                                            <SelectItem className='text-[14px]' value="Instragram">Potongan  (Rp)</SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
