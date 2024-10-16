@@ -1,29 +1,35 @@
 // models/category.js
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const Category = sequelize.define('Category', {
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    productCount: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-    outletId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-  }, {
-    timestamps: true,
-    paranoid: true, // enables soft delete
-    tableName: 'Categories',
-  });
+const { Model, DataTypes, Sequelize } = require('sequelize');
+const sequelize = require('../config/database'); // Ganti dengan path yang sesuai ke konfigurasi database Anda
 
-  Category.associate = function(models) {
-    // associations can be defined here
-    // example: Category.belongsTo(models.Outlet, { foreignKey: 'outletId' });
-  };
+class Category extends Model {}
 
-  return Category;
-};
+Category.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: Sequelize.fn('CURRENT_TIMESTAMP'), // Menggunakan Sequelize.fn
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: Sequelize.fn('CURRENT_TIMESTAMP'), // Menggunakan Sequelize.fn
+  },
+}, {
+  sequelize,
+  modelName: 'Category',
+  tableName: 'categories',
+  timestamps: true,
+  paranoid: true, // Menambahkan fitur paranoid jika diperlukan
+});
+
+module.exports = Category;

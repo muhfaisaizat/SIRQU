@@ -32,17 +32,17 @@ User.init({
         allowNull: false,
         defaultValue: 'Active'
     },
-    createdAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-    },
-    deletedAt: {
-        type: DataTypes.DATE,
-    },
+    // createdAt: {
+    //     type: DataTypes.DATE,
+    //     defaultValue: DataTypes.NOW
+    // },
+    // updatedAt: {
+    //     type: DataTypes.DATE,
+    //     defaultValue: DataTypes.NOW
+    // },
+    // deletedAt: {
+    //     type: DataTypes.DATE,
+    // },
     ResetPasswordToken: { // Field untuk menyimpan token reset password
         type: DataTypes.TEXT,
         allowNull: true
