@@ -21,15 +21,8 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *                 type: string
  *                 description: The name of the category
  *                 example: Electronics
- *               productCount:
- *                 type: integer
- *                 description: The number of products in this category
- *                 example: 10
- *               outletId:
- *                 type: integer
- *                 description: The ID of the outlet (optional)
- *                 example: 1
- *     responses:
+
+ *     responses:   
  *       201:
  *         description: The category was created successfully
  *       400:
@@ -59,12 +52,6 @@ router.post('/', categoryController.createCategory);
  *                   name:
  *                     type: string
  *                     description: The name of the category
- *                   productCount:
- *                     type: integer
- *                     description: The number of products in this category
- *                   outletId:
- *                     type: integer
- *                     description: The ID of the outlet (optional)
  *                   createdAt:
  *                     type: string
  *                     format: date-time
@@ -123,10 +110,6 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), categoryController.getC
  *             properties:
  *               name:
  *                 type: string
- *               productCount:
- *                 type: integer
- *               outletId:
- *                 type: integer
  *     responses:
  *       200:
  *         description: The category was updated successfully

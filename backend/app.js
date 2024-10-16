@@ -1,11 +1,14 @@
-// app.js
 const express = require("express");
 const dotenv = require("dotenv");
 const sequelize = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
-const seedRoles = require("./seeders/roleSeeder");
+const categoryOutletRoutes = require('./routes/categoryOutletRoutes');
+const productRoutes = require('./routes/productRoutes');
+const productCategoryRoutes = require('./routes/productCategoryRoutes');
+const productOutletRoutes = require('./routes/productOutletRoutes');
+const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 
 dotenv.config();
@@ -23,6 +26,10 @@ app.use((req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use('/api/categories/outlets', categoryOutletRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/product/categories', productCategoryRoutes);
+app.use('/api/products/outlets', productOutletRoutes);
 
 // Swagger Documentation
 swaggerDocs(app);
@@ -32,15 +39,15 @@ const PORT = process.env.PORT || 5000;
 // Function to synchronize the database and seed initial data
 const initializeDatabase = async () => {
   try {
-    await sequelize.sync({ force: true }); // Hati-hati, ini akan menghapus tabel yang ada
+    await sequelize.sync({ force: false }); // Hati-hati, ini akan menghapus tabel yang ada
     console.log("Database synced");
 
     // Dapatkan queryInterface dari sequelize
-    const queryInterface = sequelize.getQueryInterface();
+    // const queryInterface = sequelize.getQueryInterface();
 
     // Jalankan seeder secara manual
-    await seedRoles(queryInterface); // Kirimkan queryInterface ke seedRoles
-    console.log("Role seeder completed");
+    // await seedRoles.up(queryInterface); // Panggil metode `up` dari seedRoles
+    // console.log("Role seeder completed");
   } catch (error) {
     console.error("Error syncing database:", error);
     throw error; // Rethrow error untuk ditangkap nanti

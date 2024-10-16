@@ -1,6 +1,7 @@
 // controllers/categoryController.js
-const { Category } = require('../models/user');
+const Category = require('../models/category');// Pastikan path model sesuai dengan struktur proyek Anda
 
+// Menambahkan kategori baru
 exports.createCategory = async (req, res) => {
   try {
     const category = await Category.create(req.body);
@@ -10,6 +11,7 @@ exports.createCategory = async (req, res) => {
   }
 };
 
+// Mendapatkan semua kategori
 exports.getCategories = async (req, res) => {
   try {
     const categories = await Category.findAll();
@@ -19,6 +21,7 @@ exports.getCategories = async (req, res) => {
   }
 };
 
+// Mendapatkan kategori berdasarkan ID
 exports.getCategoryById = async (req, res) => {
   try {
     const category = await Category.findByPk(req.params.id);
@@ -32,6 +35,7 @@ exports.getCategoryById = async (req, res) => {
   }
 };
 
+// Memperbarui kategori
 exports.updateCategory = async (req, res) => {
   try {
     const [updated] = await Category.update(req.body, {
@@ -48,13 +52,14 @@ exports.updateCategory = async (req, res) => {
   }
 };
 
+// Menghapus kategori
 exports.deleteCategory = async (req, res) => {
   try {
     const deleted = await Category.destroy({
       where: { id: req.params.id },
     });
     if (deleted) {
-      res.status(204).send();
+      res.status(204).send(); // No content
     } else {
       res.status(404).json({ error: 'Category not found' });
     }
