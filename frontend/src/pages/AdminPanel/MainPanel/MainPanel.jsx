@@ -15,6 +15,7 @@ import Kasir from '../Kasir/SistemKasir/Kasir';
 import DaftarOrder from '../Kasir/ManajemenKasir/DaftarOrder';
 import PajakStruk from '../Pengaturan/Pajak&Struk/PajakStruk';
 import Promosi from '../Pengaturan/Promosi/Promosi';
+import Penjualan from '../Penjualan/Penjualan';
 
 const MainPanel = () => {
     const navigate = useNavigate();
@@ -99,7 +100,7 @@ const MainPanel = () => {
                                     <span className="font-medium text-[14px]">Sistem Kasir</span>
                                 </Link>
                             </li>
-                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'uang' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => handlemenu('uang')}>
+                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'uang' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('uang'); navigate('/admin-panel/penjualan'); }}>
                                 <Link className='flex gap-3 justify-center'>
                                     <ReceiptItem size={16} />
                                     <span className="font-medium text-[14px]">Penjualan</span>
@@ -245,6 +246,7 @@ const MainPanel = () => {
                     <Routes>
                         <Route path="*" element={<Dashboard />} />
                         <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="penjualan" element={<Penjualan />} />
                         <Route path="pajak&struk" element={<PajakStruk />} />
                         <Route path="promosi" element={<Promosi />} />
                         <Route path="sistem-kasir" element={<Kasir />} />

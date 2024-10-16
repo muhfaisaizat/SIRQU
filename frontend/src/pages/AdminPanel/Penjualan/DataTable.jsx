@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/pagination"
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import NoData from "./NoData";
-import { useNavigate } from "react-router-dom";
+import ViewTransaksi from "./ViewTransaksi";
 
 
 
@@ -46,8 +46,7 @@ import { useNavigate } from "react-router-dom";
 
 
 // Main component
-const DataTableAktif = () => {
-    const navigate = useNavigate();
+const DataTableHistory = () => {
     // data
     const [data, setData] = useState([
         {
@@ -187,16 +186,6 @@ const DataTableAktif = () => {
             id: "actions",
             enableHiding: false,
             cell: ({ row }) => {
-
-                return (
-                    <Button onClick={() => navigate('/admin-panel/sistem-kasir')} variant="secondary" className="text-[12px]">Buka</Button>
-                )
-            },
-        },
-        {
-            id: "actions-dropdown",
-            enableHiding: false,
-            cell: ({ row }) => {
                 const id = row.getValue("id");
                 return (
                     <DropdownMenu>
@@ -207,6 +196,7 @@ const DataTableAktif = () => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-[164px]">
+                            <DropdownMenuItem onClick={() => setIsOpen(true)}className="p-3 gap-3 text-[14px] font-medium ">View Transaksi</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDelete(id)} className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -216,7 +206,7 @@ const DataTableAktif = () => {
     ]
 
 
-
+    const [isOpen, setIsOpen] = useState(false);
     const [sorting, setSorting] = useState([])
     const [columnFilters, setColumnFilters] = useState([])
     const [columnVisibility, setColumnVisibility] = useState({})
@@ -442,9 +432,10 @@ const DataTableAktif = () => {
                         </div>
                     )}
                 </div>
-            )}  
+            )} 
+            <ViewTransaksi isOpen={isOpen} setIsOpen={setIsOpen}/> 
         </div>
     )
 }
 
-export default DataTableAktif
+export default DataTableHistory
