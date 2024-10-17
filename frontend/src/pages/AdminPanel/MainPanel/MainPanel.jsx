@@ -3,7 +3,6 @@ import { Category, ShoppingCart, Diagram, User, Box, ArrowDown2, ArrowUp2, Celo,
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import DaftarPengguna from '../ManajemenUser/DaftarPengguna/DaftarPengguna';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Dashboard from '../Dashboard/Dashboard';
 import { Toaster } from "@/components/ui/toaster"
 import Kategori from '../ManajemenProduk&Stok/Kategori/Kategori';
@@ -16,6 +15,7 @@ import DaftarOrder from '../Kasir/ManajemenKasir/DaftarOrder';
 import PajakStruk from '../Pengaturan/Pajak&Struk/PajakStruk';
 import Promosi from '../Pengaturan/Promosi/Promosi';
 import Penjualan from '../Penjualan/Penjualan';
+import Logout from './Logout';
 
 const MainPanel = () => {
     const navigate = useNavigate();
@@ -74,13 +74,7 @@ const MainPanel = () => {
                     <Celo size={30} variant="Bulk" />
                     <p className='text-[24px] font-semibold'>Sirqu</p>
                 </button>
-                <div className='flex gap-3'>
-                    <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <p className='text-[14px] font-medium pt-1 pb-1'>Daffa Fairuz</p>
-                </div>
+                    <Logout/>
             </div>
 
             <div className='flex w-[100%] h-screen pt-[60px]'>
