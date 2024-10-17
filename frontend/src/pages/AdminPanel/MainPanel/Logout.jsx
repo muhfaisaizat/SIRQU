@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {Logout as IconLogout} from 'iconsax-react';
+import { useNavigate } from "react-router-dom";
 
 const Logout = () => {
+    const navigate = useNavigate();
     return (
 
         <DropdownMenu>
@@ -36,7 +38,11 @@ const Logout = () => {
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="py-3 px-[19px] gap-[12px] text-[14px] font-semibold"> <IconLogout variant='Bold'/>Logout</DropdownMenuItem>
+                <DropdownMenuItem  onClick={(e) => {
+                  e.preventDefault();
+                  localStorage.removeItem("token");
+                  navigate("/");
+                }} className="py-3 px-[19px] gap-[12px] text-[14px] font-semibold"> <IconLogout variant='Bold'/>Logout</DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
 

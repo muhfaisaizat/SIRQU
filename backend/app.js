@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const dotenv = require("dotenv");
 const sequelize = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
@@ -14,6 +15,14 @@ const swaggerDocs = require("./swagger");
 dotenv.config();
 
 const app = express();
+
+// Konfigurasi CORS
+app.use(cors({
+  origin: "http://localhost:5173", // Ganti dengan URL frontend Anda
+  methods: ["GET", "POST", "PUT", "DELETE"], // Metode yang diizinkan
+  allowedHeaders: ["Content-Type", "Authorization"], // Header yang diizinkan
+}));
+
 app.use(express.json());
 
 // Middleware for logging requests (optional)

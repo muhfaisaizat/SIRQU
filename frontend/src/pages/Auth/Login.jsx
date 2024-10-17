@@ -8,21 +8,63 @@ import { Checkbox } from "@/components/ui/checkbox";
 import logo from "../../assets/Logo.svg";
 import { Eye, EyeSlash } from 'iconsax-react';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { API_URL } from "../../helpers/networt";
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from "@/components/ui/toast";
+import { Toaster } from "@/components/ui/toaster"
 
 
 const Login = () => {
+    const { toast } = useToast();
     const navigate = useNavigate();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`${API_URL}/api/auth/login`, {
+              email,
+              password,
+            });
+            const userRole = response.data.user.role;
+            const info =response.data.message;
+            localStorage.setItem("token", response.data.token);
+            
+        
+            if (userRole === "Admin") {
+              navigate("/admin-panel");
+            } else {
+              toast({
+                variant: "destructive",
+                title: "Error!",
+                description: info,
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            }); 
+            }
+          } catch (error) {
+            console.error("Login failed:", error);
+            const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+            toast({
+                variant: "destructive",
+                title: "Login Failed",
+                description: errorMessage,  // Pesan error dari response atau fallback
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+          }
+    }
 
 
 
 
     return (
         <div className="container mx-auto flex justify-center items-center min-h-screen">
+             <Toaster />
             <div className="mx-auto w-full max-w-[450px] pt-[52px] pb-[52px] ">
                 <h1 className='text-center text-[30px] font-semibold'>Masuk ke akun anda</h1>
                 <p className="text-[14px] text-center font-medium  text-gray-500 mt-[16px] mb-[36px]">
@@ -38,6 +80,8 @@ const Login = () => {
                             type="email"
                             placeholder="Enter email"
                             required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="h-[40px] text-[14px] rounded-lg border-slate-300"
                         />
                     </div>
@@ -49,6 +93,8 @@ const Login = () => {
                                 type={showPassword ? 'text' : 'password'}
                                 placeholder="Enter password"
                                 required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 className="h-[40px] text-[14px] rounded-lg border-slate-300 pr-10"
                             />
                             <button
@@ -75,7 +121,7 @@ const Login = () => {
                             Lupa Password?
                         </Link>
                     </div>
-                    <Button type="submit" className="w-full h-[40px]  text-[14px] font-medium" onClick={() => navigate('/admin-panel')}>
+                    <Button onClick={handleLogin} className="w-full h-[40px]  text-[14px] font-medium">
                         Masuk
                     </Button>
                     <Button variant="outline"  className="w-full h-[40px]  text-[14px] font-medium" >

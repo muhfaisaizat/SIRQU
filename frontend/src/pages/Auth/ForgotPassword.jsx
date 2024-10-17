@@ -8,6 +8,11 @@ import logo from "../../assets/Logo.svg";
 import { ArrowLeft } from 'iconsax-react';
 import { Eye, EyeSlash } from 'iconsax-react';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { API_URL } from "../../helpers/networt";
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from "@/components/ui/toast";
+import { Toaster } from "@/components/ui/toaster"
 
 const obfuscateEmail = (email) => {
     const [localPart, domain] = email.split('@'); // Memisahkan bagian sebelum dan sesudah '@'
@@ -19,7 +24,7 @@ const obfuscateEmail = (email) => {
 
 const ForgotPassword = () => {
     const navigate = useNavigate();
-
+    const { toast } = useToast();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -33,6 +38,10 @@ const ForgotPassword = () => {
 
     // OTP
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
+    const [otpString, setOtpString] = useState('');
+    useEffect(() => {
+        setOtpString(otp.join(''));
+    }, [otp]);
     const inputsRef = useRef([]);
 
     // State untuk menampilkan tahap (1 = send email, 2 = otp, 3 = reset password)
@@ -83,6 +92,8 @@ const ForgotPassword = () => {
     }, [step]);
 
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     // Fungsi untuk meng-handle pengiriman form OTP
     const handleOtpSubmit = (event) => {
@@ -91,18 +102,10 @@ const ForgotPassword = () => {
         setStep(3); // Lanjut ke reset password setelah OTP benar
     };
 
-    // Fungsi untuk meng-handle submit email
-    const handleEmailSubmit = (event) => {
-        event.preventDefault();
-        // Logika untuk mengirimkan email
-        setStep(2); // Lanjut ke tahap OTP setelah email terkirim
-        setTimer(5);
-        setIsTimerActive(true);
-    };
 
 
     // State untuk countdown timer
-    const [timer, setTimer] = useState(5);
+    const [timer, setTimer] = useState(180); // Set timer awal ke 180 detik (3 menit)
     const [isTimerActive, setIsTimerActive] = useState(false);
 
     // Logika untuk timer
@@ -114,21 +117,98 @@ const ForgotPassword = () => {
             }, 1000);
         } else if (timer === 0) {
             clearInterval(countdown);
+            setIsTimerActive(false); // Timer selesai, matikan
         }
         return () => clearInterval(countdown);
     }, [timer, isTimerActive]);
 
     // Fungsi untuk meng-handle resend code
     const handleResendCode = () => {
-        setTimer(5); // Set timer kembali ke 5 detik
+        setTimer(180); // Set timer kembali ke 180 detik (3 menit)
         setIsTimerActive(true); // Aktifkan kembali countdown
+    };
+
+    // Format timer ke bentuk menit:detik (MM:SS)
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60); // Dapatkan menit
+        const seconds = time % 60; // Dapatkan detik
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`; // Format MM:SS
     };
 
 
     const obfuscatedEmail = obfuscateEmail(email);
 
+    const handleEmailSubmit = async (e) => {
+        e.preventDefault();
+        if (!email) {
+            toast({
+                variant: "destructive",
+                title: "Input email",
+                description: "Email harus diisi.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+        try {
+            await axios.post(`${API_URL}/api/auth/forgot-password`, {
+                email,
+            });
+            toast({
+                title: "Suscces",
+                description: "Email berhasil terkirim , cek email anda.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            setStep(2);
+            setTimer(180);
+            setIsTimerActive(true);
+        } catch (error) {
+            console.error("Login failed:", error);
+            const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+            toast({
+                variant: "destructive",
+                title: "!Error",
+                description: errorMessage,  // Pesan error dari response atau fallback
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
+    }
+    const handleResetPassowrd = async (e) => {
+        e.preventDefault();
+        if (password !== confirmPassword) {
+            toast({
+                variant: "destructive",
+                title: "Password Mismatch",
+                description: "Kata sandi dan konfirmasi kata sandi tidak cocok.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+        try {
+            await axios.post(`${API_URL}/api/auth/reset-password`, {
+                token:otpString,
+                newPassword:password
+            });
+            toast({
+                title: "Suscces",
+                description: "Password sudah diperbarui , silakan login.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            navigate('/');
+        } catch (error) {
+            console.error("Login failed:", error);
+            const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+            toast({
+                variant: "destructive",
+                title: "!Error",
+                description: errorMessage,  // Pesan error dari response atau fallback
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
+    }
+
     return (
         <div className="container mx-auto flex justify-center items-center min-h-screen">
+            <Toaster />
             {step === 1 && (
                 // Tahap send email
                 <div className="mx-auto w-full max-w-[450px] pt-[52px] pb-[52px] ">
@@ -139,7 +219,7 @@ const ForgotPassword = () => {
                         <br />
                         Demi alasan keamanan, kami TIDAK menyimpan kata sandi Anda. Jadi, yakinlah bahwa kami tidak akan pernah mengirimkan kata sandi Anda melalui email.
                     </p>
-                    <form onSubmit={handleEmailSubmit} className="grid gap-[36px]">
+                    <div className="grid gap-[36px]">
                         <div className="grid gap-1">
                             <Label htmlFor="email" className="text-[14px]">Email</Label>
                             <Input
@@ -152,10 +232,10 @@ const ForgotPassword = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
-                        <Button type="submit" className="w-full h-[40px]  font-medium">
+                        <Button onClick={handleEmailSubmit} className="w-full h-[40px]  font-medium">
                             Kirim instruksi rubah Kata Sandi
                         </Button>
-                    </form>
+                    </div>
                 </div>
             )}
 
@@ -187,7 +267,7 @@ const ForgotPassword = () => {
                         {timer > 0 ? (
                             <div className='flex text-center justify-center gap-1 text-[14px] font-medium mt-4'>
                                 <p className='text-slate-500'>Resend code in</p>
-                                <p>{`00:0${timer}`}</p>
+                                <p>{formatTime(timer)}</p>
                             </div>
                         ) : (
                             <Link to="#" onClick={handleResendCode} className=" underline inline-block text-[14px] font-medium text-center mt-4">
@@ -232,6 +312,8 @@ const ForgotPassword = () => {
                                         type={showPassword ? 'text' : 'password'}
                                         placeholder="Tulis Kata Sandi baru"
                                         required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
                                         className="h-[40px] text-[14px] rounded-lg border-slate-300 pr-10"
                                     />
                                     <button
@@ -252,6 +334,8 @@ const ForgotPassword = () => {
                                         type={showConfirmPassword ? 'text' : 'password'}
                                         placeholder="Ulangi Kata Sandi diatas"
                                         required
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
                                         className="h-[40px] text-[14px] rounded-lg border-slate-300 pr-10"
                                     />
                                     <button
@@ -265,17 +349,17 @@ const ForgotPassword = () => {
                             </div>
                         </div>
                         <div className='grid gap-4'>
-                            <Button type="submit" className="w-full h-[40px]  text-[14px] font-medium" onClick={() => navigate('/')}>
+                            <Button type="submit" className="w-full h-[40px]  text-[14px] font-medium" onClick={handleResetPassowrd}>
                                 Konfirmasi Kata Sandi
                             </Button>
                             <div className="text-center text-[14px] font-medium text-slate-500">
-                            Dengan menekan tombol diatas, anda telah menyetujui{" "}
+                                Dengan menekan tombol diatas, anda telah menyetujui{" "}
                                 <Link className='underline text-black'  >
-                                Syarat dan Ketentuan
+                                    Syarat dan Ketentuan
                                 </Link>
                                 {" "}serta{" "}
                                 <Link className='underline text-black'  >
-                                Kebijakan Privasi
+                                    Kebijakan Privasi
                                 </Link>
                                 {" "}kami
                             </div>

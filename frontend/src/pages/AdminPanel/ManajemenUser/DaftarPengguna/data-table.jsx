@@ -59,7 +59,8 @@ import {
 } from "@/components/ui/select"
 import NoData from "./nodata";
 import { X } from "lucide-react"
-
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
 
 
@@ -69,97 +70,54 @@ import { X } from "lucide-react"
 // Main component
 const DataTableDemo = () => {
 
-    // data
-    const [data, setData] = useState([
-        {
-            id: "m5gr84i9",
-            name: 'jairo vernandes',
-            role: "Admin",
-            status: "Aktif",
-            email: "ken99@yahoo.com",
-            date: "23 Oktober 2024",
-        },
-        {
-            id: "3u1reuv4",
-            name: 'jairo vernandes',
-            role: "Manager",
-            status: "Aktif",
-            email: "Abe45@gmail.com",
-            date: "23 Oktober 2024",
-        },
-        {
-            id: "derv1ws0",
-            name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Aktif",
-            email: "Monserrat44@gmail.com",
-            date: "23 Oktober 2024",
-        },
-        {
-            id: "5kma53ae",
-            name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "Silas22@gmail.com",
-            date: "23 Oktober 2024",
-        },
-        {
-            id: "bhqecj4p",
-            name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
-            date: "23 Oktober 2024",
-        },
-        {
-            id: "bhqecj4p234",
-            name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
-            date: "23 Oktober 2024",
-        },
-        {
-            id: "bhqecj4p23467",
-            name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
-            date: "23 Oktober 2024",
-        },
-        {
-            id: "bhqecj4p23467g",
-            name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
-            date: "23 Oktober 2024",
-        },
-        {
-            id: "bhqecj4p23467g7",
-            name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
-            date: "23 Oktober 2024",
-        },
-        {
-            id: "bhqecj4p23467g76",
-            name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
-            date: "23 Oktober 2024",
-        },
-        {
-            id: "bhqecj4p23467g76",
-            name: 'jairo vernandes',
-            role: "Kasir",
-            status: "Tidak Aktif",
-            email: "carmella@hotmail.com",
-            date: "23 Oktober 2024",
-        },
-    ]);
+    const [data, setData] = useState([]);
+
+    // Fungsi untuk memformat data API
+    const formatUserData = (apiData) => {
+        return {
+            id: `${apiData.id}`,  // Menambahkan "m" pada ID
+            name: apiData.name,     // Nama pengguna
+            role: apiData.role,     // Peran pengguna
+            status: apiData.status === "Active" ? "Aktif" : apiData.status, // Mengubah status "Active" menjadi "Aktif"
+            email: apiData.email,   // Email pengguna
+            date: new Date(apiData.createdAt).toLocaleDateString('id-ID', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            }) // Format tanggal menjadi format Indonesia
+        };
+    };
+
+    const fetchData = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/users`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+           // Log untuk memastikan data yang diterima
+
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data)) {
+                const formattedData = response.data.map(formatUserData);
+               
+                setData(formattedData);
+                setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+    // Ambil data dari API
+    useEffect(() => {
+    
+        fetchData();
+    }, []);
+    
 
     const DataStatus = [
         { id: "m5gr84i9", name: 'Aktif' },
@@ -167,7 +125,7 @@ const DataTableDemo = () => {
     ];
     const DataRole = [
         { id: "m5gr84i9", name: 'Admin' },
-        { id: "m5gr84i7", name: 'Manajer' },
+        { id: "m5gr84i7", name: 'Manager' },
         { id: "m5gr84i7", name: 'Kasir' },
     ];
 
@@ -188,6 +146,8 @@ const DataTableDemo = () => {
             )
         );
     };
+
+   
 
     // Define columns
     const columns = [
@@ -296,7 +256,7 @@ const DataTableDemo = () => {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleStatusChange(row.id)}> {status === "Aktif" ? "Deactivate" : "Activate"} </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
+                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500" onClick={() => handleDelete(id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -480,6 +440,61 @@ const DataTableDemo = () => {
         setFormData({ ...formData, role: value });
     };
 
+    const handleDelete = async (id) => {
+        const token = localStorage.getItem("token");
+    
+        try {
+          // Send a DELETE request to the API endpoint
+          await axios.delete(`${API_URL}/api/users/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          toast({
+            title: "Sukses!",
+            description: "Pengguna berhasil dihapus.",
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
+        fetchData();
+          console.log(`Data with ID ${id} deleted successfully.`);
+        } catch (error) {
+          console.error("Error deleting data:", error);
+          const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+          toast({
+            variant: "destructive",
+            title: "Error!",
+            description: errorMessage,
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
+        }
+      };
+
+    // filter role
+    const [filtersrole, setFiltersRole] = useState({
+        role: [],
+      });
+    const handleFilterChangerole = (selectedValue) => {
+        setColumnFilters([{ id: 'role', value: selectedValue }]);
+        setFiltersRole({ role: [selectedValue] });
+      };
+      const handleClearFiltersrole = () => {
+        setFiltersRole({ role: [] });  
+        setColumnFilters([]);  
+      };
+    // filter status
+    const [filtersStatus, setFiltersStatus] = useState({
+        status: [],
+      });
+    const handleFilterChangestatus = (selectedValue) => {
+        setColumnFilters([{ id: 'status', value: selectedValue }]);
+        setFiltersStatus({ status: [selectedValue] });
+      };
+      const handleClearFiltersStatus = () => {
+        setFiltersStatus({ status: [] });  
+        setColumnFilters([]);  
+      };
+
     return (
         <div className="w-full grid gap-[16px] mt-[24px]">
             <div className="flex items-center  justify-between">
@@ -500,32 +515,40 @@ const DataTableDemo = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-[184px]">
                             {DataRole.map((role) => (
-                                <DropdownMenuItem key={role.id} className="h-[36px] p-[12px]" >
+                                <DropdownMenuItem key={role.id} className="h-[36px] p-[12px]" onClick={() => handleFilterChangerole(role.name)}>
                                     <Checkbox
                                         className="capitalize"
-                                      
+                                        checked={filtersrole.role.includes(role.name)}
+                                        onCheckedChange={() => handleFilterChangerole(role.name)}
                                     />
                                     <span className="ml-[8px] text-[14px]">{role.name}</span>
                                 </DropdownMenuItem>
                             ))}
+                             <DropdownMenuItem onClick={handleClearFiltersrole} className="h-[36px] font-medium  p-[12px] flex items-center justify-center text-[14px]">
+                                Hapus Filter
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto h-[36px] text-[14px] border-slate-300">
+                            <Button variant="outline" className="ml-auto h-[32px] text-[14px] border-slate-300">
                                 <ChevronDown size={16} className="mr-2" /> Status
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-[184px]">
                             {DataStatus.map((status) => (
-                                <DropdownMenuItem key={status.id} className="h-[36px] p-[12px]" >
+                                <DropdownMenuItem key={status.id} className="h-[36px] p-[12px]" onClick={() => handleFilterChangestatus(status.name)} >
                                     <Checkbox
                                         className="capitalize"
-                                      
+                                        checked={filtersStatus.status.includes(status.name)}
+                                        onCheckedChange={() => handleFilterChangestatus(status.name)}
                                     />
                                     <span className="ml-[8px] text-[14px]">{status.name}</span>
                                 </DropdownMenuItem>
                             ))}
+                             <DropdownMenuItem onClick={handleClearFiltersStatus} className="h-[36px] font-medium  p-[12px] flex items-center justify-center text-[14px]">
+                                Hapus Filter
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
