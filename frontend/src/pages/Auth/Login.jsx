@@ -35,8 +35,10 @@ const Login = () => {
             const userRole = response.data.user.role;
             const info =response.data.message;
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("name", response.data.user.name);
+            localStorage.setItem("email", response.data.user.email);
             
-        
+            
             if (userRole === "Admin") {
               navigate("/admin-panel");
             } else {
