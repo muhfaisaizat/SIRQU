@@ -46,59 +46,8 @@ import ViewTransaksi from "./ViewTransaksi";
 
 
 // Main component
-const DataTableHistory = () => {
-    // data
-    const [data, setData] = useState([
-        {
-            id: "0001",
-            name: 'Alinea',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "Cash",
-            date: "23 Oktober 2024, 13.00",
-        },
-        {
-            id: "0002",
-            name: 'Bayu',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "QRIS",
-            date: "23 Oktober 2024, 13.00",
-        },
-        {
-            id: "0003",
-            name: 'Abimayu',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "Cash",
-            date: "23 Oktober 2024, 13.00",
-        },
-        {
-            id: "0004",
-            name: 'Abimayu',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "QRIS",
-            date: "23 Oktober 2024, 13.00",
-        },
-        {
-            id: "0005",
-            name: 'Abimayu',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "QRIS",
-            date: "23 Oktober 2024, 13.00",
-        },
-        {
-            id: "0006",
-            name: 'Abimayu',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "QRIS",
-            date: "23 Oktober 2024, 13.00",
-        },
-        
-    ]);
+const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataBayar, handleFilterChange, handleClearFilters, filters}) => {
+   
 
     // status
     const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
@@ -183,6 +132,13 @@ const DataTableHistory = () => {
             ),
         },
         {
+            accessorKey: "outlet",
+            header: "",
+            cell: ({ row }) => (
+                <div className="capitalize font-medium">{row.getValue("outlet")}</div>
+            ),
+        },
+        {
             id: "actions",
             enableHiding: false,
             cell: ({ row }) => {
@@ -208,7 +164,7 @@ const DataTableHistory = () => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [sorting, setSorting] = useState([])
-    const [columnFilters, setColumnFilters] = useState([])
+   
     const [columnVisibility, setColumnVisibility] = useState({})
     const [rowSelection, setRowSelection] = useState({})
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });;
@@ -248,21 +204,11 @@ const DataTableHistory = () => {
     })
 
     const totalPages = Math.ceil(data.length / pagination.pageSize);
-    const [filters, setFilters] = useState({
-        bayar: [],
-      });
-    const DataBayar = [
-        { id: "m5gr84i9", name: 'Cash' },
-        { id: "m5gr84i7", name: 'QRIS' },
-    ]
-    const handleFilterChange = (selectedValue) => {
-        setColumnFilters([{ id: 'bayar', value: selectedValue }]);
-        setFilters({ bayar: [selectedValue] });
-      };
-      const handleClearFilters = () => {
-        setFilters({ bayar: [] });  
-        setColumnFilters([]);  
-      };
+  
+
+      useEffect(() => {
+        setColumnVisibility((prev) => ({ ...prev, outlet: false }));
+    }, []);
     
     return (
         <div className="w-full grid gap-[16px] mt-[24px]">
@@ -308,7 +254,7 @@ const DataTableHistory = () => {
                     <DropdownMenuContent align="end" className="w-[184px]">
                         {table
                             .getAllColumns()
-                            .filter((column) => column.getCanHide())
+                            .filter((column) => column.getCanHide()&& column.id !== 'outlet')
                             .map((column) => (
                                 <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]">
                                     <Checkbox

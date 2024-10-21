@@ -15,54 +15,92 @@ import {
     DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { id } from "date-fns/locale";
 
 const Penjualan = () => {
-    const [date, setDate] = useState({
-        from: new Date(),
-        to: addDays(new Date(), 0),
-    });
+     // data
+     const [data, setData] = useState([
+        {
+            id: "0001",
+            name: 'Alinea',
+            item:'Kopi, Taichan Premium, Mi indomie',
+            harga: "5000",
+            bayar: "Cash",
+            date: "01 Oktober 2024, 13.00",
+            outlet: 'Cabang 1',
+        },
+        {
+            id: "0002",
+            name: 'Bayu',
+            item:'Kopi, Taichan Premium, Mi indomie',
+            harga: "5000",
+            bayar: "QRIS",
+            date: "09 Oktober 2024, 13.00",
+            outlet: 'Cabang 2',
+        },
+        {
+            id: "0003",
+            name: 'Putri',
+            item:'Kopi, Taichan Premium, Mi indomie',
+            harga: "5000",
+            bayar: "Cash",
+            date: "21 Oktober 2024, 13.00",
+            outlet: 'Cabang 2',
+        },
+        {
+            id: "0004",
+            name: 'Sasa',
+            item:'Kopi, Taichan Premium, Mi indomie',
+            harga: "5000",
+            bayar: "QRIS",
+            date: "20 Oktober 2024, 13.00",
+            outlet: 'Cabang 1',
+        },
+        {
+            id: "0009",
+            name: 'wawa',
+            item:'Kopi, Taichan Premium, Mi indomie',
+            harga: "5000",
+            bayar: "Cash",
+            date: "20 Oktober 2024, 13.00",
+            outlet: 'Cabang 1',
+        },
+        {
+            id: "0008",
+            name: 'anii',
+            item:'Kopi, Taichan Premium, Mi indomie',
+            harga: "5000",
+            bayar: "Cash",
+            date: "20 Oktober 2024, 13.00",
+            outlet: 'Cabang 1',
+        },
+        {
+            id: "0005",
+            name: 'Abimayu',
+            item:'Kopi, Taichan Premium, Mi indomie',
+            harga: "5000",
+            bayar: "QRIS",
+            date: "10 Oktober 2024, 13.00",
+            outlet: 'Cabang 1',
+        },
+        {
+            id: "0006",
+            name: 'Abimayu',
+            item:'Kopi, Taichan Premium, Mi indomie',
+            harga: "5000",
+            bayar: "QRIS",
+            date: "21 Oktober 2024, 13.00",
+            outlet: 'Cabang 2',
+        },
+        
+    ]);
 
-    const handleToday = () => {
-        const today = new Date();
-        setDate({
-          from: today,
-          to: today,
-        });
-      };
     
-      const handleYesterday = () => {
-        const yesterday = addDays(new Date(), -1);
-        setDate({
-          from: yesterday,
-          to: yesterday,
-        });
-      };
-    
-      const handleThisWeek = () => {
-        const today = new Date();
-        const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 }); // Asumsi minggu mulai dari Senin
-        setDate({
-          from: startOfThisWeek,
-          to: today,
-        });
-      };
-    
-      const handleThisMonth = () => {
-        const today = new Date();
-        const startOfThisMonth = startOfMonth(today);
-        setDate({
-          from: startOfThisMonth,
-          to: today,
-        });
-      };
-    
-      const handleReset = () => {
-        const today = new Date();
-        setDate({
-          from: today,
-          to: today,
-        });
-      };
+
+    const [date, setDate] = useState({
+        from: null,
+        to: addDays(null, 0),
+    });
 
     const DataOutlet = [
         { id: "m5gr84i9", name: 'Cabang 1' },
@@ -70,9 +108,97 @@ const Penjualan = () => {
         { id: "m5gr84i8", name: 'Cabang 3' }
     ];
     const [selectedOutlet, setSelectedOutlet] = useState(DataOutlet[0]);
+    const [filters, setFilters] = useState({ outlet: 'Cabang 1', bayar: [] });
+    const [columnFilters, setColumnFilters] = useState([
+        { id: 'outlet', value:  selectedOutlet.name },
+        { id: 'bayar', value: [] },
+        { id: 'date', value: [] },
+    ]);
+
+    const handleDateFilterChange = (from, to) => {
+        setDate({ from, to });
+        setColumnFilters((prev) => {
+            const existingFilters = prev.filter(filter => filter.id !== 'date');
+            return [...existingFilters, { id: 'date', value: format(from, "dd MMMM y", { locale: id }) }];
+        });
+    };
+
+    const handleDateSelect = (selectedDate) => {
+        const { from, to } = selectedDate;
+        handleDateFilterChange(from, to);
+    };
+
+    const handleToday = () => {
+        const today = new Date();
+        handleDateFilterChange(today);
+      };
+    
+      const handleYesterday = () => {
+        const yesterday = addDays(new Date(), -1);
+        handleDateFilterChange(yesterday);
+      };
+    
+      const handleThisWeek = () => {
+        const today = new Date();
+        const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 }); // Asumsi minggu mulai dari Senin
+        handleDateFilterChange(startOfThisWeek, today);
+      };
+    
+      const handleThisMonth = () => {
+        const today = new Date();
+        const startOfThisMonth = startOfMonth(today);
+        handleDateFilterChange(startOfThisMonth, today);
+      };
+    
+      const handleReset = () => {
+        setDate({
+            from: null,
+            to: null,
+        });
+        setColumnFilters((prevFilters) => {
+            return prevFilters.filter(filter => filter.id !== 'date');
+        });
+      };
+   
+    const DataBayar = [
+        { id: "m5gr84i9", name: 'Cash' },
+        { id: "m5gr84i7", name: 'QRIS' },
+    ]
     const handleSelectOutlet = (outlet) => {
         setSelectedOutlet(outlet);
+        const newFilters = { ...filters, outlet: outlet.name };
+        setFilters(newFilters);
+        setColumnFilters((prev) => {
+            const existingFilters = prev.filter(filter => filter.id !== 'outlet');
+            return [...existingFilters, { id: 'outlet', value: outlet.name }];
+        });
     };
+    const handleFilterChange = (selectedValue) => {
+        const newFilters = { ...filters, bayar: [selectedValue] };
+        setFilters(newFilters);
+        setColumnFilters((prev) => {
+            const existingFilters = prev.filter(filter => filter.id !== 'bayar');
+            return [...existingFilters, { id: 'bayar', value: [selectedValue] }];
+        });
+      };
+      const handleClearFilters = () => {
+        setFilters({ outlet: selectedOutlet.name, bayar: [] });  
+        setColumnFilters(prevFilters => {
+            const newFilters = [
+                { id: 'outlet', value: selectedOutlet.name },
+                { id: 'bayar', value: [] }
+            ];
+    
+            // Jika filter tanggal sudah ada, tetap tambahkan filter tanggal yang sama
+            const dateFilter = prevFilters.find(filter => filter.id === 'date');
+            if (dateFilter) {
+                newFilters.push(dateFilter); // Menambahkan filter tanggal yang ada
+            }
+    
+            return newFilters; // Mengembalikan array filter yang baru
+        });
+      };
+
 
 
     return (
@@ -91,13 +217,13 @@ const Penjualan = () => {
                                 {date?.from ? (
                                     date.to ? (
                                         <>
-                                            {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+                                            {format(date.from, "dd LLL y", { locale: id })} - {format(date.to, "dd LLL y", { locale: id })}
                                         </>
                                     ) : (
-                                        format(date.from, "LLL dd, y")
+                                        format(date.from, "dd LLL y", { locale: id })
                                     )
                                 ) : (
-                                    <span>Pick a date</span>
+                                    <span>Pilih tanggal</span>
                                 )}
                             </Button>
                         </PopoverTrigger>
@@ -116,7 +242,7 @@ const Penjualan = () => {
                                 mode="range"
                                 defaultMonth={date?.from}
                                 selected={date}
-                                onSelect={setDate}
+                                onSelect={handleDateSelect}
                                 numberOfMonths={1}
                             />
                         </PopoverContent>
@@ -144,7 +270,7 @@ const Penjualan = () => {
                     </DropdownMenu>
                 </div>
             </div>
-            <DataTableHistory />
+            <DataTableHistory data={data} setData={setData} columnFilters={columnFilters} setColumnFilters={setColumnFilters} filters={filters} DataBayar={DataBayar} handleFilterChange={handleFilterChange} handleClearFilters={handleClearFilters}/>
         </div>
     );
 };
