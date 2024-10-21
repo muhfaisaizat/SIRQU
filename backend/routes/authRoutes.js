@@ -88,7 +88,7 @@ router.post('/login', login);
  *               email:
  *                 type: string
  *                 format: email
- *                 example: user@example.com
+ *                 example: user@gmail.com
  *     responses:
  *       200:
  *         description: Reset link sent to email.
@@ -115,10 +115,10 @@ router.post('/forgot-password', forgotPassword);
  *             properties:
  *               token:
  *                 type: string
- *                 example: your-reset-token
+ *                 example: token
  *               newPassword:
  *                 type: string
- *                 example: newPassword123
+ *                 example: Newpassword123
  *     responses:
  *       200:
  *         description: Password has been reset.

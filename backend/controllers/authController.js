@@ -4,13 +4,37 @@ const User = require("../models/user");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+
+// Extend dayjs dengan plugin utc dan timezone
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+function getAdjustedDate() {
+  const currentDate = new Date();
+  const timezoneOffsetMillis = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
+  return new Date(currentDate.getTime() + timezoneOffsetMillis);
+}
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Fungsi register
 exports.register = async (req, res) => {
-  console.log("Register function called"); // Tambahkan log ini
   const { name, email, password, role } = req.body;
+
+  // Regex untuk memvalidasi password harus huruf kapital di depan dan ada angka di belakang
+  const passwordRegex = /^[A-Z].*\d$/;
+
+  // Validasi format password
+  if (!passwordRegex.test(password)) {
+    console.log("Password tidak valid:", password);
+    return res.status(400).json({
+      message:
+        "Password harus diawali dengan huruf kapital dan diakhiri dengan angka.",
+    });
+  }
 
   try {
     // Memeriksa apakah email sudah ada
@@ -29,23 +53,33 @@ exports.register = async (req, res) => {
       password: hashedPassword, // Simpan hashed password
       role,
       status: "Active",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: getAdjustedDate(),
+      updatedAt: getAdjustedDate(),
     });
 
     return res.status(201).json({
       message: "User registered successfully",
-      user: { ...user.dataValues, password: undefined },
+      user: { ...user.dataValues, password: undefined }, // Jangan return password ke client
     });
   } catch (error) {
     console.error("Error registering user:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 // Fungsi login
 exports.login = async (req, res) => {
   const { email, password } = req.body;
+
+  // Regex untuk memvalidasi password harus huruf kapital di depan dan ada angka di belakang
+  const passwordRegex = /^[A-Z].*\d$/;
+
+  // Validasi format password
+  if (!passwordRegex.test(password)) {
+    return res.status(400).json({
+      message:
+        "Password harus diawali dengan huruf kapital dan diakhiri dengan angka.",
+    });
+  }
 
   try {
     const user = await User.findOne({ where: { email } });
@@ -69,14 +103,14 @@ exports.login = async (req, res) => {
     return res.status(200).json({
       message: "Login successful",
       token,
-      user: { ...user.dataValues, password: undefined },
-    }); // Hapus password dari response
+      user: { ...user.dataValues, password: undefined }, // Hapus password dari response
+    });
   } catch (error) {
     console.error("Error logging in:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
+// Fungsi Forgot Password
 exports.forgotPassword = async (req, res) => {
   console.log("Forgot password request received:", req.body);
   const { email } = req.body;
@@ -88,9 +122,10 @@ exports.forgotPassword = async (req, res) => {
     }
 
     // Generate a 4-digit reset token
-    const resetToken = Math.floor(1000 + Math.random() * 9000).toString(); // Hasilkan angka acak 4 digit
+    const resetToken = Math.floor(100000 + Math.random() * 900000).toString(); // kode 6 digit
     user.ResetPasswordToken = resetToken;
-    user.ResetTokenExpires = Date.now() + 3 * 60 * 1000; // Token berlaku selama 3 menit
+    const adjustedDate = getAdjustedDate();
+    user.ResetTokenExpires = new Date(adjustedDate.getTime() + 3 * 60 * 1000); // Token berlaku selama 3 menit
     await user.save();
 
     // Setup Nodemailer
@@ -106,7 +141,7 @@ exports.forgotPassword = async (req, res) => {
 
     // const resetUrl = `http://localhost:5000/api/auth/reset-password?token=${resetToken}`;
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: `"SIRQU" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Password Reset",
       html: `<p>You requested a password reset. Your reset token is: <strong style="font-size: 24px;">${resetToken}</strong>. It is valid for 3 minutes.</p>`,
@@ -118,30 +153,60 @@ exports.forgotPassword = async (req, res) => {
     res.status(500).json({ message: "Server error." });
   }
 };
-
+// Fungsi Reset Password
 exports.resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 
+  // Regex untuk memvalidasi password
+  const passwordRegex = /^[A-Z].*\d$/;
+
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(400).json({
+      message: "Password harus diawali dengan huruf kapital dan diakhiri dengan angka.",
+    });
+  }
+
   try {
+    const adjustedDate = getAdjustedDate();
+
     const user = await User.findOne({
       where: {
         ResetPasswordToken: token,
-        ResetTokenExpires: { [Op.gt]: Date.now() }, // Memeriksa apakah token masih berlaku
+        ResetTokenExpires: { [Op.gt]: adjustedDate }, // Memeriksa apakah token masih berlaku
       },
     });
 
-    if (!user) {
-      return res.status(400).json({ message: "Invalid or expired token." });
+    if (user) {
+      console.log("ResetTokenExpires:", user.ResetTokenExpires);
+      console.log("Adjusted Date:", adjustedDate);
     }
 
-    user.password = await argon2.hash(newPassword); // Ganti password baru
-    user.ResetPasswordToken = null; // Reset token
-    user.ResetTokenExpires = null; // Reset expiry
-    await user.save();
+    if (!user) {
+      console.log("User tidak ditemukan atau token kadaluarsa.");
+      return res.status(400).json({ message: "Invalid or expired token." });
+    } else {
+      console.log("User ditemukan:", user);
+    }
 
-    res.status(200).json({ message: "Password has been reset." });
+    const hashedPassword = await argon2.hash(newPassword);
+
+    await User.update(
+      {
+        password: hashedPassword,
+        ResetPasswordToken: null,
+        ResetTokenExpires: null,
+        updatedAt: adjustedDate,
+      },
+      {
+        where: { id: user.id },
+      }
+    );
+
+    res.status(200).json({ message: "Password berhasil direset." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error." });
+    res.status(500).json({ message: "Terjadi kesalahan server." });
   }
 };
+
+
