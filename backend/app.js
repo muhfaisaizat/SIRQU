@@ -13,6 +13,7 @@ const transaksiRoutes = require('./routes/transaksiRoutes');
 const detailTransaksiRoutes = require('./routes/detailTransaksiRoutes');
 const detailPajak = require('./routes/detailPajak');
 const detailDiskonRoutes = require('./routes/detailDiskonRoutes');
+const kasirRoutes = require('./routes/kasirRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 
@@ -47,6 +48,7 @@ app.use('/api/transaksi/detail', detailTransaksiRoutes);
 app.use('/api/transaksi/detail-pajak', detailPajak);
 app.use('/api/transaksi/detail-diskon', detailDiskonRoutes);
 app.use('/api/transaksi', transaksiRoutes);
+app.use('/api/kasir', kasirRoutes);
 
 
 // Swagger Documentation
