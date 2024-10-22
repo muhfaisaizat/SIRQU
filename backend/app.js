@@ -9,6 +9,10 @@ const categoryOutletRoutes = require('./routes/categoryOutletRoutes');
 const productRoutes = require('./routes/productRoutes');
 const productCategoryRoutes = require('./routes/productCategoryRoutes');
 const productOutletRoutes = require('./routes/productOutletRoutes');
+const transaksiRoutes = require('./routes/transaksiRoutes');
+const detailTransaksiRoutes = require('./routes/detailTransaksiRoutes');
+const detailPajak = require('./routes/detailPajak');
+const detailDiskonRoutes = require('./routes/detailDiskonRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 
@@ -39,6 +43,11 @@ app.use('/api/categories/outlets', categoryOutletRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/product/categories', productCategoryRoutes);
 app.use('/api/products/outlets', productOutletRoutes);
+app.use('/api/transaksi/detail', detailTransaksiRoutes);
+app.use('/api/transaksi/detail-pajak', detailPajak);
+app.use('/api/transaksi/detail-diskon', detailDiskonRoutes);
+app.use('/api/transaksi', transaksiRoutes);
+
 
 // Swagger Documentation
 swaggerDocs(app);

@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Membuat tabel 'outlets'
-    await queryInterface.createTable('detail_diskon', {
+    await queryInterface.createTable('detail_diskons', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -12,7 +12,7 @@ module.exports = {
       transaksi_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'transaksi', // Referensi ke tabel categories
+          model: 'transaksis', // Referensi ke tabel categories
           key: 'id'
         },
         onDelete: 'CASCADE', // Jika product dihapus, hapus juga data di tabel junction
@@ -22,7 +22,7 @@ module.exports = {
       diskon_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'diskon', // Referensi ke tabel categories
+          model: 'diskons', // Referensi ke tabel categories
           key: 'id'
         },
         onDelete: 'CASCADE', // Jika product dihapus, hapus juga data di tabel junction
@@ -49,6 +49,6 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
     // Menghapus tabel 'outlets'
-    await queryInterface.dropTable('detail_diskon');
+    await queryInterface.dropTable('detail_diskons');
   }
 };

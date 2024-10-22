@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Membuat tabel 'product_outlets' sebagai junction table
-    await queryInterface.createTable('transaksi', {
+    await queryInterface.createTable('transaksis', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -80,6 +80,6 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
     // Menghapus tabel 'product_outlets'
-    await queryInterface.dropTable('transaksi');
+    await queryInterface.dropTable('transaksis');
   }
 };
