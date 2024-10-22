@@ -9,6 +9,7 @@ const categoryOutletRoutes = require('./routes/categoryOutletRoutes');
 const productRoutes = require('./routes/productRoutes');
 const productCategoryRoutes = require('./routes/productCategoryRoutes');
 const productOutletRoutes = require('./routes/productOutletRoutes');
+const kasirRoutes = require('./routes/kasirRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 
@@ -39,6 +40,7 @@ app.use('/api/categories/outlets', categoryOutletRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/product/categories', productCategoryRoutes);
 app.use('/api/products/outlets', productOutletRoutes);
+app.use('/api/kasir', kasirRoutes);
 
 // Swagger Documentation
 swaggerDocs(app);
