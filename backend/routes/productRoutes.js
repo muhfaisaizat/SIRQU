@@ -50,54 +50,54 @@ const productController = require('../controllers/productController');
  */
 router.post('/', productController.createProduct);
 
-/**
- * @swagger
- * /api/products:
- *   get:
- *     summary: Dapatkan semua produk
- *     tags: [Products]
- *     responses:
- *       200:
- *         description: Daftar produk
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     description: ID produk
- *                   name:
- *                     type: string
- *                     description: Nama produk
- *                   description:
- *                     type: string
- *                     description: Deskripsi produk
- *                   price:
- *                     type: number
- *                     description: Harga produk
- *                   stock:
- *                     type: integer
- *                     description: Jumlah produk dalam stok
- *                   unlimited_stock:
- *                     type: boolean
- *                     description: Apakah produk memiliki stok tak terbatas
- *                   createdAt:
- *                     type: string
- *                     format: date-time
- *                     description: Waktu ketika produk dibuat
- *                   updatedAt:
- *                     type: string
- *                     format: date-time
- *                     description: Waktu ketika produk terakhir diperbarui
- *                   deletedAt:
- *                     type: string
- *                     format: date-time
- *                     description: Waktu ketika produk dihapus (jika ada)
- */
-router.get('/', productController.getAllProducts);
+// /**
+//  * @swagger
+//  * /api/products:
+//  *   get:
+//  *     summary: Dapatkan semua produk
+//  *     tags: [Products]
+//  *     responses:
+//  *       200:
+//  *         description: Daftar produk
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               type: array
+//  *               items:
+//  *                 type: object
+//  *                 properties:
+//  *                   id:
+//  *                     type: integer
+//  *                     description: ID produk
+//  *                   name:
+//  *                     type: string
+//  *                     description: Nama produk
+//  *                   description:
+//  *                     type: string
+//  *                     description: Deskripsi produk
+//  *                   price:
+//  *                     type: number
+//  *                     description: Harga produk
+//  *                   stock:
+//  *                     type: integer
+//  *                     description: Jumlah produk dalam stok
+//  *                   unlimited_stock:
+//  *                     type: boolean
+//  *                     description: Apakah produk memiliki stok tak terbatas
+//  *                   createdAt:
+//  *                     type: string
+//  *                     format: date-time
+//  *                     description: Waktu ketika produk dibuat
+//  *                   updatedAt:
+//  *                     type: string
+//  *                     format: date-time
+//  *                     description: Waktu ketika produk terakhir diperbarui
+//  *                   deletedAt:
+//  *                     type: string
+//  *                     format: date-time
+//  *                     description: Waktu ketika produk dihapus (jika ada)
+//  */
+// router.get('/', productController.getAllProducts);
 
 /**
  * @swagger
@@ -180,5 +180,67 @@ router.put('/:id', productController.updateProduct);
  *         description: Produk tidak ditemukan
  */
 router.delete('/:id', productController.deleteProduct);
+
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Get Product Menu
+ *     description: Retrieve a list of products with their details and associated categories and outlets.
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: A list of products with categories and outlets
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id_product:
+ *                     type: integer
+ *                     description: The product ID
+ *                   nama_product:
+ *                     type: string
+ *                     description: The name of the product
+ *                   deskripsi_product:
+ *                     type: string
+ *                     description: Description of the product
+ *                   stok_product:
+ *                     type: integer
+ *                     description: Stock quantity of the product
+ *                   unlimited_stock:
+ *                     type: boolean
+ *                     description: Indicates if the product has unlimited stock
+ *                   harga_product:
+ *                     type: number
+ *                     format: float
+ *                     description: Price of the product
+ *                   id_category:
+ *                     type: integer
+ *                     description: The ID of the category associated with the product
+ *                   nama_category:
+ *                     type: string
+ *                     description: The name of the category associated with the product
+ *                   id_outlet:
+ *                     type: integer
+ *                     description: The ID of the outlet associated with the product
+ *                   nama_outlet:
+ *                     type: string
+ *                     description: The name of the outlet
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message
+ */
+router.get('/', productController.getProducts);
+
 
 module.exports = router;

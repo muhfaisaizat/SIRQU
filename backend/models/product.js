@@ -2,7 +2,23 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-class Product extends Model {}
+class Product extends Model {
+  static associate(models) {
+    // Relasi dengan tabel productCategory
+    Product.belongsToMany(models.Category, {
+      through: models.ProductCategory,
+      foreignKey: 'product_id',
+      otherKey: 'category_id',
+    });
+
+    // Relasi dengan tabel productOutlet
+    Product.belongsToMany(models.Outlet, {
+      through: models.ProductOutlet,
+      foreignKey: 'product_id',
+      otherKey: 'outlet_id',
+    });
+  }
+}
 
 Product.init({
   name: {
@@ -32,13 +48,13 @@ Product.init({
   paranoid: true,
 });
 
-// Definisikan relasi
-Product.associate = (models) => {
-  Product.belongsToMany(models.Category, {
-    through: models.ProductCategory,
-    foreignKey: 'product_id',
-    otherKey: 'category_id',
-  });
-};
+// // Definisikan relasi
+// Product.associate = (models) => {
+//   Product.belongsToMany(models.Category, {
+//     through: models.ProductCategory,
+//     foreignKey: 'product_id',
+//     otherKey: 'category_id',
+//   });
+// };
 
 module.exports = Product;

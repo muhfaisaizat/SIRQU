@@ -43,7 +43,7 @@ ProductOutlet.init({
 }, {
   sequelize,
   modelName: 'ProductOutlet',
-  tableName: 'products_outlets',
+  tableName: 'product_outlets',
   timestamps: true,
   paranoid: true,
 });
