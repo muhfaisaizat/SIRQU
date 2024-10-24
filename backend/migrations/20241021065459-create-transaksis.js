@@ -46,6 +46,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true 
       },
+      ket_bayar: {
+        type: Sequelize.STRING,
+        allowNull: true 
+      },
       sub_total: {
         type: Sequelize.INTEGER,
         defaultValue: 0

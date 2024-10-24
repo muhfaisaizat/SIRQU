@@ -3,7 +3,7 @@ const sequelize = require('../config/database');
 
 exports.createTransaksi = async (req, res) => {
   try {
-    const { outlet_id, kasir_id, tipe_order, name, catatan, tipe_bayar, sub_total, total, bayar, kembalian } = req.body;
+    const { outlet_id, kasir_id, tipe_order, name, catatan, tipe_bayar, ket_bayar, sub_total, total, bayar, kembalian } = req.body;
 
     // Buat transaksi baru
     const newTransaksi = await Transaksi.create({
@@ -13,6 +13,7 @@ exports.createTransaksi = async (req, res) => {
       name: name || undefined, // Gunakan default jika name kosong, hook akan mengisi
       catatan: catatan,
       tipe_bayar: tipe_bayar,
+      ket_bayar: ket_bayar,
       sub_total: sub_total,
       total: total,
       bayar: bayar,
@@ -38,7 +39,7 @@ exports.createTransaksi = async (req, res) => {
 
 exports.updateTransaksi = async (req, res) => {
   const { id } = req.params;
-  const { outlet_id, kasir_id, tipe_order, name, catatan, tipe_bayar, sub_total, total, bayar, kembalian } = req.body;
+  const { outlet_id, kasir_id, tipe_order, name, catatan, tipe_bayar, ket_bayar, sub_total, total, bayar, kembalian } = req.body;
 
   try {
     // Cari transaksi berdasarkan id
@@ -59,6 +60,7 @@ exports.updateTransaksi = async (req, res) => {
       name: name || undefined, // Gunakan default jika name kosong
       catatan: catatan,
       tipe_bayar: tipe_bayar,
+      ket_bayar: ket_bayar,
       sub_total: sub_total,
       total: total,
       bayar: bayar,
@@ -120,6 +122,7 @@ exports.readTransaksi = async (req, res) => {
         t.name AS transaksi_name,
         t.catatan,
         t.tipe_bayar,
+        t.ket_bayar,
         t.sub_total,
         t.total,
         t.bayar,
@@ -230,6 +233,7 @@ exports.readTransaksibyid = async (req, res) => {
         t.name AS transaksi_name,
         t.catatan,
         t.tipe_bayar,
+        t.ket_bayar,
         t.sub_total,
         t.total,
         t.bayar,
@@ -340,6 +344,7 @@ exports.readTransaksiDate = async (req, res) => {
         t.name AS transaksi_name,
         t.catatan,
         t.tipe_bayar,
+        t.ket_bayar,
         t.sub_total,
         t.total,
         t.bayar,

@@ -65,6 +65,10 @@ Transaksi.init({
     type: DataTypes.STRING,
     allowNull: true,
   },
+  ket_bayar: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   sub_total: {
     type: DataTypes.INTEGER,
     defaultValue: 0,

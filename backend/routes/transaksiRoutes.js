@@ -39,6 +39,9 @@ const router = express.Router();
  *               tipe_bayar:
  *                 type: string
  *                 description: Tipe pembayaran (misalnya "Cash", "Card", dll.)
+ *               ket_bayar:
+ *                 type: string
+ *                 description: Keterangan pembayaran 
  *               sub_total:
  *                 type: integer
  *                 description: Sub total transaksi sebelum diskon atau pajak
@@ -105,6 +108,9 @@ router.post('/',roleMiddleware(['Admin','Manager','Kasir']),createTransaksi);
  *               tipe_bayar:
  *                 type: string
  *                 description: Tipe pembayaran (misalnya "Cash", "Card", dll.)
+ *               ket_bayar:
+ *                 type: string
+ *                 description: Keterangan pembayaran 
  *               sub_total:
  *                 type: integer
  *                 description: Sub total transaksi sebelum diskon atau pajak

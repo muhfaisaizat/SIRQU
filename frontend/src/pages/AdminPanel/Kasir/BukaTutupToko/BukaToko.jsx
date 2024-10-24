@@ -4,8 +4,12 @@ import { Shop } from 'iconsax-react';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from "@/components/ui/toast";
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
-const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, namaToko }) => {
+const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, idOutlet, namaToko }) => {
+    const iduser = localStorage.getItem("id");
+    const nama = localStorage.getItem("name");
     const [contenstep, setcontenstep] = useState(0);
     const { toast } = useToast();
     const handelcontent = () => {
@@ -31,8 +35,8 @@ const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, namaToko }) => {
     };
 
 
-    const handlecekError = () => {
-
+    const handlecekError = async (e) => {
+        e.preventDefault();
         if (!uang) {
             toast({
                 variant: "destructive",
@@ -42,16 +46,40 @@ const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, namaToko }) => {
             });
             return;
         }
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.post(`${API_URL}/api/kasir`, {
+                outlet_id: idOutlet,
+                user_id: iduser,
+                uangModal: uang  
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-        toast({
-            title: "Sukses!",
-            description: `Toko berhasil dibuka.`,
-            action: <ToastAction altText="Try again">Cancel</ToastAction>,
-        });
+            toast({
+                title: "Sukses!",
+                description: `Toko berhasil dibuka.`,
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+    
+           
+            setIsDialogOpen(false);
+            Buka();
+           
+          } catch (error) {
+            console.error("Login failed:", error);
+            const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+            toast({
+                variant: "destructive",
+                title: "Buka Toko Failed",
+                description: errorMessage,  // Pesan error dari response atau fallback
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+          }
 
        
-        setIsDialogOpen(false);
-        Buka();
     }
 
 
@@ -69,7 +97,7 @@ const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, namaToko }) => {
                     <div className="border p-[17px] rounded-[8px] grid gap-[12px] justify-items-center">
                         <Shop size={40} variant="Bold" />
                         <h2 className="text-[18px] font-semibold">Silahkan buka toko anda terlebih dahulu</h2>
-                        <p className="text-[14px] text-slate-500">Anda [Admin name] akan melakukan buka pada kasir [{namaToko}]</p>
+                        <p className="text-[14px] text-slate-500">Anda [{nama}] akan melakukan buka pada kasir [{namaToko}]</p>
                         <Button onClick={handelcontent} className="text-[14px] h-[36px]">Buka Toko</Button>
                     </div>
                 </div>

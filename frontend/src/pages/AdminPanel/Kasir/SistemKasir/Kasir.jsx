@@ -4,6 +4,9 @@ import Menu from './Menu'
 import Order from './Order'
 import BukaToko from '../BukaTutupToko/BukaToko'
 import TutupToko from '../BukaTutupToko/TutupToko'
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
+import dayjs from "dayjs";
 
 const Kasir = () => {
   const [DetailOrder, setDetailOrder] = useState([]);
@@ -17,7 +20,6 @@ const Kasir = () => {
   const [taxtdata, setTaxdata] = useState(0);
   const [orderDiskon, setOrderDiskon] = useState(0);
   const [textButton, setTextButton] = useState('Bayar');
-  const [isDialogOpen, setIsDialogOpen] = useState(true);
   const [isDialogOpentutup, setIsDialogOpentutup] = useState(false);
   const [tanggalSekarang, setTanggalSekarang] = useState('');
   const [waktuSekarang, setWaktuSekarang] = useState('');
@@ -25,9 +27,51 @@ const Kasir = () => {
   const [waktuTutup, setWaktuTutup] = useState('');
   const [uang, setUang] = useState('');
   const [item, setItem] = useState(0);
-  const [pendapatanKotor, setPendapatanKotor]= useState(0);
-  const [pendapatanBersih, setPendapatanBersih]= useState(0);
-  const [namaToko, setnamaToko]=useState('');
+  const [pendapatanKotor, setPendapatanKotor] = useState(0);
+  const [pendapatanBersih, setPendapatanBersih] = useState(0);
+  const [namaToko, setnamaToko] = useState('');
+  const [idOutlet, setIdOutlet] = useState('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+
+  const fetchData = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(`${API_URL}/api/kasir`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("buka tanggal:", response.data); 
+      const today = dayjs().startOf("day"); // Dapatkan tanggal hari ini tanpa jam
+
+      // Loop melalui semua data dalam response.data
+      const isAnyKasirOpenToday = response.data.length === 0 || response.data.some((kasir) => {
+        const waktuBuka = kasir.waktuBuka;
+        const waktuTutup = kasir.waktuTutup;
+    
+        // Cek apakah waktuBuka adalah hari ini
+        if (dayjs(waktuBuka).isSame(today, "day")) {
+            // Jika waktuBuka adalah hari ini, cek apakah waktuTutup ada
+            if (waktuTutup) {
+                return true; // Jika waktuTutup terisi, dialog dibuka
+            } else {
+                return false; // Jika waktuTutup tidak terisi, dialog tidak akan dibuka
+            }
+        }
+        return false; // Jika tidak ada waktu buka pada hari ini, lanjutkan
+    });
+
+      // Set dialog terbuka atau tertutup berdasarkan hasil pencarian
+      setIsDialogOpen(isAnyKasirOpenToday);
+    } catch (error) {
+      console.error("Error fetching data", error);
+    }
+  };
+  // Ambil data dari API
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -137,7 +181,7 @@ const Kasir = () => {
   return (
     <div className='w-full h-full flex bg-slate-100'>
       <ScrollArea className='w-[72.8%] h-[100%]'>
-        <Menu setDetailOrder={setDetailOrder} DaftarOrder={DaftarOrder} handleSelectChange={handleSelectChange} setViewOrder={setViewOrder} isDialogOpen={isDialogOpentutup} setIsDialogOpen={setIsDialogOpentutup} setnamaToko={setnamaToko} setIsDialogOpenbukatoko={setIsDialogOpen}  setuangModal={setUang}/>
+        <Menu setDetailOrder={setDetailOrder} DaftarOrder={DaftarOrder} handleSelectChange={handleSelectChange} setViewOrder={setViewOrder} isDialogOpen={isDialogOpentutup} setIsDialogOpen={setIsDialogOpentutup} setIdOutlet={setIdOutlet} setnamaToko={setnamaToko} setIsDialogOpenbukatoko={setIsDialogOpen} setuangModal={setUang} />
       </ScrollArea>
       <div className='w-[27.2%] h-[100%] bg-white border-l'>
         <Order
@@ -163,10 +207,10 @@ const Kasir = () => {
         />
       </div>
       {isDialogOpen && (
-        <BukaToko setIsDialogOpen={setIsDialogOpen} Buka={Buka} uang={uang} setUang={setUang} namaToko={namaToko}  />
+        <BukaToko setIsDialogOpen={setIsDialogOpen} Buka={Buka} uang={uang} setUang={setUang} idOutlet={idOutlet} namaToko={namaToko} />
       )}
       {isDialogOpentutup && (
-        <TutupToko setIsDialogOpentutup={setIsDialogOpentutup} waktuBuka={waktuBuka} uang={uang} waktuTutup={waktuTutup} Tutup={Tutup} item={item} pendapatanKotor={pendapatanKotor} pendapatanBersih={pendapatanBersih} setUang={setUang} setIsDialogOpenbuka={setIsDialogOpen}/>
+        <TutupToko setIsDialogOpentutup={setIsDialogOpentutup} waktuBuka={waktuBuka} uang={uang} waktuTutup={waktuTutup} Tutup={Tutup} item={item} pendapatanKotor={pendapatanKotor} pendapatanBersih={pendapatanBersih} setUang={setUang} setIsDialogOpenbuka={setIsDialogOpen} />
       )}
     </div>
   )
