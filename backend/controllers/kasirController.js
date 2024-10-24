@@ -1,7 +1,8 @@
 const Kasir = require('../models/kasir'); // Pastikan path ini benar
 const Outlet = require('../models/outlet');
 const User = require('../models/user');
-const moment = require('moment'); // Import moment.js for date formatting
+const moment = require('moment-timezone'); // Import moment-timezone
+// const { Sequelize } = require('sequelize'); // Untuk menggunakan Sequelize literal (NOW)
 
 // Mendapatkan semua data kasir
 exports.getAllKasir = async (req, res) => {
@@ -28,8 +29,8 @@ exports.getAllKasir = async (req, res) => {
       user_name: kasir.User.name,
       user_role: kasir.User.role,
       uangModal: kasir.uangModal,
-      waktuBuka: kasir.waktuBuka,
-      waktuTutup: kasir.waktuTutup,
+      waktuBuka: moment(kasir.waktuBuka).tz('Asia/Jakarta').format('DD-MM-YY HH:mm:ss'), // Format dengan timezone Asia/Jakarta
+      waktuTutup: kasir.waktuTutup ? moment(kasir.waktuTutup).tz('Asia/Jakarta').format('DD-MM-YY HH:mm:ss') : null, // Format waktuTutup jika ada
       itemTerjual: kasir.itemTerjual,
       totalKotor: kasir.totalKotor,
       totalBersih: kasir.totalBersih,
@@ -73,8 +74,8 @@ exports.getKasirById = async (req, res) => {
       user_name: kasir.User.name,
       user_role: kasir.User.role,
       uangModal: kasir.uangModal,
-      waktuBuka: kasir.waktuBuka,
-      waktuTutup: kasir.waktuTutup,
+      waktuBuka: moment(kasir.waktuBuka).tz('Asia/Jakarta').format('DD-MM-YY HH:mm:ss'), // Format dengan timezone Asia/Jakarta
+      waktuTutup: kasir.waktuTutup ? moment(kasir.waktuTutup).tz('Asia/Jakarta').format('DD-MM-YY HH:mm:ss') : null, // Format waktuTutup jika ada
       itemTerjual: kasir.itemTerjual,
       totalKotor: kasir.totalKotor,
       totalBersih: kasir.totalBersih,
@@ -90,17 +91,17 @@ exports.getKasirById = async (req, res) => {
 // POST /api/kasir
 // Menambahkan kasir baru
 exports.createKasir = async (req, res) => {
-  const { outlet_id, user_id, uangModal, waktuBuka, waktuTutup } = req.body;
+  const { outlet_id, user_id, uangModal } = req.body;
 
   try {
     // Validasi input
-    if (!outlet_id || !user_id || !waktuBuka) {
+    if (!outlet_id || !user_id) {
       return res.status(400).json({ error: 'Field harus diisi' });
     }
 
     // Format waktuBuka dan waktuTutup ke format datetime MySQL
-    const formattedWaktuBuka = moment(waktuBuka).format('YYYY-MM-DD HH:mm:ss');
-    const formattedWaktuTutup = moment(waktuTutup).format('YYYY-MM-DD HH:mm:ss');
+    // const formattedWaktuBuka = moment(waktuBuka).format('DD-MM-YYY HH:mm:ss');
+    // const formattedWaktuTutup = moment(waktuTutup).format('DD-MM-YYY HH:mm:ss');
 
     // Cek apakah outlet dan user yang diberikan ada
     const outlet = await Outlet.findByPk(outlet_id);
@@ -119,8 +120,8 @@ exports.createKasir = async (req, res) => {
       outlet_id,
       user_id,
       uangModal,
-      waktuBuka: formattedWaktuBuka, // Gunakan nilai yang diformat
-      waktuTutup: formattedWaktuTutup, // Gunakan nilai yang diformat
+      waktuBuka: moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'), // Waktu saat ini dengan timezone Jakarta
+      waktuTutup: null, // Waktu tutup diset null
       itemTerjual: 0, // Nilai default
       totalKotor: 0.0, // Nilai default
       totalBersih: 0.0, // Nilai default
@@ -140,7 +141,7 @@ exports.createKasir = async (req, res) => {
 // PUT /api/kasir/:id
 exports.updateKasir = async (req, res) => {
     const { id } = req.params;
-    const { waktuTutup, itemTerjual, totalKotor, totalBersih } = req.body;
+    const { itemTerjual, totalKotor, totalBersih } = req.body;
   
     try {
       const kasir = await Kasir.findByPk(id);
@@ -149,10 +150,10 @@ exports.updateKasir = async (req, res) => {
       }
   
       // Format waktuTutup to MySQL datetime format
-      const formattedWaktuTutup = moment(waktuTutup).format('YYYY-MM-DD HH:mm:ss');
+      // const formattedWaktuTutup = moment(waktuTutup).format('YYYY-MM-DD HH:mm:ss');
   
       // Update the properties
-      kasir.waktuTutup = formattedWaktuTutup; // Use formatted value
+      kasir.waktuTutup = moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'); // Set waktuTutup sekarang
       kasir.itemTerjual = itemTerjual;
       kasir.totalKotor = totalKotor;
       kasir.totalBersih = totalBersih;

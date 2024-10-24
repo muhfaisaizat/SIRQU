@@ -65,12 +65,6 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), kasirController.getKasi
  *                 type: integer
  *               uangModal:
  *                 type: number
- *               waktuBuka:
- *                 type: string
- *                 format: date-time
- *               waktuTutup:
- *                 type: string
- *                 format: date-time
  *     responses:
  *       201:
  *         description: Data kasir berhasil dibuat
@@ -101,9 +95,6 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), kasirController.createKas
  *           schema:
  *             type: object
  *             properties:
- *               waktuTutup:
- *                 type: string
- *                 format: date-time
  *               itemTerjual:
  *                 type: integer
  *               totalKotor:
