@@ -106,7 +106,7 @@ exports.getProducts = async (req, res) => {
         categories.id AS id_category,
         categories.name AS nama_category,
         outlets.id AS id_outlet,
-        outlets.name AS nama_outlet
+        outlets.nama AS nama_outlet
       FROM 
         products
       JOIN 
