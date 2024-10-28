@@ -23,8 +23,10 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
-const Order = ({ DetailOrder, setDetailOrder, setTransaksi, textButton, Transaksi, orderDiskon, DaftarOrder, setDaftarOrder,taxData, persen, namaCustomer, setNamaCustomer, setPersen, clicked, setClicked, tipeOrder, setTipeOrder, handleSelectChange, viewOrder }) => {
+const Order = ({ DetailOrder, fetchDataDaftarOrder, setDetailOrder, setTransaksi, textButton, Transaksi, orderDiskon, DaftarOrder, idOutlet, setDaftarOrder, taxData, persen, namaCustomer, setNamaCustomer, setPersen, clicked, setClicked, tipeOrder, setTipeOrder, handleSelectChange, viewOrder }) => {
     const { toast } = useToast();
     const [isOpen, setIsOpen] = useState(false);
 
@@ -87,7 +89,7 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, textButton, Transaks
 
 
     const Tax = [
-        { id: 'hcbsas', nama: 'Tax 10%', pajak: '10%' }
+        { id: 1, nama: 'Tax 10%', pajak: '10%' }
     ];
     const Discont = [
         // { id: 'hsjsj', nama: 'Promo Sale', diskon: '50%' }
@@ -98,35 +100,35 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, textButton, Transaks
     let pajak = 0;
     let diskon = 0;
     if (viewOrder.ketBayar === 'Sudah Bayar') {
-         pajak = taxData;
-         diskon = orderDiskon;
+        pajak = taxData;
+        diskon = orderDiskon;
     } else {
-         // Menghitung pajak
-    
-    if (Tax.length > 0) {
-        const taxPercentage = parseFloat(Tax[0].pajak) / 100;
-        pajak = totalHarga * taxPercentage;
-    }
+        // Menghitung pajak
 
-    // Menghitung diskon
-   
-    if (Discont.length > 0) {
-        const discountPercentage = parseFloat(Discont[0].diskon) / 100;
-        diskon = totalHarga * discountPercentage;
-    }
+        if (Tax.length > 0) {
+            const taxPercentage = parseFloat(Tax[0].pajak) / 100;
+            pajak = totalHarga * taxPercentage;
+        }
+
+        // Menghitung diskon
+
+        if (Discont.length > 0) {
+            const discountPercentage = parseFloat(Discont[0].diskon) / 100;
+            diskon = totalHarga * discountPercentage;
+        }
 
     };
-    
+
     // Menghitung total akhir
     const totalAkhir = totalHarga + pajak - diskon;
 
-   
 
 
 
 
 
-   
+
+
     const [catatan, setCatatan] = useState('');
 
     const handleAddTransaction = () => {
@@ -176,7 +178,7 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, textButton, Transaks
 
             if (viewOrder.idOrder > 0) {
                 // Jika idOrder lebih dari 0, gunakan id tersebut
-                newId = viewOrder.idOrder.toString().padStart(5, '0');
+                newId = viewOrder.idOrder.toString();
             } else {
                 // Jika idOrder sama dengan 0, buat ID baru
                 newId = (lastId + 1).toString().padStart(5, '0');
@@ -186,6 +188,7 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, textButton, Transaks
             const newTransaction = {
                 id: newId,
                 nama: namaCustomer,
+                catatan: catatan,
                 tipeOrder: tipeOrder,
                 detailTransaksi: DetailOrder,
             };
@@ -198,8 +201,7 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, textButton, Transaks
     };
 
 
-    const saveBill = () => {
-
+    const saveBill = async () => {
         if (!tipeOrder) {
             toast({
                 variant: "destructive",
@@ -230,67 +232,129 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, textButton, Transaks
             return;
         }
 
-        setTransaksi((prevTransaksi) => {
-            // Ambil ID transaksi terakhir
-            let lastId = 0;
-
-            // Cek apakah prevTransaksi tidak kosong
-            if (DaftarOrder.length > 0) {
-                const lastOrder = DaftarOrder[DaftarOrder.length - 1];
-                lastId = parseInt(lastOrder.id, 10);
-            }
-
-            // Set ID baru, dimulai dari 1 jika tidak ada transaksi sebelumnya
-            const newId = (lastId + 1).toString().padStart(5, '0');
-
-            // Buat transaksi baru
-            const newTransaction = {
-                id: newId,
-                nama: namaCustomer,
-                tipeOrder: tipeOrder,
-                detailTransaksi: DetailOrder,
-            };
-
-            // Tambahkan transaksi baru ke state Transaksi
-            return [...prevTransaksi, newTransaction];
-        });
-        if (Transaksi.length > 0) {
-            const newTransaction = Transaksi[Transaksi.length - 1];
-
-            const orderData = {
-                id: newTransaction?.id || 0,
-                nama: newTransaction?.nama || ' ',
-                tipeOrder: newTransaction?.tipeOrder || ' ',
-                KetBayar: 'Open bill',
-                detailTransaksi: newTransaction?.detailTransaksi.map((item) => ({
-                    id: item.id,
-                    foto: item.foto,
-                    count: item.count,
-                    name: item.name,
-                    harga: item.harga,
-                })) || [],
-                subtotal: totalHarga,
-                tax: null,
-                diskon: null,
+        const token = localStorage.getItem("token");
+        const iduser = localStorage.getItem("id");
+        try {
+            // Buat transaksi baru terlebih dahulu
+            const createTransaksi = await axios.post(`${API_URL}/api/transaksi`, {
+                outlet_id: idOutlet,
+                kasir_id: iduser,
+                tipe_order: tipeOrder,
+                name: namaCustomer,
+                catatan: catatan,
+                tipe_bayar: null,
+                ket_bayar: "Open bill",
+                sub_total: totalHarga,
                 total: totalAkhir,
-                bayar: null,
-                kembalian: null,
-            };
+                bayar: 0,
+                kembalian: 0
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-            // Simpan data ke DaftarOrder
-            setDaftarOrder((prevOrder) => [...prevOrder, orderData]);
+            const transaksi_id = createTransaksi.data.data.id;  // Mengambil id dari data
 
-            // Reset state setelah transaksi ditambahkan
+
+            // Looping untuk mengirim detail transaksi
+            const promises = DetailOrder.map(async (item) => {
+
+                return axios.post(`${API_URL}/api/transaksi/detail`, {
+                    transaksi_id: transaksi_id,  // ID transaksi yang baru dibuat
+                    product_id: item.id,         // ID produk dari array
+                    stok: item.count             // Jumlah stok dari array
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            });
+
+            // // Cek apakah Tax[0] ada dan memiliki id
+            // if (Tax.length > 0 && Tax[0].id) {
+            //     const createPajak = await axios.post(`${API_URL}/api/transaksi/detail-pajak`, {
+            //         transaksi_id: transaksi_id,
+            //         pajak_id: Tax[0].id,  // Menggunakan pajak_id dari Tax
+            //         harga: pajak           // Pastikan harga sudah terdefinisi
+            //     }, {
+            //         headers: {
+            //             Authorization: `Bearer ${token}`,
+            //         },
+            //     });
+            // }
+
+            // Tunggu hingga semua request POST selesai
+            await Promise.all(promises);
             setTransaksi([]);
             setNamaCustomer('');
             setDetailOrder([]);
             setCatatan('');
+            fetchDataDaftarOrder();
             toast({
                 title: "Bill berhasil disimpan",
                 description: "Anda dapat mengedit bill pada bagian order list",
                 action: <ToastAction altText="Try again">Cancel</ToastAction>,
             });
+
+            console.log("Semua detail transaksi berhasil diinput");
+        } catch (error) {
+            console.error("Error saat membuat transaksi atau detail transaksi:", error);
         }
+
+        // setTransaksi((prevTransaksi) => {
+        //     // Ambil ID transaksi terakhir
+        //     let lastId = 0;
+
+        //     // Cek apakah prevTransaksi tidak kosong
+        //     if (DaftarOrder.length > 0) {
+        //         const lastOrder = DaftarOrder[DaftarOrder.length - 1];
+        //         lastId = parseInt(lastOrder.id, 10);
+        //     }
+
+        //     // Set ID baru, dimulai dari 1 jika tidak ada transaksi sebelumnya
+        //     const newId = (lastId + 1).toString().padStart(5, '0');
+
+        //     // Buat transaksi baru
+        //     const newTransaction = {
+        //         id: newId,
+        //         nama: namaCustomer,
+        //         tipeOrder: tipeOrder,
+        //         detailTransaksi: DetailOrder,
+        //     };
+
+        //     // Tambahkan transaksi baru ke state Transaksi
+        //     return [...prevTransaksi, newTransaction];
+        // });
+        // if (Transaksi.length > 0) {
+        //     const newTransaction = Transaksi[Transaksi.length - 1];
+
+        //     const orderData = {
+        //         id: newTransaction?.id || 0,
+        //         nama: newTransaction?.nama || ' ',
+        //         tipeOrder: newTransaction?.tipeOrder || ' ',
+        //         KetBayar: 'Open bill',
+        //         detailTransaksi: newTransaction?.detailTransaksi.map((item) => ({
+        //             id: item.id,
+        //             foto: item.foto,
+        //             count: item.count,
+        //             name: item.name,
+        //             harga: item.harga,
+        //         })) || [],
+        //         subtotal: totalHarga,
+        //         tax: null,
+        //         diskon: null,
+        //         total: totalAkhir,
+        //         bayar: null,
+        //         kembalian: null,
+        //     };
+
+        //     // Simpan data ke DaftarOrder
+        //     setDaftarOrder((prevOrder) => [...prevOrder, orderData]);
+
+        //     // Reset state setelah transaksi ditambahkan
+
+        // }
     }
 
 
@@ -329,7 +393,11 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, textButton, Transaks
                                     </Button>
                                 ) : (
                                     <div>
-                                        <Textarea placeholder="Catatan" className="text-[14px]" />
+                                        <Textarea
+                                            value={catatan}
+                                            onChange={(e) => setCatatan(e.target.value)}
+                                            placeholder="Catatan"
+                                            className="text-[14px]" />
                                         <div className='flex justify-end gap-[12px] mt-[16px]'>
                                             <Button
                                                 variant="outline"
@@ -415,13 +483,10 @@ const Order = ({ DetailOrder, setDetailOrder, setTransaksi, textButton, Transaks
                     <>
                         <div className='grid gap-[8px]'>
                             {clicked && (
-                                <Button variant="outline" className="h-[36px] text-[14px]" onClick={() => {
-
-                                    saveBill(); // Kemudian kirim data ke daftarOrder setelah transaksi ditambahkan
-                                }}>Simpan Tagihan</Button>
+                                <Button variant="outline" className="h-[36px] text-[14px]" onClick={saveBill}>Simpan Tagihan</Button>
                             )}
                             <Button className="w-full h-[36px] text-[14px]" onClick={handleAddTransaction}>{textButton}</Button>
-                            <Bayar isOpen={isOpen} setIsOpen={setIsOpen} Transaksi={Transaksi} setTransaksi={setTransaksi} DaftarOrder={DaftarOrder} setDaftarOrder={setDaftarOrder} setNamaCustomer={setNamaCustomer} setDetailOrder={setDetailOrder} setCatatan={setCatatan} />
+                            <Bayar isOpen={isOpen} setIsOpen={setIsOpen} Transaksi={Transaksi} setTransaksi={setTransaksi} DaftarOrder={DaftarOrder} setDaftarOrder={setDaftarOrder} setNamaCustomer={setNamaCustomer} setDetailOrder={setDetailOrder} setCatatan={setCatatan} fetchDataDaftarOrder={fetchDataDaftarOrder} idOutlet={idOutlet}/>
                         </div>
                     </>
                 )}

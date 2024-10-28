@@ -1,9 +1,60 @@
-import React from 'react';
+import React , {useState, useEffect} from 'react';
 import { DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TickCircle, Printer } from 'iconsax-react';
 import { Button } from '@/components/ui/button';
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
+import dayjs from "dayjs";
 
-const Struk = ({ DaftarOrder, setIsOpen, setcontenstep, idDaftarOrder }) => {
+const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
+    const [DaftarOrder, setDaftarOrder] = useState([]);
+    const formatDaftarOrderData = (apiData) => {
+        return {
+          id: apiData.transaksi_id,
+          nama: apiData.transaksi_name,
+          tipeOrder: apiData.tipe_order,
+          KetBayar: apiData.ket_bayar,
+          pembayaran: apiData.tipe_bayar,
+          waktu: apiData.createdAt,
+          kasir: apiData.kasir_name,
+          detailTransaksi: apiData.detailtransaksi || [],
+          total: apiData.total,
+          tax: apiData.detailpajaks || [],
+          diskon: apiData.detaildiskons || [],
+          subtotal: apiData.sub_total,
+          bayar: apiData.bayar,
+          kembalian: apiData.kembalian,
+        };
+      };
+    const fetchData = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/transaksi/${idDaftarOrder}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+
+
+            // Akses data array dari response.data.data
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatDaftarOrderData);
+                setDaftarOrder(formattedData);
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+    // Ambil data dari API
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     return (
         <DialogContent className="sm:max-w-[638px] my-[20px] grid gap-[16px]">
             <DialogHeader className='grid gap-[16px] justify-items-center items-center py-[16px]'>
@@ -36,11 +87,11 @@ const Struk = ({ DaftarOrder, setIsOpen, setcontenstep, idDaftarOrder }) => {
                     <p className='text-[14px] font-medium'>www.kopikita.com</p>
                 </div>
                 {
-                    DaftarOrder.filter((daftarOrder) => daftarOrder.id === idDaftarOrder).map((filteredOrder) => (
+                    DaftarOrder.map((filteredOrder) => (
                         <div key={filteredOrder.id}>
                             <div className='py-[16px] border-t w-[390px]'>
                                 <p className='text-[14px] font-medium'>No. Order : #{filteredOrder.id}</p>
-                                <p className='text-[14px] font-medium'>Waktu : {filteredOrder.waktu}</p>
+                                <p className='text-[14px] font-medium'>Waktu : {dayjs(filteredOrder.waktu).format('DD MMMM YYYY, HH.mm')}</p>
                                 <p className='text-[14px] font-medium'>Kasir : {filteredOrder.kasir}</p>
                                 <p className='text-[14px] font-medium'>Pembayaran : {filteredOrder.pembayaran}</p>
                             </div>
@@ -48,10 +99,10 @@ const Struk = ({ DaftarOrder, setIsOpen, setcontenstep, idDaftarOrder }) => {
                                 {filteredOrder.detailTransaksi.map((item, index) => (
                                     <div className='flex justify-between' key={index}>
                                         <div className='flex gap-[8px]'>
-                                            <p>{item.count}</p>
-                                            <p className='font-bold'>{item.name}</p>
+                                            <p>{item.stok}</p>
+                                            <p className='font-bold'>{item.product_name}</p>
                                         </div>
-                                        <p>Rp  {item.harga.toLocaleString('id-ID')}</p>
+                                        <p>Rp  {item.product_price.toLocaleString('id-ID')}</p>
                                     </div>
                                 ))}
                             </div>
@@ -60,18 +111,22 @@ const Struk = ({ DaftarOrder, setIsOpen, setcontenstep, idDaftarOrder }) => {
                                     <p>Sub Total</p>
                                     <p>Rp {filteredOrder.subtotal.toLocaleString('id-ID')}</p>
                                 </div>
-                                {filteredOrder.tax && filteredOrder.tax.harga && (
-                                    <div className='flex justify-between'>
-                                        <p>{filteredOrder.tax.nama}</p> {/* Tampilkan nama pajak */}
-                                        <p>Rp {filteredOrder.tax.harga.toLocaleString('id-ID')}</p> {/* Tampilkan harga pajak */}
-                                    </div>
+                                {filteredOrder.tax && filteredOrder.tax.length > 0 && (
+                                    <>
+                                        {filteredOrder.tax.map((item, index)=>(
+                                            <div key={index} className='flex justify-between'>
+                                            <p>{item.pajak_name}</p> {/* Tampilkan nama pajak */}
+                                            <p>Rp {item.harga.toLocaleString('id-ID')}</p> {/* Tampilkan harga pajak */}
+                                            </div>
+                                        ))}
+                                    </>
                                 )}
                                 {filteredOrder.diskon && filteredOrder.diskon.length > 0 && (
                                     <>
                                         {filteredOrder.diskon.map((item, index) => (
                                             <div key={index} className='flex justify-between'>
-                                                <p>{item.nama}</p> {/* Nama diskon */}
-                                                <p>-Rp {item.hargaDiskon.toLocaleString('id-ID')}</p> {/* Harga diskon */}
+                                                <p>{item.diskon_name}</p> {/* Nama diskon */}
+                                                <p>-Rp {item.harga.toLocaleString('id-ID')}</p> {/* Harga diskon */}
                                             </div>
                                         ))}
                                     </>

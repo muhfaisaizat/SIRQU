@@ -2,7 +2,7 @@ const Kasir = require('../models/kasir'); // Pastikan path ini benar
 const Outlet = require('../models/outlet');
 const User = require('../models/user');
 const moment = require('moment-timezone'); // Import moment-timezone
-// const { Sequelize } = require('sequelize'); // Untuk menggunakan Sequelize literal (NOW)
+const sequelize = require('../config/database');
 
 // Mendapatkan semua data kasir
 exports.getAllKasir = async (req, res) => {
@@ -59,12 +59,10 @@ exports.getKasirById = async (req, res) => {
         },
       ],
     });
-
     // Periksa apakah kasir ditemukan
     if (!kasir) {
       return res.status(404).json({ message: 'Kasir not found' });
     }
-
     // Format response untuk menyesuaikan dengan keinginan Anda
     const formattedKasir = {
       kasir_id: kasir.id,
@@ -80,7 +78,6 @@ exports.getKasirById = async (req, res) => {
       totalKotor: kasir.totalKotor,
       totalBersih: kasir.totalBersih,
     };
-
     res.status(200).json(formattedKasir);
   } catch (error) {
     console.error('Error fetching kasir data by ID:', error);

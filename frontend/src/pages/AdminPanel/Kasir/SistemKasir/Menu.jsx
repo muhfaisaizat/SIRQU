@@ -23,7 +23,7 @@ import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
 
 
-const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, isDialogOpen, setIsDialogOpen ,setIdOutlet, setnamaToko, setIsDialogOpenbukatoko ,setuangModal}) => {
+const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, isDialogOpen, setIsDialogOpen, setIdOutlet, setnamaToko, setIsDialogOpenbukatoko, setuangModal }) => {
     const DataOutlet = [
         { id: "1", name: 'Toko utama' },
         { id: "m5gr84i7", name: 'Cabang 2' },
@@ -51,17 +51,17 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
 
     const formatMenuData = (apiData) => {
         return {
-            id: `${apiData.id_product}`,  
-            name: apiData.nama_product,     
-            outlet: apiData.nama_outlet,     
-            kategori: apiData.nama_category, 
-            deskripsi: apiData.deskripsi_product,   
-            stok: apiData.stok_product,   
-            harga: apiData.harga_product,  
-            foto: 'https://github.com/shadcn.png' 
+            id: `${apiData.id_product}`,
+            name: apiData.nama_product,
+            outlet: apiData.nama_outlet,
+            kategori: apiData.nama_category,
+            deskripsi: apiData.deskripsi_product,
+            stok: apiData.stok_product,
+            harga: apiData.harga_product,
+            foto: 'https://github.com/shadcn.png'
         };
     };
-    
+
     const fetchData = async () => {
         const token = localStorage.getItem("token");
         try {
@@ -70,9 +70,9 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
                     Authorization: `Bearer ${token}`,
                 },
             });
-    
-          
-    
+
+
+
             // Akses data array dari response.data.data
             if (Array.isArray(response.data.data)) {
                 const formattedData = response.data.data.map(formatMenuData);
@@ -80,12 +80,12 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
             } else {
                 console.error("Data yang diterima bukan array");
             }
-    
+
         } catch (error) {
             console.error("Error fetching data", error);
         }
     };
-    
+
     // Ambil data dari API
     useEffect(() => {
         fetchData();
@@ -94,12 +94,12 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
     const [selectedOutlet, setSelectedOutlet] = useState(DataOutlet[0]);
     const [searchTerm, setSearchTerm] = useState("");
     useEffect(() => {
-        setnamaToko(selectedOutlet.name); 
+        setnamaToko(selectedOutlet.name);
         setIdOutlet(selectedOutlet.id);
-      }, [selectedOutlet]);
+    }, [selectedOutlet]);
 
     const handleSelectOutlet = (outlet) => {
-        setIsDialogOpenbukatoko(true); 
+        setIsDialogOpenbukatoko(true);
         setSelectedOutlet(outlet);
         setnamaToko(outlet.name);
         setIdOutlet(outlet.id);
@@ -184,8 +184,8 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <div className='flex gap-[12px]'>
-                    <BadgeDateTime />
-                    <Button  onClick={() => setIsDialogOpen(true)} className='text-[14px] h-[35px] rounded-full font-medium'><Door strokeWidth={1} size={24} />Tutup Kasir</Button>
+                        <BadgeDateTime />
+                        <Button onClick={() => setIsDialogOpen(true)} className='text-[14px] h-[35px] rounded-full font-medium'><Door strokeWidth={1} size={24} />Tutup Kasir</Button>
                     </div>
                 </div>
                 <div className='px-[24px] grid gap-[16px]'>
@@ -199,14 +199,18 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
                         ) : (
                             <div className='flex gap-[12px]'>
                                 {DaftarOrder.map((daftarOrder) => (
-                                    <div key={daftarOrder.id} onClick={() => handleSelectChange(daftarOrder.tipeOrder, daftarOrder.id, daftarOrder.KetBayar, daftarOrder.detailTransaksi, daftarOrder.nama, daftarOrder.tax ? daftarOrder.tax.harga : null, daftarOrder.diskon)}  className=' p-[16px] w-[208px] grid gap-[12px] bg-white rounded-[6px] cursor-pointer hover:bg-slate-50'>
+                                    <div key={daftarOrder.id} onClick={() => handleSelectChange(daftarOrder.tipeOrder, daftarOrder.id, daftarOrder.KetBayar, daftarOrder.detailTransaksi, daftarOrder.nama, daftarOrder.tax , daftarOrder.diskon)} className=' p-[16px] w-[208px] grid gap-[12px] bg-white rounded-[6px] cursor-pointer hover:bg-slate-50'>
                                         <div className='flex justify-between'>
                                             <h1 className='text-[16px] font-semibold'>{daftarOrder.nama}</h1>
-                                            <h1 className='text-[12px] font-medium text-slate-500 mt-[5px]'>#{daftarOrder.id}</h1>
+                                            <h1 className='text-[12px] font-medium text-slate-500 mt-[5px]'>#{String(daftarOrder.id).padStart(4, '0')}</h1>
                                         </div>
                                         <div className='flex justify-between'>
-                                            <Badge  variant={daftarOrder.KetBayar === 'Open bill' ? undefined : 'outline'} className='h-[22px] rounded-full text-[12px] font-medium'>{daftarOrder.KetBayar}</Badge>
-                                            <h3 className='text-[14px] font-medium text-slate-500'>{daftarOrder.detailTransaksi.reduce((sum, item) => sum + item.count, 0)} Item</h3>
+                                            <Badge variant={daftarOrder.KetBayar === 'Open bill' ? undefined : 'outline'} className='h-[22px] rounded-full text-[12px] font-medium'>{daftarOrder.KetBayar}</Badge>
+                                            <h3 className='text-[14px] font-medium text-slate-500'>
+                                                {Array.isArray(daftarOrder.detailTransaksi)
+                                                    ? daftarOrder.detailTransaksi.reduce((sum, item) => sum + (item.stok || 0), 0)
+                                                    : 0} Item
+                                            </h3>
                                         </div>
                                     </div>
                                 ))}

@@ -334,8 +334,10 @@ exports.readTransaksibyid = async (req, res) => {
 
 exports.readTransaksiDate = async (req, res) => {
   try {
-    // Query SQL untuk mengambil data transaksi utama berdasarkan tanggal sekarang
-    const queryTransaksi = `
+    const { status } = req.query; // Ambil parameter status dari query
+
+    // Inisialisasi query SQL dasar
+    let queryTransaksi = `
       SELECT 
         t.id AS transaksi_id,
         t.outlet_id,
@@ -360,9 +362,12 @@ exports.readTransaksiDate = async (req, res) => {
         users AS u ON t.kasir_id = u.id
       WHERE  
         t.deletedAt IS NULL
-      AND 
-        DATE(t.createdAt) = DATE(NOW());  -- Menggunakan DATE(NOW()) untuk mendapatkan tanggal saat ini
     `;
+
+    // Tambahkan kondisi untuk status 'active' atau 'history'
+    if (status === 'active') {
+      queryTransaksi += ' AND DATE(t.createdAt) = DATE(NOW())';
+    }
 
     // Jalankan query untuk mendapatkan data transaksi
     const [transaksis] = await sequelize.query(queryTransaksi);
@@ -442,4 +447,3 @@ exports.readTransaksiDate = async (req, res) => {
     });
   }
 };
-
