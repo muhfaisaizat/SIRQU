@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
+const upload = require('../middleware/uploadImage'); // Middleware upload
 
 /**
  * @swagger
@@ -18,7 +19,7 @@ const productController = require('../controllers/productController');
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -36,19 +37,27 @@ const productController = require('../controllers/productController');
  *                 example: 999.99
  *               stock:
  *                 type: integer
- *                 description: Jumlah produk dalam stok
+ *                 nullable: true
+ *                 description: |
+ *                   Jumlah produk dalam stok.
+ *                   Jika `unlimited_stock` adalah `true`, biarkan kosong atau `null`.
  *                 example: 100
  *               unlimited_stock:
  *                 type: boolean
  *                 description: Apakah produk memiliki stok tak terbatas
  *                 example: false
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: File gambar untuk produk
  *     responses:
  *       201:
  *         description: Produk berhasil dibuat
  *       400:
  *         description: Permintaan tidak valid
  */
-router.post('/', productController.createProduct);
+
+router.post('/', upload, productController.createProduct);
 
 // /**
 //  * @swagger
@@ -136,29 +145,47 @@ router.get('/:id', productController.getProductById);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               name:
  *                 type: string
+ *                 description: Nama produk
+ *                 example: iPhone 13
  *               description:
  *                 type: string
+ *                 description: Deskripsi produk
+ *                 example: Smartphone terbaru dari Apple
  *               price:
  *                 type: number
+ *                 description: Harga produk
+ *                 example: 999.99
  *               stock:
  *                 type: integer
+ *                 nullable: true
+ *                 description: |
+ *                   Jumlah produk dalam stok.
+ *                   Jika `unlimited_stock` adalah `true`, biarkan kosong atau `null`.
+ *                 example: 100
  *               unlimited_stock:
  *                 type: boolean
+ *                 description: Apakah produk memiliki stok tak terbatas
+ *                 example: false
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: File gambar untuk produk
  *     responses:
  *       200:
  *         description: Produk berhasil diperbarui
- *       404:
- *         description: Produk tidak ditemukan
  *       400:
  *         description: Permintaan tidak valid
+ *       404:
+ *         description: Produk tidak ditemukan
  */
-router.put('/:id', productController.updateProduct);
+router.put('/:id', upload, productController.updateProduct);
+
 
 /**
  * @swagger

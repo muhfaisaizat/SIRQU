@@ -41,6 +41,10 @@ Product.init({
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true,
+},
 }, {
   sequelize,
   modelName: 'Product',

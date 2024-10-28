@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const argon2 = require('argon2');
+const path = require('path');
 
 exports.createUser = async (req, res) => {
     const { name, email, password, role, status } = req.body;
@@ -14,6 +15,9 @@ exports.createUser = async (req, res) => {
         // Hash password sebelum menyimpan
         const hashedPassword = await argon2.hash(password);
 
+        // Tambahkan path gambar dari req.file jika ada
+        const imagePath = req.file ? `/images/${req.file.filename}` : null;
+
         // Membuat user baru
         const newUser = await User.create({
             name,
@@ -21,6 +25,7 @@ exports.createUser = async (req, res) => {
             password: hashedPassword, // Simpan hashed password
             role,
             status: status || 'Active',
+            image: imagePath, // Simpan path gambar
             createdAt: new Date(),
             updatedAt: new Date(),
         });
@@ -51,9 +56,14 @@ exports.updateUser = async (req, res) => {
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
+    // Jika gambar baru diupload, ganti path gambar
+    const imagePath = req.file ? `/images/${req.file.filename}` : user.image;
+
+    // Perbarui informasi user
     user.name = name || user.name;
     user.role = role || user.role;
     user.status = status || user.status;
+    user.image = imagePath; // Update image path if a new image is uploaded
     await user.save();
 
     res.json({ message: 'User updated', user });

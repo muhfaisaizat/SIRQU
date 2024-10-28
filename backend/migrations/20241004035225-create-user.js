@@ -9,6 +9,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      image: {
+        type: Sequelize.STRING,
+        allowNull: true, // Bisa kosong, jika foto belum diunggah
+      },
       name: {
         type: Sequelize.STRING,
         allowNull: false // Tambahkan if necessary

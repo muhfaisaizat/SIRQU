@@ -26,6 +26,10 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false // Menentukan apakah stok tidak terbatas
       },
+      image: { 
+        type: Sequelize.STRING, 
+        allowNull: true,
+      },
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') // Nilai default untuk 'createdAt'

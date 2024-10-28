@@ -26,34 +26,63 @@ exports.getProductById = async (req, res) => {
 
 // Create a new product
 exports.createProduct = async (req, res) => {
-    const { name, description, price, stock, unlimited_stock } = req.body;
+  const { name, description, price } = req.body;
+  const unlimited_stock = req.body.unlimited_stock === 'true';
   
-    if (!unlimited_stock && (stock < 0 || isNaN(stock))) {
-      return res.status(400).json({ error: "Stock must be a non-negative integer when not unlimited." });
+  // Convert stock to null if it’s an empty string
+  let stock = req.body.stock === "" ? null : req.body.stock;
+
+  // Validate stock based on the value of unlimited_stock
+  if (unlimited_stock) {
+    if (stock !== null) {
+      return res.status(400).json({ error: "Stock must be null when unlimited_stock is true." });
     }
-  
-    try {
-      const finalStock = unlimited_stock ? null : stock; 
-  
-      const newProduct = await Product.create({
-        name,
-        description,
-        price,
-        stock: finalStock,
-        unlimited_stock,
-      });
-      res.status(201).json(newProduct);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+  } else {
+    if (stock == null || isNaN(stock) || stock < 0) {
+      return res.status(400).json({ error: "Stock must be a non-negative integer when unlimited_stock is false." });
     }
-  };
+  }
+
+  try {
+    // Set stock to null if unlimited_stock is true
+    const finalStock = unlimited_stock ? null : stock;
+
+    // Collect paths of uploaded images
+    const imagePath = req.file ? `/images/${req.file.filename}` : null;
+    // Create new product
+    const newProduct = await Product.create({
+      name,
+      description,
+      price,
+      stock: finalStock,
+      unlimited_stock,
+      image: imagePath, 
+    });
+
+    res.status(201).json(newProduct);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
   
   // Update product
   exports.updateProduct = async (req, res) => {
-    const { name, description, price, stock, unlimited_stock } = req.body;
+    const { name, description, price } = req.body;
+    const unlimited_stock = req.body.unlimited_stock === 'true';
   
-    if (!unlimited_stock && (stock < 0 || isNaN(stock))) {
-      return res.status(400).json({ error: "Stock must be a non-negative integer when not unlimited." });
+    // Convert stock to null if it’s an empty string
+    let stock = req.body.stock === "" ? null : req.body.stock;
+  
+    // Validate stock based on the value of unlimited_stock
+    if (unlimited_stock) {
+      if (stock !== null) {
+        return res.status(400).json({ error: "Stock must be null when unlimited_stock is true." });
+      }
+    } else {
+      if (stock == null || isNaN(stock) || stock < 0) {
+        return res.status(400).json({ error: "Stock must be a non-negative integer when unlimited_stock is false." });
+      }
     }
   
     try {
@@ -62,20 +91,28 @@ exports.createProduct = async (req, res) => {
         return res.status(404).json({ error: "Product not found" });
       }
   
+      // Set stock to null if unlimited_stock is true
       const finalStock = unlimited_stock ? null : stock;
   
+      // Update image path if a new file is uploaded
+      const imagePath = req.file ? `/images/${req.file.filename}` : product.image;
+  
+      // Update product
       await product.update({
         name,
         description,
         price,
         stock: finalStock,
         unlimited_stock,
+        image: imagePath, // Update image path
       });
-      res.json(product);
+  
+      res.status(200).json(product);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
-  };    
+  };
+  
 
 // Soft delete product
 exports.deleteProduct = async (req, res) => {
