@@ -169,7 +169,6 @@ exports.updateKasir = async (req, res) => {
 
 // Mendapatkan data kasir berdasarkan outlet_id
 exports.getKasirById = async (req, res) => {
-  const { id } = req.params; // Ambil ID outlet dari parameter request
   try {
     const kasir = await Kasir.findOne({
       where: {
