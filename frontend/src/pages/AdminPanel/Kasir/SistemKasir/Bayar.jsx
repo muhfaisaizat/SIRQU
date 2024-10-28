@@ -31,11 +31,22 @@ import { ToastAction } from "@/components/ui/toast";
 import Struk from './Struk'
 import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
+import { Skeleton } from '@/components/ui/skeleton'
 
 
 const Bayar = ({ Transaksi, setTransaksi,fetchDataDaftarOrder, setDaftarOrder, DaftarOrder, setNamaCustomer, setDetailOrder, setCatatan, isOpen, setIsOpen, idOutlet}) => {
     const { toast } = useToast();
-    const [contenstep, setcontenstep] = useState(0)
+    const [contenstep, setcontenstep] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        // Set loading selama beberapa detik sebelum konten Struk ditampilkan
+        const timer = setTimeout(() => {
+          setIsLoading(false);
+        }, 2000); // Sesuaikan dengan waktu loading yang diinginkan
+    
+        return () => clearTimeout(timer);
+      }, []);
+    
     const handelcontent = () => {
         setcontenstep((prevStep) => prevStep + 1);
     }
@@ -581,7 +592,16 @@ const Bayar = ({ Transaksi, setTransaksi,fetchDataDaftarOrder, setDaftarOrder, D
                 </DialogContent>
             )}
             {contenstep === 1 && (
+                 isLoading ? (
+                    // Tampilan loading dengan Skeleton dari Shadcn
+                    <DialogContent className="space-y-4">
+                      <Skeleton className="h-4 w-3/4 bg-gray-300 rounded-md" />
+                      <Skeleton className="h-4 w-full bg-gray-300 rounded-md" />
+                      <Skeleton className="h-4 w-1/2 bg-gray-300 rounded-md" />
+                    </DialogContent>
+                  ) : (
                   <Struk  setIsOpen={setIsOpen} setcontenstep={setcontenstep} idDaftarOrder={idDaftarOrder}/>
+                  )
             )}
             </Dialog>
         </div>

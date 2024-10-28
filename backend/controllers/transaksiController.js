@@ -97,7 +97,7 @@ exports.deleteTransaksi = async (req, res) => {
     }
 
     // Melakukan soft delete
-    await detailTransaksi.destroy();
+    await transaksi.destroy();
 
     res.status(200).json({
       message: "Transaksi berhasil dihapus (soft delete)",
