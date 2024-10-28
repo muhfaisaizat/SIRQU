@@ -59,10 +59,12 @@ exports.getKasirById = async (req, res) => {
         },
       ],
     });
+
     // Periksa apakah kasir ditemukan
     if (!kasir) {
       return res.status(404).json({ message: 'Kasir not found' });
     }
+
     // Format response untuk menyesuaikan dengan keinginan Anda
     const formattedKasir = {
       kasir_id: kasir.id,
@@ -78,6 +80,7 @@ exports.getKasirById = async (req, res) => {
       totalKotor: kasir.totalKotor,
       totalBersih: kasir.totalBersih,
     };
+
     res.status(200).json(formattedKasir);
   } catch (error) {
     console.error('Error fetching kasir data by ID:', error);
@@ -163,3 +166,50 @@ exports.updateKasir = async (req, res) => {
       res.status(500).json({ error: 'Terjadi kesalahan' });
     }
   };
+
+// Mendapatkan data kasir berdasarkan outlet_id
+exports.getKasirById = async (req, res) => {
+  try {
+    const kasir = await Kasir.findOne({
+      where: {
+        outlet_id: id, // Kondisi untuk mendapatkan kasir berdasarkan outlet_id
+      },
+      include: [
+        {
+          model: Outlet,
+          attributes: ['id', 'name'], // Hanya ambil atribut yang diperlukan
+        },
+        {
+          model: User,
+          attributes: ['id', 'name', 'role'], // Hanya ambil atribut yang diperlukan
+        },
+      ],
+    });
+
+    // Periksa apakah kasir ditemukan
+    if (!kasir) {
+      return res.status(404).json({ message: 'Kasir not found for this outlet' });
+    }
+
+    // Format response untuk menyesuaikan dengan keinginan Anda
+    const formattedKasir = {
+      kasir_id: kasir.id,
+      outlet_id: kasir.Outlet.id,
+      outlet_name: kasir.Outlet.name,
+      user_id: kasir.User.id,
+      user_name: kasir.User.name,
+      user_role: kasir.User.role,
+      uangModal: kasir.uangModal,
+      waktuBuka: moment(kasir.waktuBuka).tz('Asia/Jakarta').format('DD-MM-YY HH:mm:ss'), // Format dengan timezone Asia/Jakarta
+      waktuTutup: kasir.waktuTutup ? moment(kasir.waktuTutup).tz('Asia/Jakarta').format('DD-MM-YY HH:mm:ss') : null, // Format waktuTutup jika ada
+      itemTerjual: kasir.itemTerjual,
+      totalKotor: kasir.totalKotor,
+      totalBersih: kasir.totalBersih,
+    };
+
+    res.status(200).json(formattedKasir);
+  } catch (error) {
+    console.error('Error fetching kasir data by outlet ID:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
