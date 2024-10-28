@@ -11,7 +11,7 @@ exports.getAllKasir = async (req, res) => {
       include: [
         {
           model: Outlet,
-          attributes: ['id', 'name'], // Hanya ambil atribut yang diperlukan
+          attributes: ['id', 'nama'], // Hanya ambil atribut yang diperlukan
         },
         {
           model: User,
@@ -24,7 +24,7 @@ exports.getAllKasir = async (req, res) => {
     const formattedKasirList = kasirList.map(kasir => ({
       kasir_id: kasir.id,
       outlet_id: kasir.Outlet.id,
-      outlet_name: kasir.Outlet.name,
+      outlet_nama: kasir.Outlet.name,
       user_id: kasir.User.id,
       user_name: kasir.User.name,
       user_role: kasir.User.role,
@@ -51,7 +51,7 @@ exports.getKasirById = async (req, res) => {
      SELECT 
     kasirs.id, 
     kasirs.outlet_id, 
-    outlets.name AS outlet_name, 
+    outlets.nama AS outlet_name, 
     kasirs.user_id, 
     users.name AS user_name, 
     kasirs.uangModal, 
