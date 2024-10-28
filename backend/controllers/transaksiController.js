@@ -128,7 +128,7 @@ exports.readTransaksi = async (req, res) => {
         t.bayar,
         t.kembalian,
         t.createdAt,
-        o.name AS outlet_name,
+        o.nama AS outlet_name,
         u.name AS kasir_name
       FROM 
         transaksis AS t
@@ -239,7 +239,7 @@ exports.readTransaksibyid = async (req, res) => {
         t.bayar,
         t.kembalian,
         t.createdAt,
-        o.name AS outlet_name,
+        o.nama AS outlet_name,
         u.name AS kasir_name
       FROM 
         transaksis AS t
@@ -352,7 +352,7 @@ exports.readTransaksiDate = async (req, res) => {
         t.bayar,
         t.kembalian,
         t.createdAt,
-        o.name AS outlet_name,
+        o.nama AS outlet_name,
         u.name AS kasir_name
       FROM 
         transaksis AS t
