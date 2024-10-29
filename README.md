@@ -1,1 +1,1 @@
-*Sistem Point of Sales || SIRQU (sistem kasir ku)
+# Sistem Point of Sales || SIRQU (sistem kasir ku)
