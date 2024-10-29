@@ -36,7 +36,11 @@ import {
 } from "@/components/ui/pagination"
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import NoData from "./NoData";
-
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
+import dayjs from "dayjs";
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from "@/components/ui/toast";
 
 
 
@@ -46,73 +50,142 @@ import NoData from "./NoData";
 
 // Main component
 const DataTableHistory = () => {
+    const { toast } = useToast();
     // data
     const [data, setData] = useState([
-        {
-            id: "0001",
-            name: 'Alinea',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "Cash",
-            date: "23 Oktober 2024, 13.00",
-        },
-        {
-            id: "0002",
-            name: 'Bayu',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "QRIS",
-            date: "23 Oktober 2024, 13.00",
-        },
-        {
-            id: "0003",
-            name: 'Abimayu',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "Cash",
-            date: "23 Oktober 2024, 13.00",
-        },
-        {
-            id: "0004",
-            name: 'Abimayu',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "QRIS",
-            date: "23 Oktober 2024, 13.00",
-        },
-        {
-            id: "0005",
-            name: 'Abimayu',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "QRIS",
-            date: "23 Oktober 2024, 13.00",
-        },
-        {
-            id: "0006",
-            name: 'Abimayu',
-            item:'Kopi, Taichan Premium, Mi indomie',
-            harga: "5000",
-            bayar: "QRIS",
-            date: "23 Oktober 2024, 13.00",
-        },
+        // {
+        //     id: "0001",
+        //     name: 'Alinea',
+        //     item:'Kopi, Taichan Premium, Mi indomie',
+        //     harga: "5000",
+        //     bayar: "Cash",
+        //     date: "23 Oktober 2024, 13.00",
+        // },
+        // {
+        //     id: "0002",
+        //     name: 'Bayu',
+        //     item:'Kopi, Taichan Premium, Mi indomie',
+        //     harga: "5000",
+        //     bayar: "QRIS",
+        //     date: "23 Oktober 2024, 13.00",
+        // },
+        // {
+        //     id: "0003",
+        //     name: 'Abimayu',
+        //     item:'Kopi, Taichan Premium, Mi indomie',
+        //     harga: "5000",
+        //     bayar: "Cash",
+        //     date: "23 Oktober 2024, 13.00",
+        // },
+        // {
+        //     id: "0004",
+        //     name: 'Abimayu',
+        //     item:'Kopi, Taichan Premium, Mi indomie',
+        //     harga: "5000",
+        //     bayar: "QRIS",
+        //     date: "23 Oktober 2024, 13.00",
+        // },
+        // {
+        //     id: "0005",
+        //     name: 'Abimayu',
+        //     item:'Kopi, Taichan Premium, Mi indomie',
+        //     harga: "5000",
+        //     bayar: "QRIS",
+        //     date: "23 Oktober 2024, 13.00",
+        // },
+        // {
+        //     id: "0006",
+        //     name: 'Abimayu',
+        //     item:'Kopi, Taichan Premium, Mi indomie',
+        //     harga: "5000",
+        //     bayar: "QRIS",
+        //     date: "23 Oktober 2024, 13.00",
+        // },
         
     ]);
 
     // status
     const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
-    const handleDelete = (id) => {
-        setData((prevData) => {
-            const updatedData = prevData.filter((item) => item.id !== id);
-            if (updatedData.length === 0 && pagination.pageIndex > 0) {
-                // Jika data kosong dan berada di halaman selain pertama, kembali ke halaman pertama
-                setPagination((prev) => ({
-                    ...prev,
-                    pageIndex: prev.pageIndex - 1,
-                }));
+
+    const formatData = (apiData) => {
+        return {
+            id: apiData.transaksi_id,
+            name: apiData.transaksi_name,
+            tipeOrder: apiData.tipe_order,
+            KetBayar: apiData.ket_bayar,
+            tipe_bayar: apiData.tipe_bayar,
+            date: apiData.createdAt,
+            kasir: apiData.kasir_name,
+            item : (apiData.detailtransaksi || []).map(item => item.product_name).join(', '),
+            detailTransaksi: apiData.detailtransaksi || [],
+            total: apiData.total,
+            tax: apiData.detailpajaks || [],
+            diskon: apiData.detaildiskons || [],
+            subtotal: apiData.sub_total,
+            bayar: apiData.bayar,
+            kembalian: apiData.kembalian,
+        };
+    };
+
+    const fetchData = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/transaksi?status=history`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+           // Log untuk memastikan data yang diterima
+
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatData);
+               
+                setData(formattedData);
+                setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
             }
-            return updatedData;
-        });
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+    // Ambil data dari API
+    useEffect(() => {
+    
+        fetchData();
+    }, []);
+
+
+    const handleDelete = async (id) => {
+        const token = localStorage.getItem("token");
+        try {
+          const response = await axios.delete(`${API_URL}/api/transaksi/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+      
+          toast({
+            title: "Sukses",
+            description: "Data berhasil dihapus",
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+          });
+      
+          // Panggil fetchData untuk memperbarui data setelah penghapusan
+          fetchData();
+        } catch (error) {
+          console.error("Error deleting data", error);
+      
+          // Tampilkan pesan toast untuk error
+          toast({
+            variant: "destructive",
+            title: "Gagal",
+            description: "Data gagal dihapus. Silakan coba lagi.",
+            action: <ToastAction altText="Try again">Coba Lagi</ToastAction>,
+          });
+        }
       };
 
     // Define columns
@@ -163,23 +236,30 @@ const DataTableHistory = () => {
             ),
         },
         {
-            accessorKey: "harga",
+            accessorKey: "subtotal",
             header: "Total Bayar",
-            cell: ({ row }) => <div className=" font-medium">Rp {parseInt(row.getValue("harga")).toLocaleString('id-ID')}</div>,
+            cell: ({ row }) => <div className=" font-medium">Rp {parseInt(row.getValue("subtotal")).toLocaleString('id-ID')}</div>,
         },
         {
-            accessorKey: "bayar",
+            accessorKey: "tipe_bayar",
             header: "Metode Bayar",
             cell: ({ row }) => (
-                <div className="capitalize font-medium">{row.getValue("bayar")}</div>
+                <div className="capitalize font-medium">{row.getValue("tipe_bayar")}</div>
             ),
         },
         {
             accessorKey: "date",
             header: "Waktu & Tanggal",
-            cell: ({ row }) => (
-                <div className="capitalize font-medium">{row.getValue("date").length > 18 ? `${row.getValue("date").slice(0, 18)}...` : row.getValue("date")}</div>
-            ),
+            cell: ({ row }) => {
+                const dateValue = row.getValue("date"); // Ambil nilai `date` dari baris
+                const formattedDate = dayjs(dateValue).format('DD MMMM YYYY, HH.mm'); // Format tanggalnya
+            
+                return (
+                  <div className="capitalize font-medium">
+                    {formattedDate.length > 18 ? `${formattedDate.slice(0, 18)}...` : formattedDate}
+                  </div>
+                );
+              },
         },
         {
             id: "actions",
@@ -254,7 +334,7 @@ const DataTableHistory = () => {
         { id: "m5gr84i7", name: 'QRIS' },
     ]
     const handleFilterChange = (selectedValue) => {
-        setColumnFilters([{ id: 'bayar', value: selectedValue }]);
+        setColumnFilters([{ id: 'tipe_bayar', value: selectedValue }]);
         setFilters({ bayar: [selectedValue] });
       };
       const handleClearFilters = () => {

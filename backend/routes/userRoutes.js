@@ -1,7 +1,8 @@
 const express = require('express');
-const { createUser,getAllUsers, getUserById, updateUser, deleteUser } = require('../controllers/userController');
+const { createUser,getAllUsers, getUserById, updateUser, deleteUser, updateUserStatus } = require('../controllers/userController');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const router = express.Router();
+const upload = require('../middleware/uploadImage'); // Middleware upload
 
 /**
  * @swagger
@@ -12,7 +13,7 @@ const router = express.Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -33,6 +34,9 @@ const router = express.Router();
  *               status:
  *                 type: string
  *                 enum: [Active, Inactive]
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: User created successfully
@@ -41,7 +45,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/', roleMiddleware(['Admin']), createUser);
+router.post('/', upload, roleMiddleware(['Admin']), createUser);
 
 /**
  * @swagger
@@ -96,7 +100,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), getUserById);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -107,6 +111,9 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), getUserById);
  *               status:
  *                 type: string
  *                 enum: [Active, Inactive]
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: User updated successfully
@@ -115,7 +122,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), getUserById);
  *       500:
  *         description: Server error
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), updateUser);
+router.put('/:id', roleMiddleware(['Admin', 'Manager']), upload, updateUser);
 
 /**
  * @swagger
@@ -139,5 +146,53 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), updateUser);
  *         description: Server error
  */
 router.delete('/:id', roleMiddleware(['Admin', 'Manager']), deleteUser);
+
+/**
+ * @swagger
+ * /api/users/{id}/status:
+ *   put:
+ *     summary: Update user status by ID
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user to update
+ *       - in: query
+ *         name: status
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [Active, Inactive]
+ *         description: New status for the user
+ *     responses:
+ *       200:
+ *         description: User status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     status:
+ *                       type: string
+ *       400:
+ *         description: Invalid status value
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put('/:id/status', roleMiddleware(['Admin', 'Manager']), updateUserStatus);
 
 module.exports = router;

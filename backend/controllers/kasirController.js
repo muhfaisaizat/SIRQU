@@ -2,7 +2,7 @@ const Kasir = require('../models/kasir'); // Pastikan path ini benar
 const Outlet = require('../models/outlet');
 const User = require('../models/user');
 const moment = require('moment-timezone'); // Import moment-timezone
-// const { Sequelize } = require('sequelize'); // Untuk menggunakan Sequelize literal (NOW)
+const sequelize = require('../config/database');
 
 // Mendapatkan semua data kasir
 exports.getAllKasir = async (req, res) => {
@@ -11,7 +11,7 @@ exports.getAllKasir = async (req, res) => {
       include: [
         {
           model: Outlet,
-          attributes: ['id', 'name'], // Hanya ambil atribut yang diperlukan
+          attributes: ['id', 'nama'], // Hanya ambil atribut yang diperlukan
         },
         {
           model: User,
@@ -24,7 +24,7 @@ exports.getAllKasir = async (req, res) => {
     const formattedKasirList = kasirList.map(kasir => ({
       kasir_id: kasir.id,
       outlet_id: kasir.Outlet.id,
-      outlet_name: kasir.Outlet.name,
+      outlet_nama: kasir.Outlet.name,
       user_id: kasir.User.id,
       user_name: kasir.User.name,
       user_role: kasir.User.role,
@@ -44,49 +44,55 @@ exports.getAllKasir = async (req, res) => {
 };
 
 // Mendapatkan data kasir berdasarkan ID
-// exports.getKasirById = async (req, res) => {
-//   const { id } = req.params; // Ambil ID dari parameter request
-//   try {
-//     const kasir = await Kasir.findByPk(id, {
-//       include: [
-//         {
-//           model: Outlet,
-//           attributes: ['id', 'name'], // Hanya ambil atribut yang diperlukan
-//         },
-//         {
-//           model: User,
-//           attributes: ['id', 'name', 'role'], // Hanya ambil atribut yang diperlukan
-//         },
-//       ],
-//     });
+exports.getKasirById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const queryKasir = `
+     SELECT 
+    kasirs.id, 
+    kasirs.outlet_id, 
+    outlets.nama AS outlet_name, 
+    kasirs.user_id, 
+    users.name AS user_name, 
+    kasirs.uangModal, 
+    kasirs.waktuBuka, 
+    kasirs.waktuTutup, 
+    kasirs.itemTerjual, 
+    kasirs.totalKotor, 
+    kasirs.totalBersih 
+FROM 
+    kasirs 
+JOIN 
+    outlets ON kasirs.outlet_id = outlets.id
+JOIN 
+    users ON kasirs.user_id = users.id
+WHERE 
+    kasirs.outlet_id = ${id} 
+    AND 
+    DATE(kasirs.waktuBuka) = DATE(NOW())
+    AND
+    kasirs.waktuTutup IS NULL;
+    `;
 
-//     // Periksa apakah kasir ditemukan
-//     if (!kasir) {
-//       return res.status(404).json({ message: 'Kasir not found' });
-//     }
+    // Jalankan query untuk mendapatkan data transaksi
+    const [kasir] = await sequelize.query(queryKasir);
 
-//     // Format response untuk menyesuaikan dengan keinginan Anda
-//     const formattedKasir = {
-//       kasir_id: kasir.id,
-//       outlet_id: kasir.Outlet.id,
-//       outlet_name: kasir.Outlet.name,
-//       user_id: kasir.User.id,
-//       user_name: kasir.User.name,
-//       user_role: kasir.User.role,
-//       uangModal: kasir.uangModal,
-//       waktuBuka: moment(kasir.waktuBuka).tz('Asia/Jakarta').format('DD-MM-YY HH:mm:ss'), // Format dengan timezone Asia/Jakarta
-//       waktuTutup: kasir.waktuTutup ? moment(kasir.waktuTutup).tz('Asia/Jakarta').format('DD-MM-YY HH:mm:ss') : null, // Format waktuTutup jika ada
-//       itemTerjual: kasir.itemTerjual,
-//       totalKotor: kasir.totalKotor,
-//       totalBersih: kasir.totalBersih,
-//     };
-
-//     res.status(200).json(formattedKasir);
-//   } catch (error) {
-//     console.error('Error fetching kasir data by ID:', error);
-//     res.status(500).json({ error: error.message });
-//   }
-// };
+   
+    // Mengembalikan respons dengan data transaksi, detail_transaksi, detail_pajak, dan detail_diskon
+    return res.status(200).json({
+      success: true,
+      message: 'Data kasir berhasil diambil',
+      data: kasir,
+    });
+  } catch (error) {
+    console.error('Error reading kasir:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan saat mengambil data kasir',
+      error: error.message,
+    });
+  }
+};
 
 // POST /api/kasir
 // Menambahkan kasir baru
@@ -167,50 +173,3 @@ exports.updateKasir = async (req, res) => {
     }
   };
 
-// Mendapatkan data kasir berdasarkan outlet_id
-exports.getKasirById = async (req, res) => {
-  const { id } = req.params; // Ambil ID outlet dari parameter request
-  try {
-    const kasir = await Kasir.findOne({
-      where: {
-        outlet_id: id, // Kondisi untuk mendapatkan kasir berdasarkan outlet_id
-      },
-      include: [
-        {
-          model: Outlet,
-          attributes: ['id', 'name'], // Hanya ambil atribut yang diperlukan
-        },
-        {
-          model: User,
-          attributes: ['id', 'name', 'role'], // Hanya ambil atribut yang diperlukan
-        },
-      ],
-    });
-
-    // Periksa apakah kasir ditemukan
-    if (!kasir) {
-      return res.status(404).json({ message: 'Kasir not found for this outlet' });
-    }
-
-    // Format response untuk menyesuaikan dengan keinginan Anda
-    const formattedKasir = {
-      kasir_id: kasir.id,
-      outlet_id: kasir.Outlet.id,
-      outlet_name: kasir.Outlet.name,
-      user_id: kasir.User.id,
-      user_name: kasir.User.name,
-      user_role: kasir.User.role,
-      uangModal: kasir.uangModal,
-      waktuBuka: moment(kasir.waktuBuka).tz('Asia/Jakarta').format('DD-MM-YY HH:mm:ss'), // Format dengan timezone Asia/Jakarta
-      waktuTutup: kasir.waktuTutup ? moment(kasir.waktuTutup).tz('Asia/Jakarta').format('DD-MM-YY HH:mm:ss') : null, // Format waktuTutup jika ada
-      itemTerjual: kasir.itemTerjual,
-      totalKotor: kasir.totalKotor,
-      totalBersih: kasir.totalBersih,
-    };
-
-    res.status(200).json(formattedKasir);
-  } catch (error) {
-    console.error('Error fetching kasir data by outlet ID:', error);
-    res.status(500).json({ error: error.message });
-  }
-};

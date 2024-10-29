@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
+// const upload = require('../middleware/uploadImage'); // Middleware upload
 
 /**
  * @swagger
@@ -159,6 +160,7 @@ router.get('/:id', productController.getProductById);
  *         description: Permintaan tidak valid
  */
 router.put('/:id', productController.updateProduct);
+
 
 /**
  * @swagger

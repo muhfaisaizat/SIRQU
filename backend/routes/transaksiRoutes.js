@@ -159,13 +159,20 @@ router.delete('/:id', roleMiddleware(['Admin', 'Manager','Kasir']), deleteTransa
 
 
 
-
 /**
  * @swagger
  * /api/transaksi:
  *   get:
  *     summary: Retrieve a list of transactions
  *     tags: [Transaksi]
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [active, history]
+ *         description: Pilihan status transaksi
  *     responses:
  *       200:
  *         description: List of transactions retrieved successfully
@@ -173,6 +180,7 @@ router.delete('/:id', roleMiddleware(['Admin', 'Manager','Kasir']), deleteTransa
  *         description: Internal server error
  */
 router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), readTransaksiDate);
+
 
 /**
  * @swagger

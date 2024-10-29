@@ -31,7 +31,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), kasirController.getAllKasi
  *       - name: id
  *         in: path
  *         required: true
- *         description: ID kasir yang ingin diambil
+ *         description: ID outlet yang ingin diambil
  *         schema:
  *           type: integer
  *     responses:

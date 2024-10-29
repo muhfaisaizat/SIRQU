@@ -29,21 +29,34 @@ import Qris from "../../../../assets/QRIS.png"
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from "@/components/ui/toast";
 import Struk from './Struk'
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
+import { Skeleton } from '@/components/ui/skeleton'
 
 
-const Bayar = ({ Transaksi, setTransaksi, setDaftarOrder, DaftarOrder, setNamaCustomer, setDetailOrder, setCatatan, isOpen, setIsOpen}) => {
+const Bayar = ({ Transaksi, setTransaksi,fetchDataDaftarOrder, setDaftarOrder, DaftarOrder, setNamaCustomer, setDetailOrder, setCatatan, isOpen, setIsOpen, idOutlet}) => {
     const { toast } = useToast();
-    const [contenstep, setcontenstep] = useState(0)
+    const [contenstep, setcontenstep] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        // Set loading selama beberapa detik sebelum konten Struk ditampilkan
+        const timer = setTimeout(() => {
+          setIsLoading(false);
+        }, 2000); // Sesuaikan dengan waktu loading yang diinginkan
+    
+        return () => clearTimeout(timer);
+      }, []);
+    
     const handelcontent = () => {
         setcontenstep((prevStep) => prevStep + 1);
     }
 
     const Tax = [
-        { id: 'hcbsas', nama: 'Tax 10%', pajak: '10%' }
+        { id: '1', nama: 'Tax 10%', pajak: '10%' }
     ];
     const Discont = [
-        { id: 'hsjsj', nama: 'Promo Sale', diskon: '50%' },
-        { id: 'hsjss', nama: 'Ramadan', diskon: '40%' }
+        { id: '1', nama: 'Promo Sale', diskon: '50%' },
+        { id: '2', nama: 'Ramadan', diskon: '40%' }
     ];
 
     
@@ -157,7 +170,7 @@ const Bayar = ({ Transaksi, setTransaksi, setDaftarOrder, DaftarOrder, setNamaCu
 
 
 
-    const handleSubmitOrder = () => {
+    const handleSubmitOrder  = async () => {
        
         if (!metodePembayaran) {
             toast({
@@ -179,61 +192,242 @@ const Bayar = ({ Transaksi, setTransaksi, setDaftarOrder, DaftarOrder, setNamaCu
             return;
         }
 
-        const orderData = {
-          id: Transaksi[0]?.id || 0,
-          nama: Transaksi[0]?.nama || ' ',
-          tipeOrder: Transaksi[0]?.tipeOrder || ' ',
-          KetBayar:'Sudah Bayar',
-          waktu: `${tanggalSekarang}, ${waktuSekarang}`,
-          pembayaran: metodePembayaran,
-          kasir: 'Dafa',
-          detailTransaksi: Transaksi[0]?.detailTransaksi.map((item) => ({
-            id: item.id,
-            foto: item.foto,
-            count: item.count,
-            name: item.name,
-            harga: item.harga,
-          })) || [],
-          subtotal: totalHarga,
-          tax: Tax.length > 0 ? { nama: Tax[0].nama, harga: pajak } : null,
-          diskon: diskonList.length > 0 ? diskonList.map((promo) => ({
-            nama: promo.nama,
-            hargaDiskon: promo.hargaDiskon,
-          })) : null,
-          total: totalAkhir,
-          bayar: isNaN(Number(uang)) || uang === '' ? 0 : Number(uang),
-          kembalian: isNaN(Number(uang)) || uang === ''
-            ? 0
-            : (Number(uang) - totalAkhir) < 0
-            ? Math.abs(Number(uang) - totalAkhir)
-            : Number(uang) - totalAkhir,
-        };
-      
-        // Simpan data ke DaftarOrder
-        setDaftarOrder((prevOrder) => {
-            const existingOrderIndex = prevOrder.findIndex(order => order.id === orderData.id);
+        // const existingOrder = DaftarOrder.some(item => Number(item.id) === Number(Transaksi[0]?.id))
+        
+
+        if  (DaftarOrder.some(item => Number(item.id) === Number(Transaksi[0]?.id))) {
+            const token = localStorage.getItem("token");
+            const iduser = localStorage.getItem("id");
     
-            if (existingOrderIndex !== -1) {
-                // Jika ID sudah ada, update data transaksi yang sesuai
-                const updatedOrder = [...prevOrder];
-                updatedOrder[existingOrderIndex] = { ...updatedOrder[existingOrderIndex], ...orderData };
-                return updatedOrder;
-            } else {
-                // Jika ID belum ada, tambahkan transaksi baru
-                return [...prevOrder, orderData];
+            try {
+                // Buat transaksi baru terlebih dahulu
+                const createTransaksi = await axios.put(`${API_URL}/api/transaksi/${Transaksi[0]?.id}`, {
+                    outlet_id: idOutlet,
+                    kasir_id: iduser,
+                    tipe_order: Transaksi[0]?.tipeOrder,
+                    name: Transaksi[0]?.nama,
+                    catatan: Transaksi[0]?.catatan,
+                    tipe_bayar:  metodePembayaran,
+                    ket_bayar: "Sudah Bayar",
+                    sub_total: totalHarga,
+                    total: totalAkhir,
+                    bayar: isNaN(Number(uang)) || uang === '' ? 0 : Number(uang),
+                    kembalian: isNaN(Number(uang)) || uang === ''
+                        ? 0
+                        : (Number(uang) - totalAkhir) < 0
+                        ? Math.abs(Number(uang) - totalAkhir)
+                        : Number(uang) - totalAkhir,
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+    
+    
+    
+                // Looping untuk mengirim detail transaksi
+                const promises = Transaksi[0]?.detailTransaksi.map(async (item) => {
+    
+                    return axios.put(`${API_URL}/api/transaksi/detail/${Transaksi[0]?.id}/${item.id}`, {
+                        product_id: item.id_produk,         // ID produk dari array
+                        stok: item.count             // Jumlah stok dari array
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                });
+    
+                // Cek apakah Tax[0] ada dan memiliki id
+                if (Tax.length > 0 ) {
+                    const createPajak = await axios.post(`${API_URL}/api/transaksi/detail-pajak`, {
+                        transaksi_id: Transaksi[0]?.id,
+                        pajak_id: Tax[0].id,  
+                        harga: pajak
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                }
+    
+                if (diskonList.length > 0) {
+                    const creatediskon = diskonList.map(async (item) => {
+                        return axios.post(`${API_URL}/api/transaksi/detail-diskon`, {
+                            transaksi_id: Transaksi[0]?.id, 
+                            diskon_id: item.id,         
+                            harga: item.hargaDiskon             
+                        }, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        });
+                    });
+                }
+    
+                // Tunggu hingga semua request POST selesai
+                await Promise.all(promises);
+                setTransaksi([]);
+                setidDaftarOrder(Transaksi[0]?.id)
+                // Reset state setelah transaksi ditambahkan
+                setNamaCustomer('');
+                setDetailOrder([]);
+                setCatatan('');
+                setcontenstep(1);
+                setUang('');
+                setmetodePembayaran('');
+                setClicked(false);
+                setSelectedDisconts([]);
+                fetchDataDaftarOrder();
+                
+            } catch (error) {
+                console.error("Error saat membuat transaksi atau detail transaksi:", error);
             }
-        });
-        setTransaksi([]);
-        setidDaftarOrder(Transaksi[0]?.id)
-        // Reset state setelah transaksi ditambahkan
-        setNamaCustomer('');
-        setDetailOrder([]);
-        setCatatan('');
-        setcontenstep(1);
-        setUang('');
-        setmetodePembayaran('');
-        setClicked(false);
-        setSelectedDisconts([]);
+        } else {
+            const token = localStorage.getItem("token");
+            const iduser = localStorage.getItem("id");
+    
+            try {
+                // Buat transaksi baru terlebih dahulu
+                const createTransaksi = await axios.post(`${API_URL}/api/transaksi`, {
+                    outlet_id: idOutlet,
+                    kasir_id: iduser,
+                    tipe_order: Transaksi[0]?.tipeOrder,
+                    name: Transaksi[0]?.nama,
+                    catatan: Transaksi[0]?.catatan,
+                    tipe_bayar:  metodePembayaran,
+                    ket_bayar: "Sudah Bayar",
+                    sub_total: totalHarga,
+                    total: totalAkhir,
+                    bayar: isNaN(Number(uang)) || uang === '' ? 0 : Number(uang),
+                    kembalian: isNaN(Number(uang)) || uang === ''
+                        ? 0
+                        : (Number(uang) - totalAkhir) < 0
+                        ? Math.abs(Number(uang) - totalAkhir)
+                        : Number(uang) - totalAkhir,
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+    
+                const transaksi_id = createTransaksi.data.data.id;  // Mengambil id dari data
+    
+    
+                // Looping untuk mengirim detail transaksi
+                const promises = Transaksi[0]?.detailTransaksi.map(async (item) => {
+    
+                    return axios.post(`${API_URL}/api/transaksi/detail`, {
+                        transaksi_id: transaksi_id,  // ID transaksi yang baru dibuat
+                        product_id: item.id,         // ID produk dari array
+                        stok: item.count             // Jumlah stok dari array
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                });
+    
+                // Cek apakah Tax[0] ada dan memiliki id
+                if (Tax.length > 0 ) {
+                    const createPajak = await axios.post(`${API_URL}/api/transaksi/detail-pajak`, {
+                        transaksi_id: transaksi_id,
+                        pajak_id: Tax[0].id,  
+                        harga: pajak
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                }
+    
+                if (diskonList.length > 0) {
+                    const creatediskon = diskonList.map(async (item) => {
+                        return axios.post(`${API_URL}/api/transaksi/detail-diskon`, {
+                            transaksi_id: transaksi_id, 
+                            diskon_id: item.id,         
+                            harga: item.hargaDiskon             
+                        }, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        });
+                    });
+                }
+    
+                // Tunggu hingga semua request POST selesai
+                await Promise.all(promises);
+                setTransaksi([]);
+               
+                // Reset state setelah transaksi ditambahkan
+                setNamaCustomer('');
+                setDetailOrder([]);
+                setCatatan('');
+                setcontenstep(1);
+                setUang('');
+                setmetodePembayaran('');
+                setClicked(false);
+                setSelectedDisconts([]);
+                fetchDataDaftarOrder();
+                setidDaftarOrder(Transaksi[0]?.id)
+                
+            } catch (error) {
+                console.error("Error saat membuat transaksi atau detail transaksi:", error);
+            }
+        }
+
+       
+
+
+
+
+        // const orderData = {
+        //   id: Transaksi[0]?.id || 0,
+        //   nama: Transaksi[0]?.nama || ' ',
+        //   tipeOrder: Transaksi[0]?.tipeOrder || ' ',
+        //   KetBayar:'Sudah Bayar',
+        //   waktu: `${tanggalSekarang}, ${waktuSekarang}`,
+        //   pembayaran: metodePembayaran,
+        //   kasir: 'Dafa',
+        //   detailTransaksi: Transaksi[0]?.detailTransaksi.map((item) => ({
+        //     id: item.id,
+        //     foto: item.foto,
+        //     count: item.count,
+        //     name: item.name,
+        //     harga: item.harga,
+        //   })) || [],
+        //   subtotal: totalHarga,
+        //   tax: Tax.length > 0 ? { nama: Tax[0].nama, harga: pajak } : null,
+        //   diskon: diskonList.length > 0 ? diskonList.map((promo) => ({
+        //     nama: promo.nama,
+        //     hargaDiskon: promo.hargaDiskon,
+        //   })) : null,
+        //   total: totalAkhir,
+        //   bayar: isNaN(Number(uang)) || uang === '' ? 0 : Number(uang),
+        //   kembalian: isNaN(Number(uang)) || uang === ''
+        //     ? 0
+        //     : (Number(uang) - totalAkhir) < 0
+        //     ? Math.abs(Number(uang) - totalAkhir)
+        //     : Number(uang) - totalAkhir,
+        // };
+      
+        // // Simpan data ke DaftarOrder
+        // setDaftarOrder((prevOrder) => {
+        //     const existingOrderIndex = prevOrder.findIndex(order => order.id === orderData.id);
+    
+        //     if (existingOrderIndex !== -1) {
+        //         // Jika ID sudah ada, update data transaksi yang sesuai
+        //         const updatedOrder = [...prevOrder];
+        //         updatedOrder[existingOrderIndex] = { ...updatedOrder[existingOrderIndex], ...orderData };
+        //         return updatedOrder;
+        //     } else {
+        //         // Jika ID belum ada, tambahkan transaksi baru
+        //         return [...prevOrder, orderData];
+        //     }
+        // });
+
+
+      
       };
 
 
@@ -257,7 +451,7 @@ const Bayar = ({ Transaksi, setTransaksi, setDaftarOrder, DaftarOrder, setNamaCu
                             <div className='w-[50%] h-full  mt-[16px]  gap-[16px] flex flex-col justify-between'>
                                 <div className='px-[16px]'>
                                     <div className='flex justify-between'>
-                                        <h1 className='text-[14px] font-semibold'>#{Transaksi[0]?.id ? Transaksi[0].id : 0}</h1>
+                                        <h1 className='text-[14px] font-semibold'>#{Transaksi[0]?.id.padStart(4, '0') ? Transaksi[0].id.padStart(4, '0') : 0}</h1>
                                         <div className='flex gap-3'>
                                         <ProfileCircle size="24" variant="Bulk"/>
                                             <p className='text-[14px] font-medium pt-1 pb-1'>  {Transaksi[0]?.nama ? Transaksi[0].nama : ' '}</p>
@@ -398,7 +592,16 @@ const Bayar = ({ Transaksi, setTransaksi, setDaftarOrder, DaftarOrder, setNamaCu
                 </DialogContent>
             )}
             {contenstep === 1 && (
-                  <Struk DaftarOrder={DaftarOrder} setIsOpen={setIsOpen} setcontenstep={setcontenstep} idDaftarOrder={idDaftarOrder}/>
+                 isLoading ? (
+                    // Tampilan loading dengan Skeleton dari Shadcn
+                    <DialogContent className="space-y-4">
+                      <Skeleton className="h-4 w-3/4 bg-gray-300 rounded-md" />
+                      <Skeleton className="h-4 w-full bg-gray-300 rounded-md" />
+                      <Skeleton className="h-4 w-1/2 bg-gray-300 rounded-md" />
+                    </DialogContent>
+                  ) : (
+                  <Struk  setIsOpen={setIsOpen} setcontenstep={setcontenstep} idDaftarOrder={idDaftarOrder}/>
+                  )
             )}
             </Dialog>
         </div>

@@ -5,22 +5,47 @@ const sequelize = require('../config/database');
 class Outlet extends Model {}
 
 Outlet.init({
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  // Other outlet fields
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    nama: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    alamat: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+    },
+    image: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    syarat_ketentuan: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+    },
+    deletedAt: {
+        type: DataTypes.DATE,
+    },
 }, {
-  sequelize,
-  modelName: 'Outlet',
-  tableName: 'outlets',
-  timestamps: true,
-  paranoid: true,
+    sequelize,
+    modelName: 'Outlet',
+    tableName: 'outlets',
+    timestamps: true,
+    paranoid: true, // Mengaktifkan soft delete (deletedAt)
 });
 
 module.exports = Outlet;
