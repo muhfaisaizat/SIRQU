@@ -1,6 +1,5 @@
-// models/category.js
 const { Model, DataTypes, Sequelize } = require('sequelize');
-const sequelize = require('../config/database'); // Ganti dengan path yang sesuai ke konfigurasi database Anda
+const sequelize = require('../config/database'); // Pastikan path ini benar
 
 class Category extends Model {}
 
@@ -17,19 +16,19 @@ Category.init({
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: Sequelize.fn('CURRENT_TIMESTAMP'), // Menggunakan Sequelize.fn
+    defaultValue: Sequelize.fn('CURRENT_TIMESTAMP'),
   },
   updatedAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: Sequelize.fn('CURRENT_TIMESTAMP'), // Menggunakan Sequelize.fn
+    defaultValue: Sequelize.fn('CURRENT_TIMESTAMP'),
   },
 }, {
-  sequelize,
+  sequelize, // Memastikan instance sequelize dari config/database.js digunakan
   modelName: 'Category',
   tableName: 'categories',
   timestamps: true,
-  paranoid: true, // Menambahkan fitur paranoid jika diperlukan
+  paranoid: true,
 });
 
 module.exports = Category;

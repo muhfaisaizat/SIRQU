@@ -16,6 +16,7 @@ const detailDiskonRoutes = require('./routes/detailDiskonRoutes');
 const kasirRoutes = require('./routes/kasirRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
+const receiptRoutes = require('./routes/receiptRoutes');
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ app.use('/api/transaksi/detail-pajak', detailPajak);
 app.use('/api/transaksi/detail-diskon', detailDiskonRoutes);
 app.use('/api/transaksi', transaksiRoutes);
 app.use('/api/kasir', kasirRoutes);
+app.use('/api', receiptRoutes);
 
 
 // Swagger Documentation
@@ -61,10 +63,7 @@ const initializeDatabase = async () => {
   try {
     await sequelize.sync({ force: false }); // Hati-hati, ini akan menghapus tabel yang ada
     console.log("Database synced");
-
-    // Dapatkan queryInterface dari sequelize
-    // const queryInterface = sequelize.getQueryInterface();
-
+    
     // Jalankan seeder secara manual
     // await seedRoles.up(queryInterface); // Panggil metode `up` dari seedRoles
     // console.log("Role seeder completed");

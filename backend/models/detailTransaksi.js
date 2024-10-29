@@ -11,7 +11,7 @@ const DetailTransaksi = sequelize.define('DetailTransaksi', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Transaksi', // Sesuaikan dengan model Transaksi Anda
+      model: 'transaksis', // Nama tabel di database
       key: 'id'
     },
     onDelete: 'CASCADE',
@@ -21,7 +21,7 @@ const DetailTransaksi = sequelize.define('DetailTransaksi', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Product', // Sesuaikan dengan model Product Anda
+      model: 'products', // Nama tabel di database
       key: 'id'
     },
     onDelete: 'CASCADE',
@@ -43,7 +43,7 @@ const DetailTransaksi = sequelize.define('DetailTransaksi', {
     type: DataTypes.DATE // Kolom untuk soft delete
   }
 }, {
-  tableName: 'detail_transaksis',
+  tableName: 'detail_transaksis', // Nama tabel di database
   timestamps: true, // Mengaktifkan createdAt dan updatedAt
   paranoid: true // Mengaktifkan soft delete (deletedAt)
 });

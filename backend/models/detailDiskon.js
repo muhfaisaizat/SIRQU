@@ -11,7 +11,7 @@ const DetailDiskon = sequelize.define('DetailDiskon', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Transaksi', // Sesuaikan dengan model Transaksi Anda
+      model: 'Transaksis', // Sesuaikan dengan model Transaksi Anda
       key: 'id'
     },
     onDelete: 'CASCADE',
@@ -21,7 +21,7 @@ const DetailDiskon = sequelize.define('DetailDiskon', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Diskon', // Sesuaikan dengan model Product Anda
+      model: 'Diskons', // Sesuaikan dengan model Product Anda
       key: 'id'
     },
     onDelete: 'CASCADE',

@@ -11,7 +11,7 @@ const DetailPajak = sequelize.define('DetailPajak', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Transaksi', // Sesuaikan dengan model Transaksi Anda
+      model: 'Transaksis', // Sesuaikan dengan model Transaksi Anda
       key: 'id'
     },
     onDelete: 'CASCADE',
@@ -21,7 +21,7 @@ const DetailPajak = sequelize.define('DetailPajak', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Pajak', // Sesuaikan dengan model Product Anda
+      model: 'Pajaks', // Sesuaikan dengan model Product Anda
       key: 'id'
     },
     onDelete: 'CASCADE',
