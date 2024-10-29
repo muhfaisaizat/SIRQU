@@ -15,6 +15,7 @@ const detailPajak = require('./routes/detailPajak');
 const detailDiskonRoutes = require('./routes/detailDiskonRoutes');
 const kasirRoutes = require('./routes/kasirRoutes');
 const outletRoutes = require('./routes/outletRoutes');
+const productImageRoutes = require('./routes/productImageRoutes')
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 const path = require('path');
@@ -46,6 +47,7 @@ app.use('/api/categories/outlets', categoryOutletRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/product/categories', productCategoryRoutes);
 app.use('/api/products/outlets', productOutletRoutes);
+app.use('/api/products/productImage', productImageRoutes);
 app.use('/api/transaksi/detail', detailTransaksiRoutes);
 app.use('/api/transaksi/detail-pajak', detailPajak);
 app.use('/api/transaksi/detail-diskon', detailDiskonRoutes);
