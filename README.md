@@ -17,12 +17,12 @@ Pastikan sudah menginstal:
 
 ### 1. Menyiapkan Backend
 
-1. Buka terminal dan pindah ke direktori `backend`: cd backend
-2. Instal dependensi: npm install atau, jika menggunakan yarn:yarn install
+1. Buka terminal dan pindah ke direktori backend: `cd backend`
+2. Instal dependensi: `npm install` atau, jika menggunakan yarn: `yarn install`
 3. Jalankan server backend:
    
 ### 2. Menyiapkan Frontend
 
-1. Buka terminal dan pindah ke direktori `frontend`: cd frontend
-2. Instal dependensi: npm install atau, jika menggunakan yarn:yarn install
-3. Jalankan server frontend: npm run dev
+1. Buka terminal dan pindah ke direktori frontend: `cd frontend`
+2. Instal dependensi: `npm install` atau, jika menggunakan yarn: `yarn install`
+3. Jalankan server frontend: `npm run dev` atau `yarn dev`
