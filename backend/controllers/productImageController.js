@@ -1,6 +1,6 @@
 // controllers/productImageController.js
 const ProductImage = require('../models/productImage');
-const Product = require('../models/Product'); // Pastikan path model benar
+const Product = require('../models/product'); // Pastikan path model benar
 
 // Menambahkan gambar produk baru
 exports.createProductImage = async (req, res) => {

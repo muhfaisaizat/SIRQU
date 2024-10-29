@@ -76,3 +76,36 @@ exports.deleteUser = async (req, res) => {
     await user.destroy();
     res.json({ message: 'User deleted' });
 };
+
+// Controller method for updating user status by ID 
+exports.updateUserStatus = async (req, res) => {
+    try {
+      const userId = req.params.id;
+      const newStatus = req.query.status;
+  
+      // Update status user
+      const [updated] = await User.update({ status: newStatus }, { where: { id: userId } });
+  
+      if (updated) {
+        // Dapatkan informasi user setelah update
+        const updatedUser = await User.findOne({ where: { id: userId }, attributes: ['id', 'name', 'status'] });
+  
+        return res.status(200).json({
+          success: true,
+          message: `User status updated to ${newStatus}`,
+          data: updatedUser
+        });
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: "User not found"
+        });
+      }
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "An error occurred while updating user status",
+        error: error.message
+      });
+    }
+  };

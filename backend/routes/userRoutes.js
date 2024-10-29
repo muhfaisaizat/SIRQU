@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUser,getAllUsers, getUserById, updateUser, deleteUser } = require('../controllers/userController');
+const { createUser,getAllUsers, getUserById, updateUser, deleteUser, updateUserStatus } = require('../controllers/userController');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const router = express.Router();
 const upload = require('../middleware/uploadImage'); // Middleware upload
@@ -146,5 +146,53 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), upload, updateUser);
  *         description: Server error
  */
 router.delete('/:id', roleMiddleware(['Admin', 'Manager']), deleteUser);
+
+/**
+ * @swagger
+ * /api/users/{id}/status:
+ *   put:
+ *     summary: Update user status by ID
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user to update
+ *       - in: query
+ *         name: status
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [Active, Inactive]
+ *         description: New status for the user
+ *     responses:
+ *       200:
+ *         description: User status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     status:
+ *                       type: string
+ *       400:
+ *         description: Invalid status value
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put('/:id/status', roleMiddleware(['Admin', 'Manager']), updateUserStatus);
 
 module.exports = router;
