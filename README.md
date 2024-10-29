@@ -26,3 +26,11 @@ Pastikan sudah menginstal:
 1. Buka terminal dan pindah ke direktori frontend: `cd frontend`
 2. Instal dependensi: `npm install` atau, jika menggunakan yarn: `yarn install`
 3. Jalankan server frontend: `npm run dev` atau `yarn dev`
+4. Frontend akan berjalan di `http://localhost:5173`
+
+Untuk login menggunakan dummy account admin:\
+`Email : admin@gmail.com`
+`Password : Admin123`
+
+Untuk tampilan buat Toko Utama setelah login ganti URL:\
+`http://localhost:5173/admin-panel/wellcome`
