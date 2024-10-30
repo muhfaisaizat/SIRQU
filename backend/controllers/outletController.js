@@ -1,6 +1,9 @@
 // controllers/outletController.js
 const Outlet = require('../models/outlet'); // Pastikan path model sesuai dengan struktur proyek Anda
 const path = require('path');
+const User = require('../models/user');
+const sequelize = require('../config/database');
+const ProductOutlet = require('../models/productOutlet');
 
 // Menambahkan outlet baru dengan gambar
 exports.createOutlet = async (req, res) => {
@@ -23,24 +26,94 @@ exports.createOutlet = async (req, res) => {
 // Mendapatkan semua outlet
 exports.getOutlets = async (req, res) => {
   try {
-    const outlets = await Outlet.findAll();
-    res.status(200).json(outlets);
+    // Query SQL untuk mengambil data outlet dengan koordinator
+    const queryOutlet = `
+      SELECT 
+          outlets.id AS id_outlet,
+          outlets.nama AS nama_outlet,
+          outlets.alamat AS alamat,
+          outlets.image AS image,
+          outlets.syarat_ketentuan AS syarat_ketentuan,
+          outlets.koordinator AS koordinator,
+          users.id AS id_user,
+          users.name AS name_user,
+          users.role AS role_user
+      FROM 
+          outlets 
+      LEFT JOIN 
+          users ON outlets.koordinator = users.id;
+    `;
+
+    // Jalankan query untuk mendapatkan data outlet
+    const [outlets] = await sequelize.query(queryOutlet);
+
+    // Mengembalikan respons dengan data outlet
+    return res.status(200).json({
+      success: true,
+      message: 'Data outlet berhasil diambil',
+      data: outlets,
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Error fetching outlets:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan saat mengambil data outlet',
+      error: error.message,
+    });
   }
 };
 
 // Mendapatkan outlet berdasarkan ID
 exports.getOutletById = async (req, res) => {
+  const { id } = req.params; // Mengambil ID dari parameter URL
+
   try {
-    const outlet = await Outlet.findByPk(req.params.id);
-    if (outlet) {
-      res.status(200).json(outlet);
-    } else {
-      res.status(404).json({ error: 'Outlet not found' });
+    // Query SQL untuk mengambil data outlet berdasarkan ID dengan koordinator
+    const queryOutletById = `
+      SELECT 
+          outlets.id AS id_outlet,
+          outlets.nama AS nama_outlet,
+          outlets.alamat AS alamat,
+          outlets.image AS image,
+          outlets.syarat_ketentuan AS syarat_ketentuan,
+          outlets.koordinator AS koordinator,
+          users.id AS id_user,
+          users.name AS name_user,
+          users.role AS role_user
+      FROM 
+          outlets 
+      LEFT JOIN 
+          users ON outlets.koordinator = users.id
+      WHERE 
+          outlets.id = :id;
+    `;
+
+    // Jalankan query untuk mendapatkan data outlet berdasarkan ID
+    const [outlet] = await sequelize.query(queryOutletById, {
+      replacements: { id }, // Menggunakan parameter untuk mencegah SQL injection
+    });
+
+    // Cek apakah outlet ditemukan
+    if (outlet.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Outlet tidak ditemukan',
+      });
     }
+
+    // Mengembalikan respons dengan data outlet
+    return res.status(200).json({
+      success: true,
+      message: 'Data outlet berhasil diambil',
+      data: outlet[0], // Mengambil data outlet pertama (karena kita mencari berdasarkan ID)
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Error fetching outlet by ID:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan saat mengambil data outlet',
+      error: error.message,
+    });
   }
 };
 
@@ -86,5 +159,53 @@ exports.deleteOutlet = async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+exports.updateOutletCoordinator = async (req, res) => {
+  try {
+    const outletId = req.params.id;
+    const { koordinatorId } = req.body;
+
+    // Validate that koordinatorId is provided
+    if (!koordinatorId) {
+      return res.status(400).json({ error: 'Koordinator ID is required' });
+    }
+
+    // Check if the user exists and has an eligible role
+    const user = await User.findByPk(koordinatorId, { attributes: ['id', 'name', 'role'] });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Only allow users with 'Admin' or 'Manager' roles
+    if (!['Admin', 'Manager'].includes(user.role)) {
+      return res.status(403).json({ error: 'User does not have permission to be a coordinator' });
+    }
+
+    // Find the outlet to update
+    const outlet = await Outlet.findByPk(outletId);
+    if (!outlet) {
+      return res.status(404).json({ error: 'Outlet not found' });
+    }
+
+    // Update the koordinator field with the eligible user's ID
+    outlet.koordinator = koordinatorId;
+    await outlet.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Coordinator updated successfully',
+      data: {
+        id_outlet: outlet.id,
+        nama_outlet: outlet.nama,
+        id_koordinator: outlet.koordinator,
+        id_user: user.id,
+        nama_user: user.name,
+        role_user: user.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

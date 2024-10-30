@@ -196,4 +196,57 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), upload, outletControlle
  */
 router.delete('/:id', roleMiddleware(['Admin', 'Manager']), outletController.deleteOutlet);
 
+/**
+ * @swagger
+ * /api/outlets/{id}/koordinator:
+ *   put:
+ *     summary: Update the coordinator of an outlet by ID
+ *     tags: [Outlets]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the outlet to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               koordinatorId:
+ *                 type: integer
+ *                 description: The ID of the user to be set as the new coordinator
+ *                 example: 123
+ *     responses:
+ *       200:
+ *         description: Coordinator updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     koordinatorId:
+ *                       type: integer
+ *       403:
+ *         description: User does not have permission to be a coordinator
+ *       404:
+ *         description: Outlet or user not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put('/:id/koordinator', roleMiddleware(['Admin', 'Manager']), outletController.updateOutletCoordinator);
+
+
 module.exports = router;

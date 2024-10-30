@@ -50,7 +50,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *       400:
  *         description: Permintaan tidak valid
  */
-router.post('/', productController.createProduct);
+router.post('/', roleMiddleware(['Admin', 'Manager']), productController.createProduct);
 
 // /**
 //  * @swagger
@@ -120,7 +120,7 @@ router.post('/', productController.createProduct);
  *       404:
  *         description: Produk tidak ditemukan
  */
-router.get('/:id', productController.getProductById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager']), productController.getProductById);
 
 /**
  * @swagger
@@ -160,7 +160,7 @@ router.get('/:id', productController.getProductById);
  *       400:
  *         description: Permintaan tidak valid
  */
-router.put('/:id', productController.updateProduct);
+router.put('/:id', roleMiddleware(['Admin', 'Manager']), productController.updateProduct);
 
 
 /**
@@ -182,7 +182,7 @@ router.put('/:id', productController.updateProduct);
  *       404:
  *         description: Produk tidak ditemukan
  */
-router.delete('/:id', productController.deleteProduct);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager']), productController.deleteProduct);
 
 /**
  * @swagger
@@ -243,7 +243,7 @@ router.delete('/:id', productController.deleteProduct);
  *                   type: string
  *                   description: Error message
  */
-router.get('/', productController.getProducts);
+router.get('/', roleMiddleware(['Admin', 'Manager']), productController.getProducts);
 
 /**
  * @swagger
@@ -300,7 +300,7 @@ router.get('/', productController.getProducts);
  *       500:
  *         description: Internal server error
  */
-router.put('/:id/status', productController.updateProductStatus);
+router.put('/:id/status', roleMiddleware(['Admin', 'Manager']), productController.updateProductStatus);
 
 
 

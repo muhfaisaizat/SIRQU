@@ -27,6 +27,10 @@ Outlet.init({
         allowNull: false,
         defaultValue: false,
     },
+    koordinator: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
     createdAt: {
         type: DataTypes.DATE,
         allowNull: false,

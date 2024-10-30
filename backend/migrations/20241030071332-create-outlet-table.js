@@ -25,6 +25,10 @@ module.exports = {
         allowNull: false,
         defaultValue: false, // Nilai default 'false' jika belum diset
       },
+      koordinator: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
