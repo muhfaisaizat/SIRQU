@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const categoryOutletController = require('../controllers/categoryOutletController');
+const roleMiddleware = require('../middleware/roleMiddleware');
 
 /**
  * @swagger
@@ -35,7 +36,7 @@ const categoryOutletController = require('../controllers/categoryOutletControlle
  *       400:
  *         description: Bad request or invalid data
  */
-router.post('/', categoryOutletController.createCategoryOutlet);
+router.post('/', roleMiddleware(['Admin', 'Manager']), categoryOutletController.createCategoryOutlet);
 
 /**
  * @swagger
@@ -55,7 +56,7 @@ router.post('/', categoryOutletController.createCategoryOutlet);
  *       400:
  *         description: Error fetching relationships
  */
-router.get('/', categoryOutletController.getCategoryOutlets);
+router.get('/', roleMiddleware(['Admin', 'Manager']), categoryOutletController.getCategoryOutlets);
 
 /**
  * @swagger
@@ -82,7 +83,7 @@ router.get('/', categoryOutletController.getCategoryOutlets);
  *       400:
  *         description: Error fetching the relationship
  */
-router.get('/:id', categoryOutletController.getCategoryOutletById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager']), categoryOutletController.getCategoryOutletById);
 
 /**
  * @swagger
@@ -125,7 +126,7 @@ router.get('/:id', categoryOutletController.getCategoryOutletById);
  *       400:
  *         description: Error updating the relationship
  */
-router.put('/:id', categoryOutletController.updateCategoryOutlet);
+router.put('/:id', roleMiddleware(['Admin', 'Manager']), categoryOutletController.updateCategoryOutlet);
 
 /**
  * @swagger
@@ -148,6 +149,6 @@ router.put('/:id', categoryOutletController.updateCategoryOutlet);
  *       400:
  *         description: Error deleting the relationship
  */
-router.delete('/:id', categoryOutletController.deleteCategoryOutlet);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager']), categoryOutletController.deleteCategoryOutlet);
 
 module.exports = router;

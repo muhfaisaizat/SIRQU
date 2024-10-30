@@ -18,21 +18,24 @@ exports.getCategories = async (req, res) => {
     // Query SQL untuk mengambil data kategori dengan jumlah produk
     const queryCategories = `
       SELECT 
-        categories.id AS id_kategori,
-        categories.name AS nama_kategori,
-        COUNT(product_categories.product_id) AS jumlah_product,
-        GROUP_CONCAT(DISTINCT outlets.nama) AS nama_outlet,
-        categories.createdAt AS created_at
-      FROM 
-        categories
-      LEFT JOIN 
-        product_categories ON categories.id = product_categories.categories_id
-      LEFT JOIN 
-        product_outlets ON product_categories.product_id = product_outlets.product_id
-      LEFT JOIN 
-        outlets ON product_outlets.outlet_id = outlets.id
-      GROUP BY 
-        categories.id, categories.name, categories.createdAt;
+    categories.id AS id_kategori,
+    categories.name AS nama_kategori,
+    COUNT(product_categories.product_id) AS jumlah_product,
+    GROUP_CONCAT(DISTINCT outlets.nama) AS nama_outlet,
+    GROUP_CONCAT(DISTINCT product_outlets.id) AS product_outlet_id,
+    GROUP_CONCAT(DISTINCT product_outlets.product_id) AS product_id,
+    GROUP_CONCAT(DISTINCT product_outlets.outlet_id) AS outlet_id,
+    categories.createdAt AS created_at
+FROM 
+    categories
+LEFT JOIN 
+    product_categories ON categories.id = product_categories.categories_id
+LEFT JOIN 
+    product_outlets ON product_categories.product_id = product_outlets.product_id
+LEFT JOIN 
+    outlets ON product_outlets.outlet_id = outlets.id
+GROUP BY 
+    categories.id, categories.name, categories.createdAt;
     `;
 
     // Jalankan query untuk mendapatkan data kategori
@@ -66,15 +69,18 @@ exports.getCategoryById = async (req, res) => {
         categories.name AS nama_kategori,
         COUNT(product_categories.product_id) AS jumlah_product,
         GROUP_CONCAT(DISTINCT outlets.nama) AS nama_outlet,
+        GROUP_CONCAT(DISTINCT product_outlets.id) AS product_outlet_id,
+        GROUP_CONCAT(DISTINCT product_outlets.product_id) AS product_id,
+        GROUP_CONCAT(DISTINCT product_outlets.outlet_id) AS outlet_id,
         categories.createdAt AS created_at
       FROM 
-        categories
+          categories
       LEFT JOIN 
-        product_categories ON categories.id = product_categories.categories_id
+          product_categories ON categories.id = product_categories.categories_id
       LEFT JOIN 
-        product_outlets ON product_categories.product_id = product_outlets.product_id
+          product_outlets ON product_categories.product_id = product_outlets.product_id
       LEFT JOIN 
-        outlets ON product_outlets.outlet_id = outlets.id
+          outlets ON product_outlets.outlet_id = outlets.id
       WHERE 
         categories.id = ?
       GROUP BY 

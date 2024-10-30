@@ -18,11 +18,8 @@ const outletRoutes = require('./routes/outletRoutes');
 const productImageRoutes = require('./routes/productImageRoutes')
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
-<<<<<<< HEAD
 const receiptRoutes = require('./routes/receiptRoutes');
-=======
 const path = require('path');
->>>>>>> db0b5ddf65ae7839ba71ef872565570bd00eb9f9
 
 dotenv.config();
 
@@ -57,12 +54,9 @@ app.use('/api/transaksi/detail-pajak', detailPajak);
 app.use('/api/transaksi/detail-diskon', detailDiskonRoutes);
 app.use('/api/transaksi', transaksiRoutes);
 app.use('/api/kasir', kasirRoutes);
-<<<<<<< HEAD
 app.use('/api', receiptRoutes);
-=======
 app.use('/api/outlets', outletRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
->>>>>>> db0b5ddf65ae7839ba71ef872565570bd00eb9f9
 
 
 // Swagger Documentation

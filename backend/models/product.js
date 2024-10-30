@@ -41,6 +41,11 @@ Product.init({
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  status: {
+    type: DataTypes.ENUM('Produk Aktif', 'Produk Tidak Aktif'),
+    allowNull: false,
+    defaultValue: 'Produk Aktif'
+  },
 }, {
   sequelize,
   modelName: 'Product',

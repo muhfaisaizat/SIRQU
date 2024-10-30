@@ -28,7 +28,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *       400:
  *         description: Invalid request
  */
-router.post('/', categoryController.createCategory);
+router.post('/', roleMiddleware(['Admin', 'Manager']), categoryController.createCategory);
 
 /**
  * @swagger

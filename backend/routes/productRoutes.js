@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
 // const upload = require('../middleware/uploadImage'); // Middleware upload
+const roleMiddleware = require('../middleware/roleMiddleware');
 
 /**
  * @swagger
@@ -243,6 +244,64 @@ router.delete('/:id', productController.deleteProduct);
  *                   description: Error message
  */
 router.get('/', productController.getProducts);
+
+/**
+ * @swagger
+ * /api/products/{id}/status:
+ *   put:
+ *     summary: Update product status and stock by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the product to update
+ *       - in: query
+ *         name: stock
+ *         schema:
+ *           type: integer
+ *           description: New stock value for the product
+ *       - in: query
+ *         name: status
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [Produk Aktif, Produk Tidak Aktif]
+ *         description: New status for the product
+ *     responses:
+ *       200:
+ *         description: Product status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     name:
+ *                       type: string
+ *                     stock:
+ *                       type: integer
+ *                     status:
+ *                       type: string
+ *       400:
+ *         description: Invalid status value
+ *       404:
+ *         description: Product not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put('/:id/status', productController.updateProductStatus);
+
 
 
 module.exports = router;

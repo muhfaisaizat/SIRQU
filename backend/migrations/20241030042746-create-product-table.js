@@ -26,6 +26,11 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false // Menentukan apakah stok tidak terbatas
       },
+      status: {
+        type: Sequelize.ENUM('Produk Aktif', 'Produk Tidak Aktif'),
+        allowNull: false,
+        defaultValue: 'Produk Aktif'
+      },
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') // Nilai default untuk 'createdAt'
@@ -43,5 +48,6 @@ module.exports = {
   down: async (queryInterface, Sequelize) => {
     // Menghapus tabel 'products'
     await queryInterface.dropTable('products');
+    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_products_status";'); // Menghapus tipe ENUM jika rollback
   }
 };
