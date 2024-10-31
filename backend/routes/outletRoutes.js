@@ -248,5 +248,48 @@ router.delete('/:id', roleMiddleware(['Admin', 'Manager']), outletController.del
  */
 router.put('/:id/koordinator', roleMiddleware(['Admin', 'Manager']), outletController.updateOutletCoordinator);
 
+/**
+ * @swagger
+ * /api/outlets/product-outlets:
+ *   post:
+ *     summary: Create ProductOutlet for each product in a specific outlet
+ *     tags: [Outlets]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               outlet_id:
+ *                 type: integer
+ *                 description: ID of the outlet for which to create ProductOutlets
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Successfully created ProductOutlets for each product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       product_id:
+ *                         type: integer
+ *                       outlet_id:
+ *                         type: integer
+ *       404:
+ *         description: No products found
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/product-outlets',  outletController.createProductOutletsForAllProducts);
+
 
 module.exports = router;

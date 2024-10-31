@@ -3,7 +3,10 @@ const Outlet = require('../models/outlet'); // Pastikan path model sesuai dengan
 const path = require('path');
 const User = require('../models/user');
 const sequelize = require('../config/database');
+// Import model yang diperlukan
+const Product = require('../models/product');
 const ProductOutlet = require('../models/productOutlet');
+
 
 // Menambahkan outlet baru dengan gambar
 exports.createOutlet = async (req, res) => {
@@ -207,5 +210,41 @@ exports.updateOutletCoordinator = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+// Function untuk membuat ProductOutlet untuk setiap produk
+exports.createProductOutletsForAllProducts = async (req, res) => {
+  try {
+    const { outlet_id } = req.body; // Ambil input outlet_id dari request body
+
+    // Ambil semua id produk dari tabel products yang belum dihapus
+    const products = await Product.findAll({ attributes: ['id'], where: { deletedAt: null } });
+
+    // Cek apakah ada produk yang ditemukan
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: 'Tidak ada produk yang ditemukan' });
+    }
+
+    // Buat array untuk menyimpan data ProductOutlet
+    const productOutletData = products.map(product => ({
+      product_id: product.id,
+      outlet_id: outlet_id,
+    }));
+
+    // Gunakan bulkCreate untuk membuat ProductOutlet dalam jumlah banyak sekaligus
+    const createdProductOutlets = await ProductOutlet.bulkCreate(productOutletData);
+
+    // Kirim respons jika berhasil
+    res.status(201).json({
+      message: 'Berhasil membuat ProductOutlet untuk setiap produk',
+      data: createdProductOutlets,
+    });
+  } catch (error) {
+    console.error('Error creating ProductOutlet:', error);
+    res.status(500).json({
+      error: 'Terjadi kesalahan saat membuat ProductOutlet',
+      message: error.message,
+    });
   }
 };
