@@ -1,11 +1,11 @@
 // controllers/productCategoryController.js
-const ProductCategory = require('../models/productCategory');
+const ProductCategory = require('../models/productsCategories');
 
 // Create a new product-category relationship
 exports.createProductCategory = async (req, res) => {
   try {
-    const { product_id, categories_id } = req.body;
-    const productCategory = await ProductCategory.create({ product_id, categories_id });
+    const { productsId, categoriesId } = req.body;
+    const productCategory = await ProductCategory.create({ productsId, categoriesId });
     res.status(201).json(productCategory);
   } catch (error) {
     console.error(error); // Debugging

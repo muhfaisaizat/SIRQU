@@ -1,11 +1,10 @@
-// models/productImage.js
+// models/productCategory.js
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Products = require('./products');
 
-class ProductImages extends Model {}
+class ProductsCategories extends Model {}
 
-ProductImages.init({
+ProductsCategories.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -21,8 +20,14 @@ ProductImages.init({
     onUpdate: 'CASCADE',
     allowNull: false,
   },
-  image: {
-    type: DataTypes.STRING,
+  categoriesId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'categories', // Pastikan nama model kategori sesuai dengan yang ada
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
     allowNull: false,
   },
   createdAt: {
@@ -39,14 +44,10 @@ ProductImages.init({
   },
 }, {
   sequelize,
-  modelName: 'productImages',
-  tableName: 'productimages',
+  modelName: 'productsCategories',
+  tableName: 'productscategories',
   timestamps: true,
   paranoid: true,
 });
 
-// Definisikan relasi
-ProductImages.belongsTo(Products, { foreignKey: 'productsId' });
-Products.hasMany(ProductImages, { foreignKey: 'productsId' });
-
-module.exports = ProductImages;
+module.exports = ProductsCategories;

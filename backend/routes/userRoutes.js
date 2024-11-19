@@ -108,6 +108,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), getUserById);
  *                 type: string
  *               role:
  *                 type: string
+ *                 enum: [Admin, Manager, Kasir]
  *               status:
  *                 type: string
  *                 enum: [Active, Inactive]

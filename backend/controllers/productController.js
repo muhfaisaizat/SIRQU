@@ -1,4 +1,4 @@
-const Product = require('../models/product');
+const Product = require('../models/products');
 const ProductImage = require('../models/productImage');
 const sequelize = require('../config/database');
 
@@ -172,19 +172,19 @@ exports.getProducts = async (req, res) => {
     categories.name AS nama_category,
     outlets.id AS id_outlet,
     outlets.nama AS nama_outlet,
-    GROUP_CONCAT(product_image.image) AS gambar_produk
+    GROUP_CONCAT(productimages.image) AS gambar_produk
     FROM 
         products
     JOIN 
-        product_categories ON products.id = product_categories.product_id
+        productscategories ON products.id = productscategories.productsId
     JOIN 
-        categories ON product_categories.categories_id = categories.id
+        categories ON productscategories.categoriesId = categories.id
     JOIN 
-        product_outlets ON products.id = product_outlets.product_id
+        productsoutlets ON products.id = productsoutlets.productsId
     JOIN 
-        outlets ON product_outlets.outlet_id = outlets.id
+        outlets ON productsoutlets.outletsId = outlets.id
     LEFT JOIN
-        product_image ON products.id = product_image.product_id
+        productimages ON products.id = productimages.productsId
     WHERE
         products.deletedAt IS NULL
     GROUP BY 

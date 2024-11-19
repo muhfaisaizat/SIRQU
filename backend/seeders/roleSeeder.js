@@ -1,5 +1,5 @@
 'use strict';
-const User = require('../models/user'); // Pastikan model User diimpor
+const User = require('../models/users'); // Pastikan model User diimpor
 const argon2 = require('argon2');
 
 module.exports = {

@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const Sequelize = require('sequelize'); // Satu deklarasi ini sudah cukup
+const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
@@ -27,17 +27,9 @@ fs
     );
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file));
-    
-    if (model.prototype instanceof Sequelize.Model) {
-      // Jika model menggunakan `class extends Model`, panggil init dengan sequelize instance
-      model.init(model.rawAttributes, { sequelize, modelName: model.name });
-    } else if (typeof model === 'function') {
-      // Jika model menggunakan `sequelize.define`, langsung assign dengan sequelize instance
-      db[model.name] = model(sequelize, Sequelize.DataTypes);
-    }
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
   });
-
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {

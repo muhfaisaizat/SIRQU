@@ -5,21 +5,21 @@ const sequelize = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
-const categoryOutletRoutes = require('./routes/categoryOutletRoutes');
+// const categoryOutletRoutes = require('./routes/categoryOutletRoutes');
 const productRoutes = require('./routes/productRoutes');
 const productCategoryRoutes = require('./routes/productCategoryRoutes');
-const productOutletRoutes = require('./routes/productOutletRoutes');
-const transaksiRoutes = require('./routes/transaksiRoutes');
-const detailTransaksiRoutes = require('./routes/detailTransaksiRoutes');
-const detailPajak = require('./routes/detailPajak');
-const detailDiskonRoutes = require('./routes/detailDiskonRoutes');
-const kasirRoutes = require('./routes/kasirRoutes');
-const outletRoutes = require('./routes/outletRoutes');
-const productImageRoutes = require('./routes/productImageRoutes')
+// const productOutletRoutes = require('./routes/productOutletRoutes');
+// const transaksiRoutes = require('./routes/transaksiRoutes');
+// const detailTransaksiRoutes = require('./routes/detailTransaksiRoutes');
+// const detailPajak = require('./routes/detailPajak');
+// const detailDiskonRoutes = require('./routes/detailDiskonRoutes');
+// const kasirRoutes = require('./routes/kasirRoutes');
+// const outletRoutes = require('./routes/outletRoutes');
+// const productImageRoutes = require('./routes/productImageRoutes')
+// const receiptRoutes = require('./routes/receiptRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
-const receiptRoutes = require('./routes/receiptRoutes');
-const path = require('path');
+const path = require('path'); 
 
 dotenv.config();
 
@@ -44,19 +44,19 @@ app.use((req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
-app.use('/api/categories/outlets', categoryOutletRoutes);
+// app.use('/api/categories/outlets', categoryOutletRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/product/categories', productCategoryRoutes);
-app.use('/api/products/outlets', productOutletRoutes);
-app.use('/api/products/productImage', productImageRoutes);
-app.use('/api/transaksi/detail', detailTransaksiRoutes);
-app.use('/api/transaksi/detail-pajak', detailPajak);
-app.use('/api/transaksi/detail-diskon', detailDiskonRoutes);
-app.use('/api/transaksi', transaksiRoutes);
-app.use('/api/kasir', kasirRoutes);
-app.use('/api', receiptRoutes);
-app.use('/api/outlets', outletRoutes);
-app.use('/images', express.static(path.join(__dirname, 'images')));
+// app.use('/api/products/outlets', productOutletRoutes);
+// app.use('/api/products/productImage', productImageRoutes);
+// app.use('/api/transaksi/detail', detailTransaksiRoutes);
+// app.use('/api/transaksi/detail-pajak', detailPajak);
+// app.use('/api/transaksi/detail-diskon', detailDiskonRoutes);
+// app.use('/api/transaksi', transaksiRoutes);
+// app.use('/api/kasir', kasirRoutes);
+// app.use('/api/outlets', outletRoutes);
+// app.use('/images', express.static(path.join(__dirname, 'images')));
+// app.use('/api', receiptRoutes);
 
 
 // Swagger Documentation
@@ -82,7 +82,7 @@ const initializeDatabase = async () => {
 // Start the server
 initializeDatabase()
   .then(() => {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`Server running on port ${PORT} http://localhost:5000/api-sirqu/docs`));
   })
   .catch((error) => {
     console.error("Error starting the server:", error);

@@ -1,5 +1,5 @@
 // controllers/categoryOutletController.js
-const CategoryOutlet = require('../models/categoryOutlet');
+const CategoryOutlet = require('../models/categoriesOutlets');
 
 // Create a new category-outlet relationship
 exports.createCategoryOutlet = async (req, res) => {

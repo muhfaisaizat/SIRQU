@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const outletController = require('../controllers/outletController');
 const roleMiddleware = require('../middleware/roleMiddleware');
-const upload = require('../middleware/uploadImage'); // Middleware upload
+const uploadOutlet = require('../middleware/uploadImageOutlet'); // Middleware upload
 
 /**
  * @swagger
@@ -30,7 +30,7 @@ const upload = require('../middleware/uploadImage'); // Middleware upload
  *                 type: string
  *                 format: binary
  *                 description: Image file for the outlet
- *               syarat_ketentuan:
+ *               syaratKetentuan:
  *                 type: boolean
  *                 description: Terms and conditions status of the outlet
  *     responses:
@@ -39,7 +39,7 @@ const upload = require('../middleware/uploadImage'); // Middleware upload
  *       400:
  *         description: Invalid request
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), upload, outletController.createOutlet);
+router.post('/', roleMiddleware(['Admin', 'Manager']), uploadOutlet, outletController.createOutlet);
 
 /**
  * @swagger
@@ -173,7 +173,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), outletController.getOut
  *       404:
  *         description: Outlet not found
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), upload, outletController.updateOutlet);
+router.put('/:id', roleMiddleware(['Admin', 'Manager']), uploadOutlet, outletController.updateOutlet);
 
 /**
  * @swagger

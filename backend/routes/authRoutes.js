@@ -56,9 +56,10 @@ router.post('/register', register);
  *             properties:
  *               email:
  *                 type: string
- *                 example: user@gmail.com
+ *                 example: admin@gmail.com
  *               password:
  *                 type: string
+ *                 example: Admin123
  *     responses:
  *       200:
  *         description: Login successful

@@ -1,11 +1,9 @@
-// models/productImage.js
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Products = require('./products');
 
-class ProductImages extends Model {}
+class ProductsOutlets extends Model {}
 
-ProductImages.init({
+ProductsOutlets.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -14,39 +12,40 @@ ProductImages.init({
   productsId: {
     type: DataTypes.INTEGER,
     references: {
-      model: 'products', // Pastikan nama model produk sesuai dengan yang ada
+      model: 'products', // Ganti ini dengan nama tabel produk yang benar
       key: 'id',
     },
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     allowNull: false,
   },
-  image: {
-    type: DataTypes.STRING,
+  outletsId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'outlets', // Ganti ini dengan nama tabel outlet yang benar
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
     allowNull: false,
   },
   createdAt: {
     type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
+    defaultValue: DataTypes.NOW
   },
   updatedAt: {
     type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
+    defaultValue: DataTypes.NOW
   },
   deletedAt: {
     type: DataTypes.DATE,
-    allowNull: true,
-  },
+  }
 }, {
   sequelize,
-  modelName: 'productImages',
-  tableName: 'productimages',
+  modelName: 'productsOutlets',
+  tableName: 'productsoutlets',
   timestamps: true,
   paranoid: true,
 });
 
-// Definisikan relasi
-ProductImages.belongsTo(Products, { foreignKey: 'productsId' });
-Products.hasMany(ProductImages, { foreignKey: 'productsId' });
-
-module.exports = ProductImages;
+module.exports = ProductsOutlets;

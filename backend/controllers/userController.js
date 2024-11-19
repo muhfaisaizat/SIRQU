@@ -1,6 +1,9 @@
-const User = require('../models/user');
+const User = require('../models/users');
 const argon2 = require('argon2');
 const path = require('path');
+const sequelize = require('../config/database'); 
+const moment = require('moment-timezone'); // Mengimpor moment.js
+const fs = require('fs');
 
 exports.createUser = async (req, res) => {
     const { name, email, password, role, status } = req.body;
@@ -16,7 +19,7 @@ exports.createUser = async (req, res) => {
         const hashedPassword = await argon2.hash(password);
 
         // Tambahkan path gambar dari req.file jika ada
-        const imagePath = req.file ? `/images/${req.file.filename}` : null;
+        const imagePath = req.file ? `PP_${req.body.name}_${req.file.originalname}` : null;
 
         // Membuat user baru
         const newUser = await User.create({
@@ -41,32 +44,100 @@ exports.createUser = async (req, res) => {
 };
 
 exports.getAllUsers = async (req, res) => {
-    const users = await User.findAll();
-    res.json(users);
+  try {
+    const [results] = await sequelize.query(`
+      SELECT id, image, name, email, password, role, status, createdAt, updatedAt, deletedAt
+      FROM users
+      WHERE deletedAt IS NULL;
+    `);
+
+    // Memformat waktu untuk setiap user dalam hasil query
+    const formattedUsers = results.map(user => ({
+      ...user,
+      createdAt: moment.utc(user.createdAt).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'),
+      updatedAt: moment.utc(user.updatedAt).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'),
+      deletedAt: user.deletedAt ? moment.utc(user.deletedAt).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss') : null,
+    }));
+
+    return res.status(200).json(formattedUsers);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return res.status(500).json({ message: 'Error fetching users' });
+  }
 };
 
 exports.getUserById = async (req, res) => {
-    const user = await User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json(user);
+  const { id } = req.params;  // Mengambil parameter ID dari URL
+
+  try {
+    // Query untuk mendapatkan user berdasarkan id
+    const [results, metadata] = await sequelize.query(`
+      SELECT id, image, name, email, password, role, status, createdAt, updatedAt, deletedAt
+      FROM users
+      WHERE id = :id AND deletedAt IS NULL;
+    `, {
+      replacements: { id },  // Menggunakan id yang diterima dari parameter
+    });
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Memformat waktu yang diambil menggunakan moment-timezone untuk zona waktu Asia/Jakarta
+    const formattedUser = {
+      ...results[0],
+      createdAt: moment.utc(results[0].createdAt).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'),
+      updatedAt: moment.utc(results[0].updatedAt).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'),
+      deletedAt: results[0].deletedAt ? moment.utc(results[0].deletedAt).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss') : null,
+    };
+
+    return res.status(200).json(formattedUser);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return res.status(500).json({ message: 'Error fetching user' });
+  }
 };
 
 exports.updateUser = async (req, res) => {
+  try {
     const { name, role, status } = req.body;
     const user = await User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-    // Jika gambar baru diupload, ganti path gambar
-    const imagePath = req.file ? `/images/${req.file.filename}` : user.image;
+    // Handle image update
+    if (req.file) {
+      // Construct path of the old image file
+      if (user.image) {
+        const oldImagePath = path.join(__dirname, '../images', user.image);
 
-    // Perbarui informasi user
+        // Check if the old image exists and remove it
+        fs.unlink(oldImagePath, (err) => {
+          if (err) {
+            console.error('Error deleting old image:', err);
+          }
+        });
+      }
+
+      // Generate the new image path and update it
+      const imagePath = `PP_${req.body.name}_${req.file.originalname}`;
+      user.image = imagePath; // Update image path with the new image
+    }
+
+    // Update user details
     user.name = name || user.name;
     user.role = role || user.role;
     user.status = status || user.status;
-    user.image = imagePath; // Update image path if a new image is uploaded
+
     await user.save();
 
-    res.json({ message: 'User updated', user });
+    res.json({ message: 'User updated successfully', user });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 };
 
 exports.deleteUser = async (req, res) => {

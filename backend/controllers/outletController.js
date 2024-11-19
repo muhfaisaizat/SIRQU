@@ -1,28 +1,43 @@
 // controllers/outletController.js
-const Outlet = require('../models/outlet'); // Pastikan path model sesuai dengan struktur proyek Anda
+const Outlet = require('../models/outlets'); // Pastikan path model sesuai dengan struktur proyek Anda
 const path = require('path');
-const User = require('../models/user');
+const User = require('../models/users');
 const sequelize = require('../config/database');
 // Import model yang diperlukan
-const Product = require('../models/product');
-const ProductOutlet = require('../models/productOutlet');
+const Product = require('../models/products');
+const ProductOutlet = require('../models/productsOutlets');
 
-
-// Menambahkan outlet baru dengan gambar
 exports.createOutlet = async (req, res) => {
+  const { nama, alamat, syaratKetentuan } = req.body;
+
   try {
-    // Tambahkan path gambar dari req.file
-    const imagePath = req.file ? `/images/${req.file.filename}` : null;
-    
-    // Buat data outlet baru dengan path gambar
-    const outlet = await Outlet.create({
-      ...req.body,
-      image: imagePath,
+    // Memeriksa apakah outlet dengan nama yang sama sudah ada
+    const existingOutlet = await Outlet.findOne({ where: { nama } });
+    if (existingOutlet) {
+      return res.status(400).json({ message: 'Outlet with this name already exists' });
+    }
+
+    // Menyimpan path gambar jika ada
+    const imagePath = req.file ? `Outlet_${req.body.nama}_${req.file.originalname}` : null;
+
+    // Membuat outlet baru
+    const newOutlet = await Outlet.create({
+      nama,
+      alamat,
+      syaratKetentuan: syaratKetentuan || false,  // Set default value jika syaratKetentuan tidak ada
+      image: imagePath,  // Menyimpan nama gambar atau null jika tidak ada gambar
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
-    
-    res.status(201).json(outlet);
+
+    // Kirim respons dengan data outlet yang baru dibuat
+    res.status(201).json({
+      message: 'Outlet created successfully',
+      outlet: { ...newOutlet.dataValues, syaratKetentuan: newOutlet.syaratKetentuan }, // Menampilkan data outlet yang baru dibuat
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Error creating outlet:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
