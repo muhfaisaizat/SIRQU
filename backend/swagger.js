@@ -32,6 +32,7 @@ const swaggerOptions = {
             { name: 'Outlets' },
             { name: 'Kasir' },
             { name: 'Transaksi' },
+            { name: 'Belanja' },
         ],
         security: [{ BearerAuth: [] }],
     },
