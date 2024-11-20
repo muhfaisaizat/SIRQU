@@ -4,6 +4,7 @@ import { Celo } from 'iconsax-react';
 import { Routes, Route } from 'react-router-dom';
 import Register from './Register';
 import ForgotPassword from './ForgotPassword';
+import bg from '../../assets/Frame.png'
 
 
 const Authentication = () => {
@@ -12,9 +13,7 @@ const Authentication = () => {
             <div
                 className="w-full md:w-1/2 h-full bg-cover bg-center flex"
                 style={{
-                    backgroundImage:
-                        'url(https://s3-alpha-sig.figma.com/img/3d0d/907a/8f35e95655ce5b4c6689ded52bd498ed?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=eh2DZQyhFlA2~VSq8O2WQCjucSWquURJ0g140k1~6SMaCGxWMmMoXkF4NQRXke7KR6ohcWrjDfxEKTRqZJq~Ml2cQcL0bTRHGcyhVikmEyX8INvwanv5dV~1RI0XCs18YPdEWwfadu59OaJJj7kw-6o3pRq6AeJvfWBPROMW9K6AAC1uJJIZh0RtZLjrlcolrI6aW6X~iikGMD0Ow8jZ9I7eEo7hBCiTEDaS23ae14YJGQh7q6yd8BkgLs8iDEZqa~WGz7p1SMSiU5uLlg4hvzfVli-WDtdGTsJAT6GFojW1byIK2BDckziSJkGMY-kBb27xnR~437Jo2uZqbDhFzA__)',
-
+                    backgroundImage:`url(${bg})`,
                 }}
             >
                 <div className="w-full h-full flex flex-col justify-between pt-[52px] pb-[52px] pl-[68px] pr-[68px]" style={{ background: 'rgba(24, 24, 27, 0.5)' }}>

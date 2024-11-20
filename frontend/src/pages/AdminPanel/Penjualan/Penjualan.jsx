@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { id } from "date-fns/locale";
+import DataCard from './DataCard';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const Penjualan = () => {
      // data
@@ -98,8 +100,8 @@ const Penjualan = () => {
     
 
     const [date, setDate] = useState({
-        from: null,
-        to: addDays(null, 0),
+        from: new Date(), // Gunakan nilai default berupa tanggal valid
+    to: new Date(),
     });
 
     const DataOutlet = [
@@ -202,8 +204,9 @@ const Penjualan = () => {
 
 
     return (
+        <ScrollArea className='h-[100%]'>
         <div className="px-[24px]">
-            <div className='flex justify-between pt-[40px] pb-[16px]'>
+            <div className='flex justify-between pt-[40px] pb-[36px]'>
                 <h2 className='text-[36px] font-semibold'>Penjualan</h2>
                 <div className='flex gap-[16px]'>
                     <Popover>
@@ -270,8 +273,10 @@ const Penjualan = () => {
                     </DropdownMenu>
                 </div>
             </div>
+            <DataCard/>
             <DataTableHistory data={data} setData={setData} columnFilters={columnFilters} setColumnFilters={setColumnFilters} filters={filters} DataBayar={DataBayar} handleFilterChange={handleFilterChange} handleClearFilters={handleClearFilters}/>
         </div>
+        </ScrollArea>
     );
 };
 

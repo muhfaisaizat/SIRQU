@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Category, ShoppingCart, Diagram, User, Box, ArrowDown2, ArrowUp2, Celo, Shop,ReceiptItem, } from 'iconsax-react';
+import { Category, ShoppingCart, Diagram, User, Box, ArrowDown2, ArrowUp2, Celo, Shop,ReceiptItem, EmptyWalletChange } from 'iconsax-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import DaftarPengguna from '../ManajemenUser/DaftarPengguna/DaftarPengguna';
@@ -16,6 +16,7 @@ import PajakStruk from '../Pengaturan/Pajak&Struk/PajakStruk';
 import Promosi from '../Pengaturan/Promosi/Promosi';
 import Penjualan from '../Penjualan/Penjualan';
 import Logout from './Logout';
+import Belanja from '../Belanja/Belanja';
 
 const MainPanel = () => {
     const navigate = useNavigate();
@@ -98,6 +99,12 @@ const MainPanel = () => {
                                 <Link className='flex gap-3 justify-center'>
                                     <ReceiptItem size={16} />
                                     <span className="font-medium text-[14px]">Penjualan</span>
+                                </Link>
+                            </li>
+                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'belanja' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('belanja'); navigate('/admin-panel/belanja'); }}>
+                                <Link className='flex gap-3 justify-center'>
+                                    <EmptyWalletChange size={16} />
+                                    <span className="font-medium text-[14px]">Belanja</span>
                                 </Link>
                             </li>
                         </ul>
@@ -241,6 +248,7 @@ const MainPanel = () => {
                         <Route path="*" element={<Dashboard />} />
                         <Route path="dashboard" element={<Dashboard handlemenu={handlemenu} />} />
                         <Route path="penjualan" element={<Penjualan />} />
+                        <Route path="belanja" element={<Belanja />} />
                         <Route path="pajak&struk" element={<PajakStruk />} />
                         <Route path="promosi" element={<Promosi />} />
                         <Route path="sistem-kasir" element={<Kasir />} />
