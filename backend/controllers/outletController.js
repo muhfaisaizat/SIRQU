@@ -24,7 +24,7 @@ exports.createOutlet = async (req, res) => {
     const newOutlet = await Outlet.create({
       nama,
       alamat,
-      syarat_ketentuan: syarat_ketentuan || false,  // Set default value jika syaratKetentuan tidak ada
+      syarat_ketentuan: syarat_ketentuan || true,  // Set default value jika syaratKetentuan tidak ada
       image: imagePath,  // Menyimpan nama gambar atau null jika tidak ada gambar
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -59,7 +59,9 @@ exports.getOutlets = async (req, res) => {
       FROM 
           outlets 
       LEFT JOIN 
-          users ON outlets.koordinator = users.id;
+          users ON outlets.koordinator = users.id
+      WHERE 
+          outlets.deletedAt IS NULL;
     `;
 
     // Jalankan query untuk mendapatkan data outlet
@@ -103,7 +105,8 @@ exports.getOutletById = async (req, res) => {
       LEFT JOIN 
           users ON outlets.koordinator = users.id
       WHERE 
-          outlets.id = :id;
+          outlets.id = :id
+          outlets.deletedAt IS NULL;
     `;
 
     // Jalankan query untuk mendapatkan data outlet berdasarkan ID
@@ -145,7 +148,7 @@ exports.updateOutlet = async (req, res) => {
       }
   
       // Jika gambar baru diupload, ganti path gambar
-      const imagePath = req.file ? `/images/${req.file.filename}` : outlet.image;
+      const imagePath = req.file ? `Outlet_${req.body.nama}_${req.file.originalname}` : outlet.image;
   
       // Perbarui outlet
       const updated = await Outlet.update({ ...req.body, image: imagePath }, {
