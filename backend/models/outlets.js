@@ -22,7 +22,7 @@ Outlet.init({
         type: DataTypes.STRING,
         allowNull: true,
     },
-    syaratKetentuan: {
+    syarat_ketentuan: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,

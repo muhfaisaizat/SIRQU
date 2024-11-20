@@ -42,8 +42,8 @@ exports.getProductCategoryById = async (req, res) => {
 // Update a product-category relationship
 exports.updateProductCategory = async (req, res) => {
   try {
-    const { product_id, categories_id } = req.body;
-    const [updated] = await ProductCategory.update({ product_id, categories_id }, {
+    const { product_id, categoriesId } = req.body;
+    const [updated] = await ProductCategory.update({ product_id, categoriesId }, {
       where: { id: req.params.id },
     });
     if (updated) {

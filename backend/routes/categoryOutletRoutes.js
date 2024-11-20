@@ -17,26 +17,47 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *           schema:
  *             type: object
  *             required:
- *               - categories_id
- *               - outlet_id
+ *               - categoriesId
+ *               - outletsId
  *             properties:
- *               categories_id:
+ *               categoriesId:
  *                 type: integer
  *                 description: The ID of the category
- *               outlet_id:
+ *               outletsId:
  *                 type: integer
  *                 description: The ID of the outlet
+ *           example:
+ *             categoriesId: 1
+ *             outletsId: 2
  *     responses:
  *       201:
  *         description: Successfully created the relationship
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoryOutlet'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/CategoryOutlet'
  *       400:
  *         description: Bad request or invalid data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid input data"
  */
 router.post('/', roleMiddleware(['Admin', 'Manager']), categoryOutletController.createCategoryOutlet);
+
 
 /**
  * @swagger
@@ -57,6 +78,8 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), categoryOutletController.
  *         description: Error fetching relationships
  */
 router.get('/', roleMiddleware(['Admin', 'Manager']), categoryOutletController.getCategoryOutlets);
+
+
 
 /**
  * @swagger

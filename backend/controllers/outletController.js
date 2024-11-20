@@ -8,7 +8,7 @@ const Product = require('../models/products');
 const ProductOutlet = require('../models/productsOutlets');
 
 exports.createOutlet = async (req, res) => {
-  const { nama, alamat, syaratKetentuan } = req.body;
+  const { nama, alamat, syarat_ketentuan } = req.body;
 
   try {
     // Memeriksa apakah outlet dengan nama yang sama sudah ada
@@ -24,7 +24,7 @@ exports.createOutlet = async (req, res) => {
     const newOutlet = await Outlet.create({
       nama,
       alamat,
-      syaratKetentuan: syaratKetentuan || false,  // Set default value jika syaratKetentuan tidak ada
+      syarat_ketentuan: syarat_ketentuan || false,  // Set default value jika syaratKetentuan tidak ada
       image: imagePath,  // Menyimpan nama gambar atau null jika tidak ada gambar
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -33,7 +33,7 @@ exports.createOutlet = async (req, res) => {
     // Kirim respons dengan data outlet yang baru dibuat
     res.status(201).json({
       message: 'Outlet created successfully',
-      outlet: { ...newOutlet.dataValues, syaratKetentuan: newOutlet.syaratKetentuan }, // Menampilkan data outlet yang baru dibuat
+      outlet: { ...newOutlet.dataValues, syarat_ketentuan: newOutlet.syarat_ketentuan }, // Menampilkan data outlet yang baru dibuat
     });
   } catch (error) {
     console.error('Error creating outlet:', error);
