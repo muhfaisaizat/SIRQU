@@ -64,3 +64,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+input[type="time"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    display: none; /* Sembunyikan ikon bawaan */
+    -webkit-appearance: none; /* Untuk Safari/Chrome */
+}
