@@ -17,10 +17,10 @@ const roleMiddleware = require('../middleware/roleMiddleware')
  *           schema:
  *             type: object
  *             properties:
- *               product_id:
+ *               productsId:
  *                 type: integer
  *                 example: 1
- *               categories_id:
+ *               categoriesId:
  *                 type: integer
  *                 example: 1
  *     responses:
@@ -88,10 +88,10 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), productCategoryControll
  *           schema:
  *             type: object
  *             properties:
- *               product_id:
+ *               productsId:
  *                 type: integer
  *                 example: 1
- *               categories_id:
+ *               categoriesId:
  *                 type: integer
  *                 example: 1
  *     responses:

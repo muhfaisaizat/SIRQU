@@ -17,34 +17,36 @@ exports.getProductById = async (req, res) => {
   try {
     const queryProduct = `
       SELECT 
-        products.id AS id_product,
-        products.name AS nama_product,
-        products.description AS deskripsi_product,
-        products.stock AS stok_product,
-        products.unlimited_stock AS unlimited_stock,
-        products.price AS harga_product,
-        products.status AS status_product,
-        categories.id AS id_category,
-        categories.name AS nama_category,
-        GROUP_CONCAT(DISTINCT outlets.id) AS id_outlet,
-        GROUP_CONCAT(DISTINCT outlets.nama) AS nama_outlet,
-        GROUP_CONCAT(DISTINCT product_image.image) AS gambar_produk
-      FROM 
-        products
-      JOIN 
-        product_categories ON products.id = product_categories.product_id
-      JOIN 
-        categories ON product_categories.categories_id = categories.id
-      JOIN 
-        product_outlets ON products.id = product_outlets.product_id
-      JOIN 
-        outlets ON product_outlets.outlet_id = outlets.id
-      LEFT JOIN
-        product_image ON products.id = product_image.product_id
-      WHERE
-        products.deletedAt IS NULL AND products.id = ?
-      GROUP BY 
-        products.id, categories.id
+    products.id AS id_product,
+    products.name AS nama_product,
+    products.description AS deskripsi_product,
+    products.stock AS stok_product,
+    products.unlimited_stock AS unlimited_stock,
+    products.price AS harga_product,
+    products.status AS status_product,
+    categories.id AS id_category,
+    categories.name AS nama_category,
+    GROUP_CONCAT(DISTINCT outlets.id) AS id_outlet,
+    GROUP_CONCAT(DISTINCT outlets.nama) AS nama_outlet,
+    GROUP_CONCAT(DISTINCT productimages.image) AS gambar_produk
+FROM 
+    products
+-- Menggunakan LEFT JOIN untuk semua tabel yang mungkin tidak memiliki data terkait
+LEFT JOIN 
+    productscategories ON products.id = productscategories.productsId
+LEFT JOIN 
+    categories ON productscategories.categoriesId = categories.id
+LEFT JOIN 
+    productsoutlets ON products.id = productsoutlets.productsId
+LEFT JOIN 
+    outlets ON productsoutlets.outletsId = outlets.id
+LEFT JOIN 
+    productimages ON products.id = productimages.productsId
+WHERE
+    products.deletedAt IS NULL AND products.id = ?
+GROUP BY 
+    products.id, categories.id;
+
     `;
 
     // Jalankan query untuk mendapatkan data produk berdasarkan ID
@@ -175,13 +177,13 @@ exports.getProducts = async (req, res) => {
     GROUP_CONCAT(productimages.image) AS gambar_produk
     FROM 
         products
-    JOIN 
+    LEFT JOIN 
         productscategories ON products.id = productscategories.productsId
-    JOIN 
+    LEFT JOIN 
         categories ON productscategories.categoriesId = categories.id
-    JOIN 
+    LEFT JOIN 
         productsoutlets ON products.id = productsoutlets.productsId
-    JOIN 
+    LEFT JOIN 
         outlets ON productsoutlets.outletsId = outlets.id
     LEFT JOIN
         productimages ON products.id = productimages.productsId

@@ -128,13 +128,13 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), categoryOutletControlle
  *           schema:
  *             type: object
  *             required:
- *               - categories_id
- *               - outlet_id
+ *               - categoriesId
+ *               - outletsId
  *             properties:
- *               categories_id:
+ *               categoriesId:
  *                 type: integer
  *                 description: The ID of the category
- *               outlet_id:
+ *               outletsId:
  *                 type: integer
  *                 description: The ID of the outlet
  *     responses:
