@@ -19,10 +19,10 @@ module.exports = {
         onUpdate: 'CASCADE',
         allowNull: false // Tidak boleh null
       },
-      categoriesId: {
+      categoriesBelanjasId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'categories', // Referensi ke tabel outlets
+          model: 'categoriesbelanjas', // Referensi ke tabel outlets
           key: 'id'
         },
         onDelete: 'CASCADE', // Jika outlet dihapus, hapus juga data di tabel junction

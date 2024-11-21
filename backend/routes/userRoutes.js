@@ -106,6 +106,8 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), getUserById);
  *             properties:
  *               name:
  *                 type: string
+ *               email:
+ *                 type: string
  *               role:
  *                 type: string
  *                 enum: [Admin, Manager, Kasir]
@@ -115,6 +117,8 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), getUserById);
  *               image:
  *                 type: string
  *                 format: binary
+ *               password:
+ *                 type: string
  *     responses:
  *       200:
  *         description: User updated successfully

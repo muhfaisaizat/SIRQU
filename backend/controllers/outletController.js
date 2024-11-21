@@ -106,7 +106,6 @@ exports.getOutletById = async (req, res) => {
           users ON outlets.koordinator = users.id
       WHERE 
           outlets.id = :id
-          outlets.deletedAt IS NULL;
     `;
 
     // Jalankan query untuk mendapatkan data outlet berdasarkan ID

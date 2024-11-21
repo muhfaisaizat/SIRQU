@@ -18,6 +18,7 @@ const outletRoutes = require('./routes/outletRoutes');
 // const productImageRoutes = require('./routes/productImageRoutes')
 // const receiptRoutes = require('./routes/receiptRoutes');
 const belanjaRoutes = require('./routes/belanjaRoutes');
+const categoriesBelanjaRoutes = require('./routes/categoryBelanjaRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 const path = require('path'); 
@@ -56,10 +57,10 @@ app.use('/api/product/categories', productCategoryRoutes);
 // app.use('/api/transaksi', transaksiRoutes);
 // app.use('/api/kasir', kasirRoutes);
 app.use('/api/outlets', outletRoutes);
-// app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 // app.use('/api', receiptRoutes);
 app.use('/api/belanja', belanjaRoutes);
-
+app.use('/api/categoriesbelanjas', categoriesBelanjaRoutes);
 
 // Swagger Documentation
 swaggerDocs(app);

@@ -1,9 +1,9 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); // Sesuaikan path ke konfigurasi database Anda
 
-class Belanjas extends Model {}
+class CategoriesBelanjas extends Model {}
 
-Belanjas.init({
+CategoriesBelanjas.init({
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -19,34 +19,8 @@ Belanjas.init({
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   },
-  categoriesBelanjasId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'categoriesbelanjas', // Referensi ke tabel categories
-      key: 'id',
-    },
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  },
-  namaKegiatan: {
+  name: {
     type: DataTypes.STRING,
-    allowNull: false,
-  },
-  deskripsi: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  totalBelanja: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  waktu: {
-    type: DataTypes.TIME, // Menyimpan waktu (HH:mm:ss)
-    allowNull: false,
-  },
-  tanggal: {
-    type: DataTypes.DATEONLY, // Menyimpan tanggal (YYYY-MM-DD)
     allowNull: false,
   },
   createdAt: {
@@ -62,10 +36,10 @@ Belanjas.init({
   },
 }, {
   sequelize,
-  modelName: 'belanjas',
-  tableName: 'belanjas',
+  modelName: 'categoriesBelanjas',
+  tableName: 'categoriesbelanjas',
   timestamps: true,
   paranoid: true, // Mengaktifkan soft delete
 });
 
-module.exports = Belanjas;
+module.exports = CategoriesBelanjas;

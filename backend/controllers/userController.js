@@ -100,7 +100,7 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const { name, role, status } = req.body;
+    const { name, role, status, password, email } = req.body; // Tambahkan email ke body
     const user = await User.findByPk(req.params.id);
     
     if (!user) {
@@ -130,6 +130,23 @@ exports.updateUser = async (req, res) => {
     user.name = name || user.name;
     user.role = role || user.role;
     user.status = status || user.status;
+
+    // Update email if provided (optional)
+    if (email) {
+      // Check if the email is already in use by another user
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser && existingUser.id !== user.id) {
+        return res.status(400).json({ error: 'Email is already in use by another user' });
+      }
+      user.email = email; // Update email with the new one
+    }
+
+    // Update password if provided (optional)
+    if (password) {
+      // Hash the new password using argon2 before saving
+      const hashedPassword = await argon2.hash(password);
+      user.password = hashedPassword; // Update password with the hashed one
+    }
 
     await user.save();
 
