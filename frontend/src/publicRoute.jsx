@@ -27,7 +27,11 @@ const PublicRoute = ({ element: Component, ...rest }) => {
       return <Navigate to="/admin-panel" />;
     } else if (role === "Kasir") {
       return <Navigate to="/admin-panel" />;
-    } else {
+    }
+    else if (role === "Manager") {
+      return <Navigate to="/admin-panel" />;
+    } 
+    else {
       return <Navigate to="/" />;
     }
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import {
     flexRender,
     getCoreRowModel,
@@ -61,6 +61,7 @@ import NoData from "./nodata";
 import { X } from "lucide-react"
 import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
+import { FiPlus } from "react-icons/fi";
 
 
 
@@ -68,60 +69,14 @@ import { API_URL } from "../../../../helpers/networt";
 
 
 // Main component
-const DataTableDemo = () => {
+const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}) => {
 
-    const [data, setData] = useState([]);
-
-    // Fungsi untuk memformat data API
-    const formatUserData = (apiData) => {
-        return {
-            id: `${apiData.id}`,  // Menambahkan "m" pada ID
-            name: apiData.name,     // Nama pengguna
-            role: apiData.role,     // Peran pengguna
-            status: apiData.status === "Active" ? "Aktif" : apiData.status, // Mengubah status "Active" menjadi "Aktif"
-            email: apiData.email,   // Email pengguna
-            date: new Date(apiData.createdAt).toLocaleDateString('id-ID', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric' 
-            }) // Format tanggal menjadi format Indonesia
-        };
-    };
-
-    const fetchData = async () => {
-        const token = localStorage.getItem("token");
-        try {
-            const response = await axios.get(`${API_URL}/api/users`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-           // Log untuk memastikan data yang diterima
-
-            // Pastikan response.data adalah array
-            if (Array.isArray(response.data)) {
-                const formattedData = response.data.map(formatUserData);
-               
-                setData(formattedData);
-                setOriginalData(formattedData); // Set originalData di sini
-            } else {
-                console.error("Data yang diterima bukan array");
-            }
-        } catch (error) {
-            console.error("Error fetching data", error);
-        }
-    };
-    // Ambil data dari API
-    useEffect(() => {
-    
-        fetchData();
-    }, []);
+   
     
 
     const DataStatus = [
-        { id: "m5gr84i9", name: 'Aktif' },
-        { id: "m5gr84i7", name: 'Tidak Aktif' },
+        { id: "m5gr84i9", name: 'Active' },
+        { id: "m5gr84i7", name: 'Inactive' },
     ];
     const DataRole = [
         { id: "m5gr84i9", name: 'Admin' },
@@ -129,22 +84,31 @@ const DataTableDemo = () => {
         { id: "m5gr84i7", name: 'Kasir' },
     ];
 
-    // status
-    const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
+   
 
-    const handleStatusChange = (id) => {
-        setData(prevData =>
-            prevData.map(item =>
-                item.id === id ? { ...item, status: item.status === "Aktif" ? "Tidak Aktif" : "Aktif" } : item
-            )
-        );
+    const handleStatusChange = async (id, currentStatus) => {
 
-        // Update original data as well
-        setOriginalData(prevData =>
-            prevData.map(item =>
-                item.id === id ? { ...item, status: item.status === "Aktif" ? "Tidak Aktif" : "Aktif" } : item
-            )
-        );
+        const token = localStorage.getItem("token");
+        const newStatus = currentStatus === "Active" ? "Inactive" : "Active";
+        
+        // Kirim request ke API untuk update status
+        try {
+            // console.log('id',id)
+            await axios.put(
+                `${API_URL}/api/users/${id}/status?status=${encodeURIComponent(newStatus)}`, 
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+      
+          fetchData();
+
+        } catch (error) {
+            console.error("Gagal memperbarui status:", error);
+        }
     };
 
    
@@ -204,12 +168,12 @@ const DataTableDemo = () => {
                 let roleClass = "";
                 let roleText = "";
 
-                if (role === "Aktif") {
+                if (role === "Active") {
                     roleClass = "secondary";
-                    roleText = "Aktif";
-                } else if (role === "Tidak Aktif") {
+                    roleText = "Active";
+                } else if (role === "Inactive") {
                     roleClass = "destructive";
-                    roleText = "Tidak Aktif";
+                    roleText = "Inactive";
                 }
 
                 return (
@@ -232,14 +196,12 @@ const DataTableDemo = () => {
             cell: ({ row }) => (
                 <div className="capitalize font-medium">{row.getValue("id")}</div>
             ),
-            enableSorting: true,
         },
         {
             id: "actions",
             enableHiding: false,
             cell: ({ row }) => {
-                const id = row.getValue("id");
-                const status = row.getValue("status")
+                const { id, status } = row.original;
 
                 return (
                     <DropdownMenu>
@@ -254,7 +216,7 @@ const DataTableDemo = () => {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleEditClick(id)}>Edit profile</DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleStatusChange(row.id)}> {status === "Aktif" ? "Deactivate" : "Activate"} </DropdownMenuItem>
+                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleStatusChange(id, status)}> {status === "Active" ? "Deactivate" : "Activate"} </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500" onClick={() => handleDelete(id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
@@ -338,7 +300,32 @@ const DataTableDemo = () => {
         password: '',
         confirmPassword: '',
         role: '',
+        id:''
     });
+
+    const [image, setImage] = useState( null);
+    const [hovered, setHovered] = useState(false);
+    const fileInputRef = useRef(null);
+  
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+  
+    const triggerFileInput = () => {
+        fileInputRef.current.click();
+    };
+  
+    const removeImage = () => {
+        setImage(null);
+    };
+
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -355,9 +342,23 @@ const DataTableDemo = () => {
 
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const { nama, email, password, confirmPassword, role } = formData;
+        const token = localStorage.getItem("token");
+        const form = new FormData();
+        form.append('name', formData.nama);
+        if(formData.email){
+            form.append('email', formData.email);
+        }
+        if(formData.password){
+            form.append('password', formData.password);
+        }
+        form.append('role', formData.role);
+        form.append('status', formData.status);
+        if (fileInputRef.current.files[0]) {
+            form.append("image", fileInputRef.current.files[0]);
+        }
 
         // Validasi
         if (!nama) {
@@ -380,25 +381,25 @@ const DataTableDemo = () => {
             return;
         }
 
-        if (!password) {
-            toast({
-                variant: "destructive",
-                title: "Error!",
-                description: "Kata sandi harus diisi.",
-                action: <ToastAction altText="Try again">Cancel</ToastAction>,
-            });
-            return;
-        }
+        // if (!password) {
+        //     toast({
+        //         variant: "destructive",
+        //         title: "Error!",
+        //         description: "Kata sandi harus diisi.",
+        //         action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        //     });
+        //     return;
+        // }
 
-        if (password !== confirmPassword) {
-            toast({
-                variant: "destructive",
-                title: "Error!",
-                description: "Kata sandi tidak cocok.",
-                action: <ToastAction altText="Try again">Cancel</ToastAction>,
-            });
-            return;
-        }
+        // if (password !== confirmPassword) {
+        //     toast({
+        //         variant: "destructive",
+        //         title: "Error!",
+        //         description: "Kata sandi tidak cocok.",
+        //         action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        //     });
+        //     return;
+        // }
 
         if (!role) {
             toast({
@@ -410,14 +411,32 @@ const DataTableDemo = () => {
             return;
         }
 
-        // Logika penyimpanan data di sini
-        // Misalnya: simpanData(formData);
+        try {
+            const response = await axios.put(`${API_URL}/api/users/${formData.id}`, form, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            toast({
+                title: "Sukses!",
+                description: "Edit pengguna berhasil.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
 
-        toast({
-            title: "Sukses!",
-            description: "Pengguna berhasil ditambahkan.",
-            action: <ToastAction altText="Try again">Cancel</ToastAction>,
-        });
+            localStorage.setItem("foto", response.data.user.image);
+
+            fetchData();
+        } catch (error) {
+            console.error('Error adding user:', error);
+            toast({
+                variant: "destructive",
+                title: 'Error Adding User',
+                description: 'An internal server error occurred. Please try again later.',
+                status: 'error',
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
 
         setIsDialogOpen(false);
     };
@@ -432,7 +451,13 @@ const DataTableDemo = () => {
                 role: selectedData.role,
                 status: selectedData.status,
                 date: selectedData.date,
+                id: selectedData.id
             });
+            if (selectedData.image === null) {
+                setImage(null);
+              } else {
+                setImage(`${API_URL}/images/${selectedData.image}`);
+              }
         }
     }, [selectedId]);
 
@@ -579,7 +604,7 @@ const DataTableDemo = () => {
                 </DropdownMenu>
             </div>
             {pageData.length === 0 ? (
-                <NoData />
+                <NoData fetchData={fetchData}/>
             ) : (
                 <div className="">
                     <Table>
@@ -704,7 +729,48 @@ const DataTableDemo = () => {
                     </div>
                     <div className="grid gap-[16px] py-4">
                         <div className='h-[154px] w-[154px]'>
-                            <ImageUpload />
+                        <div
+                            className={`relative flex items-center justify-center w-full h-full rounded-lg overflow-hidden ${image ? '' : 'border-dashed border-2 border-black'}`}
+                            onMouseEnter={() => setHovered(true)}
+                            onMouseLeave={() => setHovered(false)}
+                        >
+                            {!image ? (
+                                <button
+                                    onClick={triggerFileInput}
+                                    className="flex items-center gap-2  hover:text-black bg-transparent"
+                                >
+                                    <FiPlus size={20} />
+                                    <span className="text-[14px] font-normal">Upload Image </span>
+                                </button>
+                            ) : (
+                                <>
+                                    <img
+                                        src={image}
+                                        alt="Uploaded"
+                                        className="w-full h-full object-cover rounded-lg cursor-pointer"
+                                        onClick={triggerFileInput}
+                                    />
+                                    {hovered && (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <button
+                                                onClick={triggerFileInput}
+                                                className="text-[14px] font-normal text-white "
+                                            >
+                                                Change Cover
+                                            </button>
+
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                ref={fileInputRef}
+                                className="hidden"
+                            />
+                        </div>
                         </div>
                         <div className="grid gap-1">
                             <Label htmlFor="nama" className="text-[14px]">Nama pengguna<span className='text-rose-500'>*</span></Label>
@@ -730,7 +796,7 @@ const DataTableDemo = () => {
                             />
                         </div>
                         <div className="grid gap-1">
-                            <Label htmlFor="password" className="text-[14px]">Kata Sandi<span className='text-rose-500'>*</span></Label>
+                            <Label htmlFor="password" className="text-[14px]">Kata Sandi</Label>
                             <div className="relative">
                                 <Input
                                     id="password"
@@ -751,7 +817,7 @@ const DataTableDemo = () => {
                             </div>
                         </div>
                         <div className="grid gap-1">
-                            <Label htmlFor="confirm-password" className="text-[14px]">Ulangi Kata Sandi Anda<span className='text-rose-500'>*</span></Label>
+                            <Label htmlFor="confirm-password" className="text-[14px]">Ulangi Kata Sandi Anda</Label>
                             <div className="relative">
                                 <Input
                                     id="confirmPassword"
