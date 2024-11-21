@@ -11,11 +11,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {Logout as IconLogout} from 'iconsax-react';
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../../../helpers/networt";
 
 const Logout = () => {
     const navigate = useNavigate();
     const nama = localStorage.getItem("name");
     const email = localStorage.getItem("email");
+    const foto = localStorage.getItem("foto");
     
     return (
 
@@ -23,7 +25,7 @@ const Logout = () => {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 p-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex gap-3 w-auto hover:bg-white">
                     <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarImage src={foto && foto !== "null" ? `${API_URL}/images/${foto}` : "https://github.com/shadcn.png"}  />
                         <AvatarFallback>{nama}</AvatarFallback>
                     </Avatar>
                     <p className='text-[14px] font-medium pt-1 pb-1'>{nama}</p>
@@ -32,7 +34,7 @@ const Logout = () => {
             <DropdownMenuContent align="end" className="w-auto mt-[10px]">
                 <DropdownMenuLabel className='flex gap-3 items-center p-[16px] w-[310px]'>
                     <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png"/>
+                        <AvatarImage src={foto && foto !== "null" ? `${API_URL}/images/${foto}` : "https://github.com/shadcn.png"} />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                     <div className='grid gap-[4px]'>
@@ -46,6 +48,7 @@ const Logout = () => {
                   localStorage.removeItem("token");
                   localStorage.removeItem("name");
                   localStorage.removeItem("email");
+                  localStorage.removeItem("foto");
                   navigate("/");
                 }} className="py-3 px-[19px] gap-[12px] text-[14px] font-semibold"> <IconLogout variant='Bold'/>Logout</DropdownMenuItem>
             </DropdownMenuContent>

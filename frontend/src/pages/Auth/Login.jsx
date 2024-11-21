@@ -38,11 +38,19 @@ const Login = () => {
             localStorage.setItem("name", response.data.user.name);
             localStorage.setItem("email", response.data.user.email);
             localStorage.setItem("id", response.data.user.id);
+            localStorage.setItem("foto", response.data.user.image);
             
             
             if (userRole === "Admin") {
               navigate("/admin-panel");
-            } else {
+            } 
+            else if(userRole === "Manager"){
+                navigate("/admin-panel");
+            } 
+            else if(userRole === "Kasir"){
+                navigate("/admin-panel");
+            } 
+            else {
               toast({
                 variant: "destructive",
                 title: "Error!",

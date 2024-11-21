@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect,  useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -25,8 +25,11 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from "@/components/ui/toast"
 import { X } from "lucide-react"
+import { FiPlus } from "react-icons/fi";
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
-const AddPengguna = ({ buttonProps, title, showIcon }) => {
+const AddPengguna = ({ buttonProps, title, showIcon, fetchData }) => {
   const { toast } = useToast()
   const [isOpen, setIsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -38,6 +41,29 @@ const AddPengguna = ({ buttonProps, title, showIcon }) => {
     confirmPassword: '',
     role: '',
   });
+
+  const [image, setImage] = useState( null);
+  const [hovered, setHovered] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+              setImage(reader.result);
+          };
+          reader.readAsDataURL(file);
+      }
+  };
+
+  const triggerFileInput = () => {
+      fileInputRef.current.click();
+  };
+
+  const removeImage = () => {
+      setImage(null);
+  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -56,9 +82,10 @@ const AddPengguna = ({ buttonProps, title, showIcon }) => {
     setFormData({ ...formData, role: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { nama, email, password, confirmPassword, role } = formData;
+    const token = localStorage.getItem("token");
 
     // Validasi
     if (!nama) {
@@ -111,14 +138,58 @@ const AddPengguna = ({ buttonProps, title, showIcon }) => {
       return;
     }
 
-    // Logika penyimpanan data di sini
-    // Misalnya: simpanData(formData);
+    try {
+     
+        const formCreate = new FormData();
+        formCreate.append('name', formData.nama);
+        formCreate.append('email', formData.email);
+        formCreate.append('password', formData.password || "");
+        formCreate.append('role', formData.role);
+        formCreate.append('status', 'Active');
+        if (fileInputRef.current.files[0]) {
+            formCreate.append('image', fileInputRef.current.files[0]);
+        }
+        console.log('data',formCreate)
+        console.log('data',formData)
+        const response = await axios.post(`${API_URL}/api/users`, formCreate, {
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data'
+          }
+      });
+      toast({
+        title: "Sukses!",
+        description: "Pengguna berhasil ditambahkan.",
+        action: <ToastAction altText="Try again">Cancel</ToastAction>,
+      });
+      
+     
 
-    toast({
-      title: "Sukses!",
-      description: "Pengguna berhasil ditambahkan.",
-      action: <ToastAction altText="Try again">Cancel</ToastAction>,
-    });
+      fetchData();
+  } catch (error) {
+      console.error('Error adding user:', error);
+      if (error.response) {
+          // Server responded with a status other than 2xx
+          console.error('Response data:', error.response.data);
+          console.error('Response status:', error.response.status);
+          console.error('Response headers:', error.response.headers);
+      } else if (error.request) {
+          // Request was made but no response received
+          console.error('Request data:', error.request);
+      } else {
+          // Other errors (e.g., configuration issues)
+          console.error('Error message:', error.message);
+      }
+      toast({
+          variant: "destructive",
+          title: 'Error Adding User',
+          description: 'An internal server error occurred. Please try again later.',
+          status: 'error',
+          action: <ToastAction altText="Try again">Cancel</ToastAction>,
+      });
+  }
+
+    
 
     setIsOpen(false);
   };
@@ -143,7 +214,48 @@ const AddPengguna = ({ buttonProps, title, showIcon }) => {
           </div>
           <div className="grid gap-[16px] py-4">
             <div className='h-[154px] w-[154px]'>
-              <ImageUpload />
+            <div
+                            className={`relative flex items-center justify-center w-full h-full rounded-lg overflow-hidden ${image ? '' : 'border-dashed border-2 border-black'}`}
+                            onMouseEnter={() => setHovered(true)}
+                            onMouseLeave={() => setHovered(false)}
+                        >
+                            {!image ? (
+                                <button
+                                    onClick={triggerFileInput}
+                                    className="flex items-center gap-2  hover:text-black bg-transparent"
+                                >
+                                    <FiPlus size={20} />
+                                    <span className="text-[14px] font-normal">Upload Image </span>
+                                </button>
+                            ) : (
+                                <>
+                                    <img
+                                        src={image}
+                                        alt="Uploaded"
+                                        className="w-full h-full object-cover rounded-lg cursor-pointer"
+                                        onClick={triggerFileInput}
+                                    />
+                                    {hovered && (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <button
+                                                onClick={triggerFileInput}
+                                                className="text-[14px] font-normal text-white "
+                                            >
+                                                Change Cover
+                                            </button>
+
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                ref={fileInputRef}
+                                className="hidden"
+                            />
+                        </div>
             </div>
             <div className="grid gap-1">
               <Label htmlFor="nama" className="text-[14px]">Nama pengguna<span className='text-rose-500'>*</span></Label>

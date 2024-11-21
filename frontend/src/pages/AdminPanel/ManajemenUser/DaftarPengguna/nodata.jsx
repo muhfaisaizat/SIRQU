@@ -3,7 +3,7 @@ import { Folder2 } from 'iconsax-react';
 import AddPengguna from './AddPengguna';
 
 
-const NoData = () => {
+const NoData = ({fetchData}) => {
   return (
     <div className="flex flex-col items-center justify-center py-[80px] border border-dashed rounded-[16px] border-slate-300 gap-[24px]">
     <Folder2 size="40" variant="Bulk" />
@@ -12,7 +12,7 @@ const NoData = () => {
     <p className="text-center text-[14px] font-normal text-slate-500">Belum ada data yang tersedia untuk halaman ini</p>
     </div>
     
-    <AddPengguna buttonProps={{ variant: "outline", className: 'gap-2 h-[36px] text-[14px] font-medium' }} title="Tambah pengguna" showIcon={false}/>
+    <AddPengguna fetchData={fetchData} buttonProps={{ variant: "outline", className: 'gap-2 h-[36px] text-[14px] font-medium' }} title="Tambah pengguna" showIcon={false}/>
    </div>
 
   )
