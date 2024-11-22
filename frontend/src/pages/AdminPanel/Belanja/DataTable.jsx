@@ -154,7 +154,7 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-[100px]">
-                            <DropdownMenuItem onClick={() => setIsOpen(true)}className="p-3 gap-3 text-[14px] font-medium ">View</DropdownMenuItem>
+                            <DropdownMenuItem  onClick={() => handleviewClick(id)} className="p-3 gap-3 text-[14px] font-medium ">View</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => setIsOpenEdit(true)}className="p-3 gap-3 text-[14px] font-medium ">Edit</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDelete(id)} className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
                         </DropdownMenuContent>
@@ -173,7 +173,7 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenEdit, setIsOpenEdit] = useState(false);
     const [sorting, setSorting] = useState([])
-   
+    const [selectedId, setSelectedId] = useState(null);
     const [columnVisibility, setColumnVisibility] = useState({})
     const [rowSelection, setRowSelection] = useState({})
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });;
@@ -218,6 +218,42 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
       useEffect(() => {
         setColumnVisibility((prev) => ({ ...prev, outlet: false }));
     }, []);
+
+
+    const handleviewClick = (id) => {
+        setSelectedId(id);
+        setIsOpen(true);
+    };
+
+
+    const [formData, setFormData] = useState({
+        id: '',
+        outletsId: '',
+        categoriesBelanjasId: '', 
+        nama: '',    
+        kategori: '',     
+        total: '', 
+        deskripsi: '',  
+        date: '',
+        outlet: ''
+    });
+
+    useEffect(() => {
+        const selectedData = data.find(item => item.id === selectedId);
+        if (selectedData) {
+            setFormData({
+                id: selectedData.id,
+                outletsId: selectedData.outletsId,
+                categoriesBelanjasId: selectedData.categoriesBelanjasId, 
+                nama: selectedData.nama,    
+                kategori: selectedData.kategori,     
+                total: selectedData.total, 
+                deskripsi: selectedData.deskripsi,  
+                date: selectedData.date,
+                outlet: selectedData.outlet
+            });
+        }
+    }, [selectedId]);
     
     return (
         <div className="w-full grid gap-[16px] mt-[24px]">
@@ -388,7 +424,7 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
                     )}
                 </div>
             )} 
-            <View isOpen={isOpen} setIsOpen={setIsOpen}/> 
+            <View isOpen={isOpen} setIsOpen={setIsOpen} formData={formData}/> 
             <EditBelanja isOpen={isOpenEdit} setIsOpen={setIsOpenEdit}/> 
         </div>
     )
