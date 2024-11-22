@@ -19,7 +19,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *               items:
  *                 $ref: '#/components/schemas/Kasir'
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), kasirController.getAllKasir);
+router.get('/', roleMiddleware(['Admin', 'Manager']), kasirController.getKasirList);
 
 /**
  * @swagger
@@ -59,9 +59,9 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), kasirController.getKasi
  *           schema:
  *             type: object
  *             properties:
- *               outlet_id:
+ *               outletsId:
  *                 type: integer
- *               user_id:
+ *               usersId:
  *                 type: integer
  *               uangModal:
  *                 type: number

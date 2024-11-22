@@ -13,7 +13,7 @@ const productOutletRoutes = require('./routes/productOutletRoutes');
 // const detailTransaksiRoutes = require('./routes/detailTransaksiRoutes');
 // const detailPajak = require('./routes/detailPajak');
 // const detailDiskonRoutes = require('./routes/detailDiskonRoutes');
-// const kasirRoutes = require('./routes/kasirRoutes');
+const kasirRoutes = require('./routes/kasirRoutes');
 const outletRoutes = require('./routes/outletRoutes');
 const productImageRoutes = require('./routes/productImageRoutes')
 // const receiptRoutes = require('./routes/receiptRoutes');
@@ -55,7 +55,7 @@ app.use('/api/products/productImage', productImageRoutes);
 // app.use('/api/transaksi/detail-pajak', detailPajak);
 // app.use('/api/transaksi/detail-diskon', detailDiskonRoutes);
 // app.use('/api/transaksi', transaksiRoutes);
-// app.use('/api/kasir', kasirRoutes);
+app.use('/api/kasir', kasirRoutes);
 app.use('/api/outlets', outletRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 // app.use('/api', receiptRoutes);
