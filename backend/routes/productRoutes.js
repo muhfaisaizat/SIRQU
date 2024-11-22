@@ -274,9 +274,9 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productController.getProdu
  *         name: unlimited_stock
  *         required: true
  *         schema:
- *           type: string
+ *           type: boolean
  *           enum: [true, false]
- *         description: Indicates whether the stock is unlimited (true) or limited (false)
+ *           description: Indicates whether the stock is unlimited (true) or limited (false)
  *     responses:
  *       200:
  *         description: Product status updated successfully
