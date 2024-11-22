@@ -8,13 +8,18 @@ const Product = require('../models/products');
 const ProductOutlet = require('../models/productsOutlets');
 
 exports.createOutlet = async (req, res) => {
-  const { nama, alamat, syarat_ketentuan } = req.body;
+  const { nama, alamat, syarat_ketentuan, position } = req.body;
 
   try {
     // Memeriksa apakah outlet dengan nama yang sama sudah ada
     const existingOutlet = await Outlet.findOne({ where: { nama } });
     if (existingOutlet) {
       return res.status(400).json({ message: 'Outlet with this name already exists' });
+    }
+
+    // Memeriksa apakah nilai position valid
+    if (!['Toko Utama', 'Toko Cabang'].includes(position)) {
+      return res.status(400).json({ message: 'Invalid position value' });
     }
 
     // Menyimpan path gambar jika ada
@@ -25,6 +30,7 @@ exports.createOutlet = async (req, res) => {
       nama,
       alamat,
       syarat_ketentuan: syarat_ketentuan || true,  // Set default value jika syaratKetentuan tidak ada
+      position,  // Menambahkan position ke outlet baru
       image: imagePath,  // Menyimpan nama gambar atau null jika tidak ada gambar
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -50,6 +56,7 @@ exports.getOutlets = async (req, res) => {
           outlets.id AS id_outlet,
           outlets.nama AS nama_outlet,
           outlets.alamat AS alamat,
+          outlets.position AS posisi,
           outlets.image AS image,
           outlets.syarat_ketentuan AS syarat_ketentuan,
           outlets.koordinator AS koordinator,
@@ -94,6 +101,7 @@ exports.getOutletById = async (req, res) => {
           outlets.id AS id_outlet,
           outlets.nama AS nama_outlet,
           outlets.alamat AS alamat,
+          outlets.position AS posisi,
           outlets.image AS image,
           outlets.syarat_ketentuan AS syarat_ketentuan,
           outlets.koordinator AS koordinator,

@@ -26,6 +26,11 @@ const uploadOutlet = require('../middleware/uploadImageOutlet'); // Middleware u
  *                 type: string
  *                 description: Address of the outlet
  *                 example: Jalan ABC No.123
+ *               position:
+ *                 type: string
+ *                 enum: [Toko Utama, Toko Cabang]
+ *                 description: Position of the outlet (Main Store or Branch)
+ *                 example: Toko Utama
  *               image:
  *                 type: string
  *                 format: binary
@@ -33,13 +38,17 @@ const uploadOutlet = require('../middleware/uploadImageOutlet'); // Middleware u
  *               syaratKetentuan:
  *                 type: boolean
  *                 description: Terms and conditions status of the outlet
+ *                 example: true
  *     responses:
  *       201:
  *         description: The outlet was created successfully
  *       400:
  *         description: Invalid request
+ *       500:
+ *         description: Internal server error
  */
 router.post('/', roleMiddleware(['Admin', 'Manager']), uploadOutlet, outletController.createOutlet);
+
 
 /**
  * @swagger

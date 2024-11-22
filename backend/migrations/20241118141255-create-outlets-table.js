@@ -16,6 +16,10 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+      position: {
+        type: Sequelize.ENUM('Toko Utama', 'Toko Cabang'), // Menggunakan ENUM jika hanya ada beberapa pilihan
+        allowNull: false
+      },
       image: {
         type: Sequelize.STRING,
         allowNull: true, // Bisa kosong, jika foto belum diunggah

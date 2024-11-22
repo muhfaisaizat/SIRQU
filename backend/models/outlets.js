@@ -18,6 +18,10 @@ Outlet.init({
         type: DataTypes.TEXT,
         allowNull: false,
     },
+    position: {
+        type: DataTypes.ENUM('Toko Utama', 'Toko Cabang'),
+        allowNull: false
+    },
     image: {
         type: DataTypes.STRING,
         allowNull: true,
