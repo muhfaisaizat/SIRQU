@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const productImageController = require('../controllers/productImageController');
 const roleMiddleware = require('../middleware/roleMiddleware');
-const upload = require('../middleware/uploadImage'); // Middleware for uploading images
+const uploadProduct = require('../middleware/uploadImageProduct'); // Middleware for uploading images
 
 /**
  * @swagger
@@ -18,7 +18,7 @@ const upload = require('../middleware/uploadImage'); // Middleware for uploading
  *           schema:
  *             type: object
  *             properties:
- *               product_id:
+ *               productsId:
  *                 type: integer
  *                 description: The ID of the product
  *               image:
@@ -31,7 +31,7 @@ const upload = require('../middleware/uploadImage'); // Middleware for uploading
  *       400:
  *         description: Invalid request
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), upload, productImageController.createProductImage);
+router.post('/', roleMiddleware(['Admin', 'Manager']), uploadProduct, productImageController.createProductImage);
 
 /**
  * @swagger
@@ -121,7 +121,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), productImageController.
  *       404:
  *         description: Product image not found
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), upload, productImageController.updateProductImage);
+router.put('/:id', roleMiddleware(['Admin', 'Manager']), uploadProduct, productImageController.updateProductImage);
 
 /**
  * @swagger

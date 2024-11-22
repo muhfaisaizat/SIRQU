@@ -8,14 +8,14 @@ const categoryRoutes = require("./routes/categoryRoutes");
 const categoryOutletRoutes = require('./routes/categoryOutletRoutes');
 const productRoutes = require('./routes/productRoutes');
 const productCategoryRoutes = require('./routes/productCategoryRoutes');
-// const productOutletRoutes = require('./routes/productOutletRoutes');
+const productOutletRoutes = require('./routes/productOutletRoutes');
 // const transaksiRoutes = require('./routes/transaksiRoutes');
 // const detailTransaksiRoutes = require('./routes/detailTransaksiRoutes');
 // const detailPajak = require('./routes/detailPajak');
 // const detailDiskonRoutes = require('./routes/detailDiskonRoutes');
 // const kasirRoutes = require('./routes/kasirRoutes');
 const outletRoutes = require('./routes/outletRoutes');
-// const productImageRoutes = require('./routes/productImageRoutes')
+const productImageRoutes = require('./routes/productImageRoutes')
 // const receiptRoutes = require('./routes/receiptRoutes');
 const belanjaRoutes = require('./routes/belanjaRoutes');
 const categoriesBelanjaRoutes = require('./routes/categoryBelanjaRoutes');
@@ -49,8 +49,8 @@ app.use("/api/categories", categoryRoutes);
 app.use('/api/categories/outlets', categoryOutletRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/product/categories', productCategoryRoutes);
-// app.use('/api/products/outlets', productOutletRoutes);
-// app.use('/api/products/productImage', productImageRoutes);
+app.use('/api/products/outlets', productOutletRoutes);
+app.use('/api/products/productImage', productImageRoutes);
 // app.use('/api/transaksi/detail', detailTransaksiRoutes);
 // app.use('/api/transaksi/detail-pajak', detailPajak);
 // app.use('/api/transaksi/detail-diskon', detailDiskonRoutes);

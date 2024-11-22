@@ -16,15 +16,17 @@ const roleMiddleware = require('../middleware/roleMiddleware')
  *           schema:
  *             type: object
  *             required:
- *               - product_id
- *               - outlet_id
+ *               - productsId
+ *               - outletsId
  *             properties:
- *               product_id:
+ *               productsId:
  *                 type: integer
  *                 description: The ID of the product
- *               outlet_id:
+ *                 example: 1
+ *               outletsId:
  *                 type: integer
  *                 description: The ID of the outlet
+ *                 example: 1
  *     responses:
  *       201:
  *         description: Successfully created the relationship
@@ -104,13 +106,13 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), productOutletController
  *           schema:
  *             type: object
  *             required:
- *               - product_id
- *               - outlet_id
+ *               - productsId
+ *               - outletsId
  *             properties:
- *               product_id:
+ *               productsId:
  *                 type: integer
  *                 description: The ID of the product
- *               outlet_id:
+ *               outletsId:
  *                 type: integer
  *                 description: The ID of the outlet
  *     responses:
@@ -142,11 +144,11 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), productOutletController
  *         description: The ID of the Product-Outlet relationship
  *     responses:
  *       204:
- *         description: Successfully deleted
+ *         description: Product-outlet relationship deleted successfully
  *       404:
- *         description: Relationship not found
+ *         description: ProductOutlet not found
  *       400:
- *         description: Error deleting the relationship
+ *         description: Bad Request
  */
 router.delete('/:id', roleMiddleware(['Admin', 'Manager']), productOutletController.deleteProductOutlet);
 

@@ -1,30 +1,43 @@
 // controllers/productImageController.js
-const ProductImage = require('../models/productImage');
-const Product = require('../models/product'); // Pastikan path model benar
+const path = require('path');
+const Product = require('../models/products'); // Pastikan path model benar
+const ProductImage = require('../models/productImage'); // Pastikan path model benar
 
-// Menambahkan gambar produk baru
+// Menambahkan gambar untuk produk
 exports.createProductImage = async (req, res) => {
+  const { productsId } = req.body;
+
   try {
-    // Validasi apakah product_id yang diberikan ada di database
-    const product = await Product.findByPk(req.body.product_id);
+    // Memastikan produk dengan ID yang diberikan ada
+    const product = await Product.findByPk(productsId);
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Tambahkan path gambar dari req.file
-    const imagePath = req.file ? `/images/${req.file.filename}` : null;
+    // Menyimpan path gambar jika ada
+    const imagePath = req.file ? `Product_${productsId}_${req.file.originalname}` : null;
 
-    // Buat data gambar produk baru dengan path gambar
-    const productImage = await ProductImage.create({
-      product_id: req.body.product_id, // Gunakan product_id dari body
+    if (!imagePath) {
+      return res.status(400).json({ message: 'Image file is required' });
+    }
+
+    // Membuat data gambar produk baru
+    const newProductImage = await ProductImage.create({
+      productsId,
       image: imagePath,
     });
 
-    res.status(201).json(productImage);
+    // Mengirimkan respons sukses dengan data yang baru dibuat
+    res.status(201).json({
+      message: 'Product image created successfully',
+      productImage: newProductImage,
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Error creating product image:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 // Get all product image relationships
 exports.getProductImages = async (req, res) => {

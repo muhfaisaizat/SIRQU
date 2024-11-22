@@ -1,5 +1,9 @@
 // controllers/categoryOutletController.js
 const CategoryOutlet = require("../models/categoriesOutlets");
+const { QueryTypes } = require('sequelize');
+const sequelize = require('../config/database');
+// const Categories = require('../models/categories');
+// const Outlets = require('../models/outlets');
 
 // Create a new category-outlet relationship
 exports.createCategoryOutlet = async (req, res) => {
@@ -8,55 +12,111 @@ exports.createCategoryOutlet = async (req, res) => {
 
     // Validasi input
     if (!categoriesId || !outletsId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "categoriesId and outletsId are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "categoriesId and outletsId are required",
+      });
     }
 
+    // Membuat category-outlet baru
     const categoryOutlet = await CategoryOutlet.create({
       categoriesId,
       outletsId,
     });
-    res.status(201).json({ success: true, data: categoryOutlet });
+
+    // Mengembalikan response sukses
+    res.status(201).json({
+      success: true,
+      data: categoryOutlet,
+    });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    // Menangani error
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
 // Get all category-outlet relationships
 exports.getCategoryOutlets = async (req, res) => {
   try {
-    console.log("Fetching all category outlets...");
-    const categoryOutlets = await CategoryOutlet.findAll({
-      include: [
-        { model: Categories, as: 'category', attributes: ['id'] },
-        { model: Outlets, as: 'outlet', attributes: ['id'] },
-      ],
-    });
-    console.log("Fetched data:", categoryOutlets);
+    // Menjalankan query SQL JOIN
+    const query = `
+      SELECT 
+        categoriesoutlets.id AS categoryOutletId,
+        categories.id AS categoryId,
+        categories.name AS categoryName,
+        outlets.id AS outletId,
+        outlets.nama AS outletName
+      FROM categoriesoutlets
+      INNER JOIN categories ON categoriesoutlets.categoriesId = categories.id
+      INNER JOIN outlets ON categoriesoutlets.outletsId = outlets.id;
+    `;
 
-    res.status(200).json({ success: true, data: categoryOutlets });
+    const categoryOutlets = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+
+    if (categoryOutlets.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No category-outlet relationships found.',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: categoryOutlets,
+    });
   } catch (error) {
-    console.error("Error fetching category outlets:", error);
-    res.status(400).json({ success: false, message: error.message });
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
-
 
 // Get a specific category-outlet relationship by ID
 exports.getCategoryOutletById = async (req, res) => {
   try {
-    const categoryOutlet = await CategoryOutlet.findByPk(req.params.id);
-    if (categoryOutlet) {
-      res.status(200).json(categoryOutlet);
-    } else {
-      res.status(404).json({ error: "CategoryOutlet not found" });
+    const { id } = req.params; // Mendapatkan id dari parameter URL
+
+    // Menjalankan query SQL JOIN untuk mencari berdasarkan categoryOutletId
+    const query = `
+      SELECT 
+        categoriesoutlets.id AS categoryOutletId,
+        categories.id AS categoryId,
+        categories.name AS categoryName,
+        outlets.id AS outletId,
+        outlets.nama AS outletName
+      FROM categoriesoutlets
+      INNER JOIN categories ON categoriesoutlets.categoriesId = categories.id
+      INNER JOIN outlets ON categoriesoutlets.outletsId = outlets.id
+      WHERE categoriesoutlets.id = :id AND categoriesoutlets.deletedAt IS NULL;
+    `;
+
+    const categoryOutlet = await sequelize.query(query, {
+      replacements: { id },  // Mengganti :id dengan id dari URL
+      type: QueryTypes.SELECT,
+    });
+
+    if (categoryOutlet.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Category-outlet relationship with ID ${id} not found.`,
+      });
     }
+
+    res.status(200).json({
+      success: true,
+      data: categoryOutlet[0], // Mengambil item pertama karena hasilnya berupa array
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
