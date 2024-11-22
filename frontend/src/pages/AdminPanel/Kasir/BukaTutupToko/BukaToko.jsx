@@ -49,8 +49,8 @@ const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, idOutlet, namaToko }) 
         const token = localStorage.getItem("token");
         try {
             const response = await axios.post(`${API_URL}/api/kasir`, {
-                outlet_id: idOutlet,
-                user_id: iduser,
+                outletsId: idOutlet,
+                usersId: iduser,
                 uangModal: uang  
             }, {
                 headers: {
