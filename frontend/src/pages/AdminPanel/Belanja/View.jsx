@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,7 +10,37 @@ import {
 } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 
-const View = ({ isOpen, setIsOpen, formData }) => {
+const View = ({ isOpen, setIsOpen, formDataBelanja, setSelectedId }) => {
+
+  const [formData, setFormData] = useState({
+    id: '',
+    outletsId: '',
+    categoriesBelanjasId: '', 
+    nama: '',    
+    kategori: '',     
+    total: '', 
+    deskripsi: '',  
+    date: '',
+    outlet: ''
+});
+
+useEffect(() => {
+  if (formDataBelanja) {
+    setFormData({
+      id: formDataBelanja.id,
+      outletsId: formDataBelanja.outletsId,
+      categoriesBelanjasId: formDataBelanja.categoriesBelanjasId, 
+      nama: formDataBelanja.nama,    
+      kategori: formDataBelanja.kategori,     
+      total: formDataBelanja.total, 
+      deskripsi: formDataBelanja.deskripsi,  
+      date: formDataBelanja.date,
+      outlet: formDataBelanja.outlet
+  });
+
+  setSelectedId('');
+  }
+}, [formDataBelanja]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

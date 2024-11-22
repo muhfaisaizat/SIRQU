@@ -38,8 +38,10 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import NoData from "./NoData";
 import View from "./View";
 import EditBelanja from "./EditBelanja";
-
-
+import axios from 'axios';
+import { API_URL } from "../../../helpers/networt";
+import { useToast } from '@/hooks/use-toast'
+import { ToastAction } from "@/components/ui/toast"
 
 
 
@@ -47,24 +49,9 @@ import EditBelanja from "./EditBelanja";
 
 
 // Main component
-const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataBayar, handleFilterChange, handleClearFilters, filters, originalData, setOriginalData}) => {
-   
+const DataTableHistory = ({data, setData, fetchDataKategori, columnFilters, setColumnFilters, DataBayar, handleFilterChange, handleClearFilters, filters, originalData, setOriginalData, idOutlet, fetchDataBelanja}) => {
+    const { toast } = useToast();
 
-    // status
-    // Tambahkan state untuk data asli
-    const handleDelete = (id) => {
-        setData((prevData) => {
-            const updatedData = prevData.filter((item) => item.id !== id);
-            if (updatedData.length === 0 && pagination.pageIndex > 0) {
-                // Jika data kosong dan berada di halaman selain pertama, kembali ke halaman pertama
-                setPagination((prev) => ({
-                    ...prev,
-                    pageIndex: prev.pageIndex - 1,
-                }));
-            }
-            return updatedData;
-        });
-      };
 
     // Define columns
     const columns = [
@@ -155,7 +142,7 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-[100px]">
                             <DropdownMenuItem  onClick={() => handleviewClick(id)} className="p-3 gap-3 text-[14px] font-medium ">View</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setIsOpenEdit(true)}className="p-3 gap-3 text-[14px] font-medium ">Edit</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleeditClick(id)}className="p-3 gap-3 text-[14px] font-medium ">Edit</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDelete(id)} className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -224,6 +211,10 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
         setSelectedId(id);
         setIsOpen(true);
     };
+    const handleeditClick = (id) => {
+        setSelectedId(id);
+        setIsOpenEdit(true);
+    };
 
 
     const [formData, setFormData] = useState({
@@ -254,6 +245,36 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
             });
         }
     }, [selectedId]);
+
+    const handleDelete = async (id) => {
+        const token = localStorage.getItem("token");
+    
+        try {
+          // Send a DELETE request to the API endpoint
+          await axios.delete(`${API_URL}/api/belanja/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          toast({
+            title: "Sukses!",
+            description: "Belanja berhasil dihapus.",
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
+        fetchDataBelanja();
+        //   console.log(`Data with ID ${id} deleted successfully.`);
+        } catch (error) {
+          console.error("Error deleting data:", error);
+          const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+          toast({
+            variant: "destructive",
+            title: "Error!",
+            description: errorMessage,
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
+        }
+      };
     
     return (
         <div className="w-full grid gap-[16px] mt-[24px]">
@@ -273,7 +294,7 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
                                 <ChevronDown size={16} className="mr-2" /> Kategori Belanja
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-[184px]">
+                        <DropdownMenuContent align="start" className="w-auto">
                             {DataBayar.map((bayar) => (
                                 <DropdownMenuItem key={bayar.id} className="h-[36px] p-[12px]" onClick={() => handleFilterChange(bayar.name)}>
                                     <Checkbox 
@@ -424,8 +445,8 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
                     )}
                 </div>
             )} 
-            <View isOpen={isOpen} setIsOpen={setIsOpen} formData={formData}/> 
-            <EditBelanja isOpen={isOpenEdit} setIsOpen={setIsOpenEdit}/> 
+            <View isOpen={isOpen} setIsOpen={setIsOpen} formDataBelanja={formData} setSelectedId={setSelectedId}/> 
+            <EditBelanja isOpen={isOpenEdit} setIsOpen={setIsOpenEdit} idOutlet={idOutlet} formDataBelanja={formData} fetchDataBelanja={fetchDataBelanja} fetchDataKategori={fetchDataKategori}/> 
         </div>
     )
 }

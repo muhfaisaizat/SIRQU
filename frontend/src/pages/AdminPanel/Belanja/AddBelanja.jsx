@@ -42,7 +42,7 @@ import { API_URL } from "../../../helpers/networt";
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from "@/components/ui/toast"
 
-const AddBelanja = ({ idOutlet, fetchDataBelanja }) => {
+const AddBelanja = ({ idOutlet, fetchDataBelanja,  fetchDataKategori }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { toast } = useToast();
     const [formData, setFormData] = useState({
@@ -148,6 +148,7 @@ const AddBelanja = ({ idOutlet, fetchDataBelanja }) => {
                 });
 
                 fetchData();
+                fetchDataKategori();
             } catch (error) {
                 console.error('Error adding user:', error);
             }
@@ -171,6 +172,7 @@ const AddBelanja = ({ idOutlet, fetchDataBelanja }) => {
             });
 
             fetchData();
+            fetchDataKategori();
         } catch (error) {
             console.error('Error:', error);
         }
@@ -192,6 +194,7 @@ const AddBelanja = ({ idOutlet, fetchDataBelanja }) => {
             });
 
             fetchData();
+            fetchDataKategori();
         } catch (error) {
             console.error('Error:', error);
         }

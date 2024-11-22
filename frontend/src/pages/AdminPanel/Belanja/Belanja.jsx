@@ -25,28 +25,28 @@ import { API_URL } from "../../../helpers/networt";
 const Belanja = () => {
   // data
   const [data, setData] = useState([
-    {
-        id: "0001",
-        outletsId: '2',
-        categoriesBelanjasId: '1',
-        nama: 'Kuota listrik 1 bulan',
-        kategori:'Pengeluaran bulanan',
-        total: "500000",
-        deskripsi: "-",
-        date: "01 Oktober 2024, 13.00",
-        outlet: 'Cabang 1',
-    },
-    {
-        id: "0002",
-        outletsId: '2',
-        categoriesBelanjasId: '1',
-        nama: 'Paket data karyawan',
-        kategori:'Pengeluaran opsional',
-        total: "500000",
-        deskripsi: "paket data untuk hadiah ultah",
-        date: "01 Oktober 2024, 13.00",
-        outlet: 'Cabang 2',
-    },
+    // {
+    //     id: "0001",
+    //     outletsId: '2',
+    //     categoriesBelanjasId: '1',
+    //     nama: 'Kuota listrik 1 bulan',
+    //     kategori:'Pengeluaran bulanan',
+    //     total: "500000",
+    //     deskripsi: "-",
+    //     date: "01 Oktober 2024, 13.00",
+    //     outlet: 'Cabang 1',
+    // },
+    // {
+    //     id: "0002",
+    //     outletsId: '2',
+    //     categoriesBelanjasId: '1',
+    //     nama: 'Paket data karyawan',
+    //     kategori:'Pengeluaran opsional',
+    //     total: "500000",
+    //     deskripsi: "paket data untuk hadiah ultah",
+    //     date: "01 Oktober 2024, 13.00",
+    //     outlet: 'Cabang 2',
+    // },
   
     
 ]);
@@ -66,6 +66,11 @@ const [columnFilters, setColumnFilters] = useState([
     { id: 'kategori', value: [] },
     { id: 'date', value: [] },
 ]);
+const [DataBayar,setDataBayar] = useState([
+    // { id: "m5gr84i9", name: 'Cash' },
+    // { id: "m5gr84i7", name: 'QRIS' },
+])
+
 
 const [idOutlet,setidOutlet]=useState(null);
 
@@ -143,12 +148,44 @@ const fetchDataOutlet = async () => {
         console.error("Error fetching data", error);
     }
 };
+const fetchDataKategori = async () => {
+    const token = localStorage.getItem("token");
+    try {
+        const response = await axios.get(`${API_URL}/api/categoriesbelanjas/outlet/${idOutlet}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+       // Log untuk memastikan data yang diterima
+
+        // Pastikan response.data adalah array
+        if (Array.isArray(response.data)) {
+            // const formattedData = response.data.map(formatOutletData);
+           
+            setDataBayar(response.data);
+            // console.log(response.data)
+            // setOriginalData(formattedData); // Set originalData di sini
+        } else {
+            console.error("Data yang diterima bukan array");
+        }
+    } catch (error) {
+        console.error("Error fetching data", error);
+    }
+};
 
 // Ambil data dari API
 useEffect(() => {
     fetchDataOutlet();
     fetchData();
 }, []);
+
+
+useEffect(() => {
+    if (idOutlet) {
+        fetchDataKategori();
+    }
+}, [idOutlet]);
 
 useEffect(() => {
     if (DataOutlet.length > 0) {
@@ -176,10 +213,10 @@ useEffect(() => {
 
 
 
-const DataBayar = [
-    { id: "m5gr84i9", name: 'Cash' },
-    { id: "m5gr84i7", name: 'QRIS' },
-]
+
+
+
+
 const handleSelectOutlet = (outlet) => {
     setSelectedOutlet(outlet);
     const newFilters = { ...filters, outlet: outlet.name };
@@ -189,6 +226,7 @@ const handleSelectOutlet = (outlet) => {
         const existingFilters = prev.filter(filter => filter.id !== 'outlet');
         return [...existingFilters, { id: 'outlet', value: outlet.name }];
     });
+    fetchDataKategori();
 };
 const handleFilterChange = (selectedValue) => {
     const newFilters = { ...filters, kategori: [selectedValue] };
@@ -199,11 +237,11 @@ const handleFilterChange = (selectedValue) => {
     });
   };
   const handleClearFilters = () => {
-    setFilters({ outlet: selectedOutlet.name, bayar: [] });  
+    setFilters({ outlet: selectedOutlet.name, kategori: [] });  
     setColumnFilters(prevFilters => {
         const newFilters = [
             { id: 'outlet', value: selectedOutlet.name },
-            { id: 'bayar', value: [] }
+            { id: 'kategori', value: [] }
         ];
 
         // Jika filter tanggal sudah ada, tetap tambahkan filter tanggal yang sama
@@ -245,11 +283,11 @@ return (
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <AddBelanja idOutlet={idOutlet} fetchDataBelanja={fetchData}/>
+                <AddBelanja idOutlet={idOutlet} fetchDataBelanja={fetchData} fetchDataKategori={fetchDataKategori}/>
             </div>
         </div>
         <DataCard/>
-        <DataTableHistory data={data} setData={setData} columnFilters={columnFilters} setColumnFilters={setColumnFilters} filters={filters} DataBayar={DataBayar} handleFilterChange={handleFilterChange} handleClearFilters={handleClearFilters} originalData={originalData} setOriginalData={setOriginalData}/>
+        <DataTableHistory data={data} setData={setData} columnFilters={columnFilters} setColumnFilters={setColumnFilters} filters={filters} DataBayar={DataBayar} handleFilterChange={handleFilterChange} handleClearFilters={handleClearFilters} originalData={originalData} setOriginalData={setOriginalData} idOutlet={idOutlet} fetchDataBelanja={fetchData} fetchDataKategori={fetchDataKategori}/>
     </div>
     </ScrollArea>
 );
