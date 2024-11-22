@@ -19,7 +19,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *               outletsId:
  *                 type: integer
  *                 description: The ID of the outlet
- *               categoriesId:
+ *               categoriesBelanjasId:
  *                 type: integer
  *                 description: The ID of the category
  *               namaKegiatan:
@@ -132,7 +132,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), belanjaController.getBe
  *             properties:
  *               outletsId:
  *                 type: integer
- *               categoriesId:
+ *               categoriesBelanjasId:
  *                 type: integer
  *               namaKegiatan:
  *                 type: string
