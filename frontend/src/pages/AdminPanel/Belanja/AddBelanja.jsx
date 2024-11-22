@@ -27,7 +27,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CloseCircle, Clock, Calendar as CalendarIcon} from 'iconsax-react';
+import { CloseCircle, Clock, Calendar as CalendarIcon } from 'iconsax-react';
 import { MoreVertical } from "lucide-react"
 import {
     DropdownMenu,
@@ -37,8 +37,10 @@ import {
     DropdownMenuLabel,
     DropdownMenuCheckboxItem
 } from "@/components/ui/dropdown-menu"
+import axios from 'axios';
+import { API_URL } from "../../../helpers/networt";
 
-const AddBelanja = () => {
+const AddBelanja = ({ idOutlet }) => {
     const [uang, setUang] = useState('');
 
     // Fungsi untuk memformat angka menjadi format ribuan
@@ -69,39 +71,114 @@ const AddBelanja = () => {
 
 
     const [categories, setCategories] = useState([
-        { id: 1, name: "Izin Usaha" },
-        { id: 2, name: "Persiapan Bangun" },
-        { id: 3, name: "Izin Bangun" },
-        { id: 4, name: "SLF" },
+        // { id: 1, name: "Izin Usaha" },
+        // { id: 2, name: "Persiapan Bangun" },
+        // { id: 3, name: "Izin Bangun" },
+        // { id: 4, name: "SLF" },
     ]);
 
     const [isAdding, setIsAdding] = useState(false);
     const [newCategory, setNewCategory] = useState("");
     const [selectkategori, setselectkategori] = useState("");
+    const [selectidOutlet, setselectidOutlet] = useState("");
     const [editingCategory, setEditingCategory] = useState(null);
 
+    const fetchData = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/categoriesbelanjas/outlet/${idOutlet}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            // Log untuk memastikan data yang diterima
+
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data)) {
+                setCategories(response.data)
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+    useEffect(() => {
+        setCategories([]);
+        if (idOutlet) {
+            // console.log('idOutlet:', idOutlet);
+            fetchData();
+        }
+    }, [idOutlet]);
+
     // Menambahkan kategori baru
-    const handleAddCategory = () => {
+    const handleAddCategory = async () => {
         if (newCategory.trim() !== "") {
             const newId = categories.length ? categories[categories.length - 1].id + 1 : 1;
             setCategories([...categories, { id: newId, name: newCategory.trim() }]);
             setNewCategory("");
             setIsAdding(false);
+            try {
+                const token = localStorage.getItem("token");
+                const response = await axios.post(`${API_URL}/api/categoriesbelanjas`, {
+                    outletsId: idOutlet,
+                    name: newCategory.trim()
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                });
+
+                fetchData();
+            } catch (error) {
+                console.error('Error adding user:', error);
+            }
         }
     };
 
     // Mengubah kategori yang dipilih
-    const handleEditCategory = (id, newName) => {
+    const handleEditCategory = async (id, newName) => {
         setCategories(categories.map(category =>
             category.id === id ? { ...category, name: newName } : category
         ));
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.put(`${API_URL}/api/categoriesbelanjas/${id}`, {
+                outletsId: idOutlet,
+                name: newCategory.trim()
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+
+            fetchData();
+        } catch (error) {
+            console.error('Error:', error);
+        }
         setEditingCategory(null); // Tutup input edit setelah perubahan
         setselectkategori("");
+        setselectidOutlet('')
     };
 
     // Menghapus kategori yang dipilih
-    const handleDeleteCategory = (id) => {
+    const handleDeleteCategory = async (id) => {
         setCategories(categories.filter(category => category.id !== id));
+        try {
+            const token = localStorage.getItem("token");
+            await axios.delete(`${API_URL}/api/categoriesbelanjas/${id}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+              });
+
+            fetchData();
+        } catch (error) {
+            console.error('Error:', error);
+        }
         setNewCategory("");
         setselectkategori("");
     };
@@ -122,6 +199,7 @@ const AddBelanja = () => {
         setIsAdding(!isAdding);
         setNewCategory(""); // Reset input saat membuka
         setEditingCategory(null); // Reset edit saat membuka input
+        setselectidOutlet('')
     };
 
 
@@ -180,11 +258,12 @@ const AddBelanja = () => {
                                         >
 
                                             <DropdownMenuCheckboxItem
-                                                className='w-full text-[14px] focus:bg-transparent'
-                                                checked={selectkategori === category.name}
+                                                className='w-full text-[14px] focus:bg-transparent cursor-pointer'
+                                                checked={selectidOutlet === category.id}
                                                 onCheckedChange={(checked) => {
                                                     setNewCategory(checked ? category.name : '');
                                                     setselectkategori(checked ? category.name : '');
+                                                    setselectidOutlet(checked ? category.id : '');
                                                 }}
                                                 onClick={() => { setIsAdding(false); setEditingCategory(null); }}
                                             >
@@ -202,6 +281,7 @@ const AddBelanja = () => {
                                                         onClick={() => {
                                                             setEditingCategory(category);
                                                             setNewCategory(category.name);
+                                                            setselectidOutlet(category.id);
                                                         }}
                                                     >
                                                         Edit

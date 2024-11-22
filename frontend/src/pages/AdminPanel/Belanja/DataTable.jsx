@@ -47,11 +47,11 @@ import EditBelanja from "./EditBelanja";
 
 
 // Main component
-const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataBayar, handleFilterChange, handleClearFilters, filters}) => {
+const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataBayar, handleFilterChange, handleClearFilters, filters, originalData, setOriginalData}) => {
    
 
     // status
-    const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
+    // Tambahkan state untuk data asli
     const handleDelete = (id) => {
         setData((prevData) => {
             const updatedData = prevData.filter((item) => item.id !== id);
