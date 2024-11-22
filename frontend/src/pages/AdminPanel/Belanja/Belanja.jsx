@@ -245,7 +245,7 @@ return (
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <AddBelanja idOutlet={idOutlet}/>
+                <AddBelanja idOutlet={idOutlet} fetchDataBelanja={fetchData}/>
             </div>
         </div>
         <DataCard/>

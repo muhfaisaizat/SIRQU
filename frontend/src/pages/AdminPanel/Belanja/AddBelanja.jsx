@@ -39,8 +39,24 @@ import {
 } from "@/components/ui/dropdown-menu"
 import axios from 'axios';
 import { API_URL } from "../../../helpers/networt";
+import { useToast } from '@/hooks/use-toast'
+import { ToastAction } from "@/components/ui/toast"
 
-const AddBelanja = ({ idOutlet }) => {
+const AddBelanja = ({ idOutlet, fetchDataBelanja }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const { toast } = useToast();
+    const [formData, setFormData] = useState({
+        nama_projec: '',
+        deskripsi: '',
+        time: '',
+    });
+
+    const handleInputtextChange = (e) => {
+        const { id, value } = e.target;
+        setFormData({ ...formData, [id]: value });
+    };
+
+
     const [uang, setUang] = useState('');
 
     // Fungsi untuk memformat angka menjadi format ribuan
@@ -170,10 +186,10 @@ const AddBelanja = ({ idOutlet }) => {
             const token = localStorage.getItem("token");
             await axios.delete(`${API_URL}/api/categoriesbelanjas/${id}`, {
                 headers: {
-                  Authorization: `Bearer ${token}`,
-                  "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                 },
-              });
+            });
 
             fetchData();
         } catch (error) {
@@ -203,8 +219,124 @@ const AddBelanja = ({ idOutlet }) => {
     };
 
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const { nama_projec, deskripsi, time } = formData;
+        const token = localStorage.getItem("token");
+
+        // Validasi
+        if (!nama_projec) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Nama kegiatan harus diisi.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        if (!selectidOutlet) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Kategori Belanja harus diisi.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        if (!deskripsi) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Deskripsi harus diisi.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        if (!uang) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Total Belanja harus diisi.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+
+
+        if (!time) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Waktu harus dipilih.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        if (date === null || date === undefined) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "tanggal harus dipilih.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+
+        try {
+            const formattedDate = new Date(date).toISOString().split('T')[0];
+
+            const response = await axios.post(`${API_URL}/api/belanja`, {
+                outletsId: idOutlet,
+                categoriesBelanjasId: selectidOutlet,
+                namaKegiatan: formData.nama_projec,
+                deskripsi: formData.deskripsi,
+                totalBelanja: uang,
+                waktu:  formData.time,
+                tanggal: formattedDate
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+
+                }
+            });
+            toast({
+                title: "Sukses!",
+                description: "Belanja berhasil ditambahkan.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+
+
+            setselectidOutlet('');
+            setselectkategori('');
+            setFormData({nama_projec:'',deskripsi:'',time:''});
+            setUang('');
+            setDate(null)
+
+            fetchDataBelanja();
+        } catch (error) {
+            console.error('Error adding :', error);
+            toast({
+                variant: "destructive",
+                title: 'Error Adding ',
+                description: 'An internal server error occurred. Please try again later.',
+                status: 'error',
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
+
+
+
+        setIsOpen(false);
+    };
+
+
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button className='gap-2 h-[36px] text-[14px] font-medium' ><GoPlus size={16} /> Tambah belanja</Button>
             </DialogTrigger>
@@ -233,7 +365,8 @@ const AddBelanja = ({ idOutlet }) => {
                                 id="nama_projec"
                                 placeholder="Masukkan nama kegiatan"
                                 className='h-[36px] text-[14px]'
-
+                                value={formData.nama_projec}
+                                onChange={handleInputtextChange}
                             />
                         </div>
                     </div>
@@ -347,7 +480,8 @@ const AddBelanja = ({ idOutlet }) => {
                                 id="deskripsi"
                                 name="alamat"
                                 className="w-full text-[14px]"
-
+                                value={formData.deskripsi}
+                                onChange={handleInputtextChange}
                             />
                             <p className='text-[14px] text-slate-500 font-medium flex justify-end'>0/200 char</p>
                         </div>
@@ -399,8 +533,9 @@ const AddBelanja = ({ idOutlet }) => {
 
                                     min="09:00"
                                     max="18:00"
-                                    defaultValue="00:00"
                                     required
+                                    value={formData.time}
+                                    onChange={handleInputtextChange}
                                 />
                             </div>
                         </div>
@@ -438,7 +573,7 @@ const AddBelanja = ({ idOutlet }) => {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="submit" className='gap-2 h-[36px] text-[14px] font-medium' >Simpan</Button>
+                    <Button type="submit" onClick={handleSubmit} className='gap-2 h-[36px] text-[14px] font-medium' >Simpan</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
