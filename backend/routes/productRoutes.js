@@ -249,7 +249,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productController.getProdu
  * @swagger
  * /api/products/{id}/status:
  *   put:
- *     summary: Update product status and stock by ID
+ *     summary: Update product status, stock, and unlimited stock by ID
  *     tags: [Products]
  *     parameters:
  *       - in: path
@@ -262,7 +262,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productController.getProdu
  *         name: stock
  *         schema:
  *           type: integer
- *           description: New stock value for the product
+ *         description: New stock value for the product (ignored if unlimited_stock is true)
  *       - in: query
  *         name: status
  *         required: true
@@ -270,6 +270,13 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productController.getProdu
  *           type: string
  *           enum: [Produk Aktif, Produk Tidak Aktif]
  *         description: New status for the product
+ *       - in: query
+ *         name: unlimited_stock
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [true, false]
+ *         description: Indicates whether the stock is unlimited (true) or limited (false)
  *     responses:
  *       200:
  *         description: Product status updated successfully
@@ -293,13 +300,16 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productController.getProdu
  *                       type: integer
  *                     status:
  *                       type: string
+ *                     unlimited_stock:
+ *                       type: boolean
  *       400:
- *         description: Invalid status value
+ *         description: Invalid status, stock, or unlimited_stock value
  *       404:
  *         description: Product not found
  *       500:
  *         description: Internal server error
  */
+
 router.put('/:id/status', roleMiddleware(['Admin', 'Manager']), productController.updateProductStatus);
 
 

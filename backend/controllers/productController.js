@@ -225,12 +225,13 @@ exports.updateProductStatus = async (req, res) => {
     const productId = req.params.id;
     const newStock = req.query.stock;
     const newStatus = req.query.status; // Get new status from query parameter
+    const newUnlimitedStock = req.query.unlimited_stock; // Get unlimited_stock from query parameter
 
-    // Validate stock value (must be a non-negative integer)
-    if (newStock !== undefined && (isNaN(newStock) || newStock < 0)) {
+    // Validate stock value if unlimited_stock is false (must be a non-negative integer)
+    if (newUnlimitedStock === 'false' && (newStock !== undefined && (isNaN(newStock) || newStock < 0))) {
       return res.status(400).json({ 
         success: false,
-        message: "Stock must be a non-negative integer."
+        message: "Stock must be a non-negative integer when unlimited_stock is false."
       });
     }
 
@@ -242,18 +243,24 @@ exports.updateProductStatus = async (req, res) => {
       });
     }
 
-    // Determine status based on stock value if no status is given
-    let status = newStatus || (newStock == 0 ? 'Produk Tidak Aktif' : 'Produk Aktif');
-    let finalStock = newStock !== undefined ? newStock : undefined;
-    let unlimitedStock = 0; // Default unlimited_stock value
-
-    // If stock is 0 and status is 'Produk Aktif', adjust the response values
-    if (newStock == 0 && status === 'Produk Aktif') {
-      finalStock = null; // Set stock to null
-      unlimitedStock = 1; // Set unlimited_stock to true
+    // Validate unlimited_stock value (must be either 'true' or 'false')
+    if (!['true', 'false'].includes(newUnlimitedStock)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid unlimited_stock value. Allowed values are 'true' or 'false'."
+      });
     }
 
-    // Update stock and status product
+    // Convert unlimited_stock to boolean
+    let unlimitedStock = newUnlimitedStock === 'true';
+
+    // If unlimited_stock is true, set stock to null
+    let finalStock = unlimitedStock ? null : (newStock !== undefined ? newStock : undefined);
+
+    // Determine status based on stock value if no status is given
+    let status = newStatus || (finalStock == 0 ? 'Produk Tidak Aktif' : 'Produk Aktif');
+
+    // Update stock, status, and unlimited_stock for product
     const [updated] = await Product.update(
       { stock: finalStock, status, unlimited_stock: unlimitedStock },
       { where: { id: productId } }
