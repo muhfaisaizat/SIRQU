@@ -16,6 +16,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from "@/components/ui/toast";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
 const SyaratKetentuan = () => {
     const navigate = useNavigate();
@@ -27,7 +29,7 @@ const SyaratKetentuan = () => {
         setIsChecked(!isChecked); 
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!isChecked) {
@@ -40,11 +42,34 @@ const SyaratKetentuan = () => {
             return;
         }
 
-        toast({
-            title: "Sukses!",
-            description: "Cabang berhasil dibuka.",
-            action: <ToastAction altText="Try again">Cancel</ToastAction>,
-        });
+        try {
+            const token = localStorage.getItem("token");
+            const id = localStorage.getItem("idTokoUtama");
+            const response = await axios.put(`${API_URL}/api/outlets/syarat-ketentuan/${id}`, {
+                syarat_ketentuan: true
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+            localStorage.setItem("syarat_ketentuan", 1 );
+            toast({
+                title: "Sukses!",
+                description: "Cabang berhasil dibuka.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        } catch (error) {
+            console.error('Error adding user:', error);
+            toast({
+                variant: "destructive",
+                title: 'Error Adding User',
+                description: 'An internal server error occurred. Please try again later.',
+                status: 'error',
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
+
+        
 
         setIsOpen(false);
         navigate('/admin-panel/kelola-outlet/data');

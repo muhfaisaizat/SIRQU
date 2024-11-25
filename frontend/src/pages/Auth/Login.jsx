@@ -40,15 +40,44 @@ const Login = () => {
             localStorage.setItem("id", response.data.user.id);
             localStorage.setItem("foto", response.data.user.image);
             
+            const Outlet = await axios.get(`${API_URL}/api/outlets`, {
+                headers: {
+                    Authorization: `Bearer ${response.data.token}`,
+                },
+            });
+
+            const hasTokoUtama = Outlet.data.data.some(outlet => outlet.posisi === "Toko Utama");
+            const tokoUtamaOutlet = Outlet.data.data.find(outlet => outlet.posisi === "Toko Utama");
+
+            if (tokoUtamaOutlet) {
+                localStorage.setItem("syarat_ketentuan", tokoUtamaOutlet.syarat_ketentuan);
+                localStorage.setItem("idTokoUtama", tokoUtamaOutlet.id_outlet);
+            
+            } else {
+                localStorage.setItem("syarat_ketentuan", null);
+            
+            }
             
             if (userRole === "Admin") {
-              navigate("/admin-panel");
+                if (hasTokoUtama) {
+                    navigate("/admin-panel");
+                } else {
+                    navigate("/admin-panel/wellcome");
+                }
             } 
             else if(userRole === "Manager"){
-                navigate("/admin-panel");
+                if (hasTokoUtama) {
+                    navigate("/admin-panel");
+                } else {
+                    navigate("/admin-panel/wellcome");
+                }
             } 
             else if(userRole === "Kasir"){
-                navigate("/admin-panel");
+                if (hasTokoUtama) {
+                    navigate("/admin-panel");
+                } else {
+                    navigate("/admin-panel/wellcome");
+                }
             } 
             else {
               toast({

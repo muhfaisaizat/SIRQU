@@ -26,6 +26,21 @@ const MainPanel = () => {
     const [activeLink, setActiveLink] = useState('');
     const location = useLocation();
     const [showAddToko, setShowAddToko] = useState(false);
+    const syarat_ketentuan = localStorage.getItem("syarat_ketentuan");
+
+    const handleRedirect = () => {
+        if (syarat_ketentuan === "0") {
+          // Arahkan ke halaman syarat dan ketentuan
+          handlemenu('toko');
+          navigate('/admin-panel/kelola-outlet/syarat-ketentuan');
+        } else if (syarat_ketentuan === "1") {
+          // Arahkan ke halaman data
+          handlemenu('toko');
+          navigate('/admin-panel/kelola-outlet/data');
+        } else {
+          console.warn("Nilai 'syarat_ketentuan' tidak valid:", syarat_ketentuan);
+        }
+      };
 
     useEffect(() => {
         const savedLink = localStorage.getItem('activeLink');
@@ -232,7 +247,7 @@ const MainPanel = () => {
                                     </ul>
                                 )}
                             </li>
-                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'toko' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('toko'); navigate('/admin-panel/kelola-outlet/syarat-ketentuan'); }}>
+                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'toko' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}  onClick={handleRedirect}>
                                 <Link className='flex gap-3 justify-center'>
                                     <Shop  size={16} />
                                     <span className="font-medium text-[14px]">Kelola Outlet</span>

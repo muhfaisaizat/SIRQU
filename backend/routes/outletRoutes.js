@@ -301,4 +301,61 @@ router.put('/:id/koordinator', roleMiddleware(['Admin', 'Manager']), outletContr
 router.post('/product-outlets',  outletController.createProductOutletsForAllProducts);
 
 
+
+/**
+ * @swagger
+ * /api/outlets/syarat-ketentuan/{id}:
+ *   put:
+ *     summary: Update the terms and conditions (syarat ketentuan) of an outlet by ID
+ *     tags: [Outlets]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the outlet to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               syarat_ketentuan:
+ *                 type: boolean
+ *                 description: The new terms and conditions for the outlet (true or false)
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Syarat ketentuan updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Syarat ketentuan updated successfully."
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       description: The ID of the outlet
+ *                     syarat_ketentuan:
+ *                       type: boolean
+ *                       description: The updated terms and conditions
+ *       400:
+ *         description: Field syarat_ketentuan is required
+ *       404:
+ *         description: Outlet not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put('/syarat-ketentuan/:id', roleMiddleware(['Admin', 'Manager']), outletController.updateSyaratKetentuan);
+
+
+
+
 module.exports = router;

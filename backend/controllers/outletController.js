@@ -29,7 +29,7 @@ exports.createOutlet = async (req, res) => {
     const newOutlet = await Outlet.create({
       nama,
       alamat,
-      syarat_ketentuan: syarat_ketentuan || true,  // Set default value jika syaratKetentuan tidak ada
+      syarat_ketentuan: syarat_ketentuan ,  // Set default value jika syaratKetentuan tidak ada
       position,  // Menambahkan position ke outlet baru
       image: imagePath,  // Menyimpan nama gambar atau null jika tidak ada gambar
       createdAt: new Date(),
@@ -271,5 +271,37 @@ exports.createProductOutletsForAllProducts = async (req, res) => {
       error: 'Terjadi kesalahan saat membuat ProductOutlet',
       message: error.message,
     });
+  }
+};
+
+
+exports.updateSyaratKetentuan = async (req, res) => {
+  const { id } = req.params; 
+  const { syarat_ketentuan } = req.body; 
+
+  try {
+      // Validasi input
+      if (syarat_ketentuan === undefined) {
+          return res.status(400).json({ message: "Field syarat_ketentuan is required." });
+      }
+
+      // Cari outlet berdasarkan id
+      const outlet = await Outlet.findByPk(id);
+
+      if (!outlet) {
+          return res.status(404).json({ message: "Outlet not found." });
+      }
+
+      // Update field syarat_ketentuan
+      outlet.syarat_ketentuan = syarat_ketentuan;
+      await outlet.save();
+
+      return res.status(200).json({
+          message: "Syarat ketentuan updated successfully.",
+          data: outlet
+      });
+  } catch (error) {
+      console.error("Error updating syarat_ketentuan:", error);
+      return res.status(500).json({ message: "Internal server error." });
   }
 };
