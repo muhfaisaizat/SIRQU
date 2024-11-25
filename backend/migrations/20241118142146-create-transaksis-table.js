@@ -29,7 +29,7 @@ module.exports = {
         onUpdate: 'CASCADE',
         primaryKey: true
       },
-      tipe_order: {
+      tipeOrder: {
         type: Sequelize.STRING,
         allowNull: false 
       },

@@ -451,7 +451,8 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
                 role: selectedData.role,
                 status: selectedData.status,
                 date: selectedData.date,
-                id: selectedData.id
+                id: selectedData.id,
+                image: selectedData.image
             });
             if (selectedData.image === null) {
                 setImage(null);
@@ -888,6 +889,13 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
 
                     </div>
                     <div className="grid gap-4 py-[16px] text-[14px]">
+                        <div className="relative w-[120px] h-[120px]">
+                        <img
+                            src={formData.image ? `${API_URL}/images/${formData.image}` : "https://github.com/shadcn.png"}
+                            alt={formData.nama}
+                            className="w-full h-full border object-cover rounded-[8px]"
+                        />
+                        </div>
                         <div className="flex align-middle h-[36px]">
                             <p className="w-[150px] text-slate-500">Nama</p>
                             <p>{formData.nama}</p>

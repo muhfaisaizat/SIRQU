@@ -1,4 +1,4 @@
-const DetailDiskon = require('../models/detailDiskon');
+const DetailDiskon = require('../models/detailDiskons');
 
 exports.createDetailDiskon = async (req, res) => {
   const { transaksi_id, diskon_id, harga } = req.body;
@@ -9,8 +9,8 @@ exports.createDetailDiskon = async (req, res) => {
     }
 
     const detailDiskon = await DetailDiskon.create({
-      transaksi_id,
-      diskon_id,
+      transaksisId:transaksi_id,
+      diskonsId:diskon_id,
       harga,
     });
 
@@ -40,7 +40,7 @@ exports.updateDetailDiskon = async (req, res) => {
       const detailDiskon = await DetailDiskon.findOne({
         where: {
           id: detailDiskon_id,
-          transaksi_id: transaksi_id,
+          transaksisId:transaksi_id,
         },
       });
   
@@ -50,7 +50,7 @@ exports.updateDetailDiskon = async (req, res) => {
   
       // Update detail diskon dengan data baru
       await detailDiskon.update({
-        diskon_id,
+        diskonsId:diskon_id,
         harga,
       });
   
@@ -73,7 +73,7 @@ exports.updateDetailDiskon = async (req, res) => {
       const detailDiskon = await DetailDiskon.findOne({
         where: {
           id: detailDiskon_id,
-          transaksi_id: transaksi_id,
+          transaksisId:transaksi_id,
         },
       });
   

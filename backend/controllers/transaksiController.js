@@ -1,4 +1,4 @@
-const Transaksi = require('../models/transaksi');
+const Transaksi = require('../models/transaksis');
 const sequelize = require('../config/database');
 
 exports.createTransaksi = async (req, res) => {
@@ -7,14 +7,14 @@ exports.createTransaksi = async (req, res) => {
 
     // Buat transaksi baru
     const newTransaksi = await Transaksi.create({
-      outlet_id: outlet_id,
-      kasir_id: kasir_id,
-      tipe_order: tipe_order,
+      outletsId: outlet_id,
+      kasirsId: kasir_id,
+      tipeOrder: tipe_order,
       name: name || undefined, // Gunakan default jika name kosong, hook akan mengisi
       catatan: catatan,
-      tipe_bayar: tipe_bayar,
-      ket_bayar: ket_bayar,
-      sub_total: sub_total,
+      tipeBayar: tipe_bayar,
+      ketBayar: ket_bayar,
+      subTotal: sub_total,
       total: total,
       bayar: bayar,
       kembalian: kembalian,
@@ -54,14 +54,14 @@ exports.updateTransaksi = async (req, res) => {
 
     // Perbarui transaksi dengan data baru
     await transaksi.update({
-      outlet_id: outlet_id,
-      kasir_id: kasir_id,
-      tipe_order: tipe_order,
+      outletsId: outlet_id,
+      kasirsId: kasir_id,
+      tipeOrder: tipe_order,
       name: name || undefined, // Gunakan default jika name kosong
       catatan: catatan,
-      tipe_bayar: tipe_bayar,
-      ket_bayar: ket_bayar,
-      sub_total: sub_total,
+      tipeBayar: tipe_bayar,
+      ketBayar: ket_bayar,
+      subTotal: sub_total,
       total: total,
       bayar: bayar,
       kembalian: kembalian,
@@ -116,14 +116,14 @@ exports.readTransaksi = async (req, res) => {
     const queryTransaksi = `
       SELECT 
         t.id AS transaksi_id,
-        t.outlet_id,
-        t.kasir_id,
-        t.tipe_order,
+        t.outletsId AS outlet_id,
+        t.kasirsId AS kasir_id,
+        t.tipeOrder AS tipe_order,
         t.name AS transaksi_name,
         t.catatan,
-        t.tipe_bayar,
-        t.ket_bayar,
-        t.sub_total,
+        t.tipeBayar AS tipe_bayar,
+        t.ketBayar AS ket_bayar,
+        t.subTotal AS sub_total,
         t.total,
         t.bayar,
         t.kembalian,
@@ -133,9 +133,9 @@ exports.readTransaksi = async (req, res) => {
       FROM 
         transaksis AS t
       JOIN 
-        outlets AS o ON t.outlet_id = o.id
+        outlets AS o ON t.outletsId = o.id
       JOIN 
-        users AS u ON t.kasir_id = u.id
+        users AS u ON t.kasirsId = u.id
       WHERE
          t.deletedAt IS NULL
     `;
@@ -149,17 +149,17 @@ exports.readTransaksi = async (req, res) => {
       const queryDetailTransaksi = `
         SELECT 
           dt.id,
-          dt.transaksi_id,
-          dt.product_id,
+          dt.transaksisId AS transaksi_id,
+          dt.productsId AS product_id,
           p.name AS product_name,
           p.price AS product_price,
           dt.stok 
         FROM 
-          detail_transaksis AS dt
+          detailtransaksis AS dt
         JOIN 
-          products AS p ON dt.product_id = p.id
+          products AS p ON dt.productsId = p.id
         WHERE 
-          dt.transaksi_id = ${transaksi.transaksi_id}
+          dt.transaksisId = ${transaksi.transaksi_id}
       `;
       const [detailTransaksis] = await sequelize.query(queryDetailTransaksi);
 
@@ -167,16 +167,16 @@ exports.readTransaksi = async (req, res) => {
       const queryDetailPajak = `
         SELECT 
           dp.id,
-          dp.transaksi_id,
-          dp.pajak_id,
+          dp.transaksisId AS transaksi_id,
+          dp.pajaksId AS pajak_id,
           pj.name AS pajak_name,
           dp.harga
         FROM 
-          detail_pajaks AS dp
+          detailpajaks AS dp
         JOIN 
-          pajaks AS pj ON dp.pajak_id = pj.id
+          pajaks AS pj ON dp.pajaksId = pj.id
         WHERE 
-          dp.transaksi_id = ${transaksi.transaksi_id}
+          dp.transaksisId = ${transaksi.transaksi_id}
       `;
       const [detailPajaks] = await sequelize.query(queryDetailPajak);
 
@@ -184,16 +184,16 @@ exports.readTransaksi = async (req, res) => {
       const queryDetailDiskon = `
         SELECT 
           dd.id,
-          dd.transaksi_id,
-          dd.diskon_id,
+          dd.transaksisId AS transaksi_id,
+          dd.diskonsId AS diskon_id,
           d.name AS diskon_name,
           dd.harga
         FROM 
-          detail_diskons AS dd
+          detaildiskons AS dd
         JOIN 
-          diskons AS d ON dd.diskon_id = d.id
+          diskons AS d ON dd.diskonsId = d.id
         WHERE 
-          dd.transaksi_id = ${transaksi.transaksi_id}
+          dd.transaksisId = ${transaksi.transaksi_id}
       `;
       const [detailDiskons] = await sequelize.query(queryDetailDiskon);
 
@@ -227,14 +227,14 @@ exports.readTransaksibyid = async (req, res) => {
     const queryTransaksi = `
       SELECT 
         t.id AS transaksi_id,
-        t.outlet_id,
-        t.kasir_id,
-        t.tipe_order,
+        t.outletsId AS outlet_id,
+        t.kasirsId AS kasir_id,
+        t.tipeOrder AS tipe_order,
         t.name AS transaksi_name,
         t.catatan,
-        t.tipe_bayar,
-        t.ket_bayar,
-        t.sub_total,
+        t.tipeBayar AS tipe_bayar,
+        t.ketBayar AS ket_bayar,
+        t.subTotal AS sub_total,
         t.total,
         t.bayar,
         t.kembalian,
@@ -244,9 +244,9 @@ exports.readTransaksibyid = async (req, res) => {
       FROM 
         transaksis AS t
       JOIN 
-        outlets AS o ON t.outlet_id = o.id
+        outlets AS o ON t.outletsId = o.id
       JOIN 
-        users AS u ON t.kasir_id = u.id
+        users AS u ON t.kasirsId = u.id
       WHERE
          t.id = ${id}  -- Filter berdasarkan ID transaksi
     `;
@@ -260,51 +260,51 @@ exports.readTransaksibyid = async (req, res) => {
       const queryDetailTransaksi = `
         SELECT 
           dt.id,
-          dt.transaksi_id,
-          dt.product_id,
+          dt.transaksisId AS transaksi_id,
+          dt.productsId AS product_id,
           p.name AS product_name,
           p.price AS product_price,
           dt.stok 
         FROM 
-          detail_transaksis AS dt
+          detailtransaksis AS dt
         JOIN 
-          products AS p ON dt.product_id = p.id
+          products AS p ON dt.productsId = p.id
         WHERE 
-          dt.transaksi_id = ${transaksi.transaksi_id}
+          dt.transaksisId = ${transaksi.transaksi_id}
       `;
       const [detailTransaksis] = await sequelize.query(queryDetailTransaksi);
 
       // Query untuk mengambil detail pajak
       const queryDetailPajak = `
-        SELECT 
+         SELECT 
           dp.id,
-          dp.transaksi_id,
-          dp.pajak_id,
+          dp.transaksisId AS transaksi_id,
+          dp.pajaksId AS pajak_id,
           pj.name AS pajak_name,
           dp.harga
         FROM 
-          detail_pajaks AS dp
+          detailpajaks AS dp
         JOIN 
-          pajaks AS pj ON dp.pajak_id = pj.id
+          pajaks AS pj ON dp.pajaksId = pj.id
         WHERE 
-          dp.transaksi_id = ${transaksi.transaksi_id}
+          dp.transaksisId = ${transaksi.transaksi_id}
       `;
       const [detailPajaks] = await sequelize.query(queryDetailPajak);
 
       // Query untuk mengambil detail diskon
       const queryDetailDiskon = `
-        SELECT 
+       SELECT 
           dd.id,
-          dd.transaksi_id,
-          dd.diskon_id,
+          dd.transaksisId AS transaksi_id,
+          dd.diskonsId AS diskon_id,
           d.name AS diskon_name,
           dd.harga
         FROM 
-          detail_diskons AS dd
+          detaildiskons AS dd
         JOIN 
-          diskons AS d ON dd.diskon_id = d.id
+          diskons AS d ON dd.diskonsId = d.id
         WHERE 
-          dd.transaksi_id = ${transaksi.transaksi_id}
+          dd.transaksisId = ${transaksi.transaksi_id}
       `;
       const [detailDiskons] = await sequelize.query(queryDetailDiskon);
 
@@ -340,14 +340,14 @@ exports.readTransaksiDate = async (req, res) => {
     let queryTransaksi = `
       SELECT 
         t.id AS transaksi_id,
-        t.outlet_id,
-        t.kasir_id,
-        t.tipe_order,
+        t.outletsId AS outlet_id,
+        t.kasirsId AS kasir_id,
+        t.tipeOrder AS tipe_order,
         t.name AS transaksi_name,
         t.catatan,
-        t.tipe_bayar,
-        t.ket_bayar,
-        t.sub_total,
+        t.outletsId AS outlet_id,
+        t.kasirsId AS kasir_id,
+        t.tipeOrder AS tipe_order,
         t.total,
         t.bayar,
         t.kembalian,
@@ -357,9 +357,9 @@ exports.readTransaksiDate = async (req, res) => {
       FROM 
         transaksis AS t
       JOIN 
-        outlets AS o ON t.outlet_id = o.id
+        outlets AS o ON t.outletsId = o.id
       JOIN 
-        users AS u ON t.kasir_id = u.id
+        users AS u ON t.kasirsId = u.id
       WHERE  
         t.deletedAt IS NULL
     `;
@@ -378,51 +378,51 @@ exports.readTransaksiDate = async (req, res) => {
       const queryDetailTransaksi = `
         SELECT 
           dt.id,
-          dt.transaksi_id,
-          dt.product_id,
+          dt.transaksisId AS transaksi_id,
+          dt.productsId AS product_id,
           p.name AS product_name,
           p.price AS product_price,
           dt.stok 
         FROM 
-          detail_transaksis AS dt
+          detailtransaksis AS dt
         JOIN 
-          products AS p ON dt.product_id = p.id
+          products AS p ON dt.productsId = p.id
         WHERE 
-          dt.transaksi_id = ${transaksi.transaksi_id}
+          dt.transaksisId = ${transaksi.transaksi_id}
       `;
       const [detailTransaksis] = await sequelize.query(queryDetailTransaksi);
 
       // Query untuk mengambil detail pajak
       const queryDetailPajak = `
-        SELECT 
+         SELECT 
           dp.id,
-          dp.transaksi_id,
-          dp.pajak_id,
+          dp.transaksisId AS transaksi_id,
+          dp.pajaksId AS pajak_id,
           pj.name AS pajak_name,
           dp.harga
         FROM 
-          detail_pajaks AS dp
+          detailpajaks AS dp
         JOIN 
-          pajaks AS pj ON dp.pajak_id = pj.id
+          pajaks AS pj ON dp.pajaksId = pj.id
         WHERE 
-          dp.transaksi_id = ${transaksi.transaksi_id}
+          dp.transaksisId = ${transaksi.transaksi_id}
       `;
       const [detailPajaks] = await sequelize.query(queryDetailPajak);
 
       // Query untuk mengambil detail diskon
       const queryDetailDiskon = `
-        SELECT 
+       SELECT 
           dd.id,
-          dd.transaksi_id,
-          dd.diskon_id,
+          dd.transaksisId AS transaksi_id,
+          dd.diskonsId AS diskon_id,
           d.name AS diskon_name,
           dd.harga
         FROM 
-          detail_diskons AS dd
+          detaildiskons AS dd
         JOIN 
-          diskons AS d ON dd.diskon_id = d.id
+          diskons AS d ON dd.diskonsId = d.id
         WHERE 
-          dd.transaksi_id = ${transaksi.transaksi_id}
+          dd.transaksisId = ${transaksi.transaksi_id}
       `;
       const [detailDiskons] = await sequelize.query(queryDetailDiskon);
 

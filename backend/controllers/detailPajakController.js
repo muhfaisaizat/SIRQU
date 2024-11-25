@@ -1,4 +1,4 @@
-const DetailPajak = require('../models/detailPajak');
+const DetailPajak = require('../models/detailPajaks');
 
 exports.createDetailPajak = async (req, res) => {
   const { transaksi_id, pajak_id, harga } = req.body;
@@ -9,8 +9,8 @@ exports.createDetailPajak = async (req, res) => {
     }
 
     const detailPajak = await DetailPajak.create({
-      transaksi_id,
-      pajak_id,
+      transaksisId:transaksi_id,
+      pajaksId:pajak_id,
       harga,
     });
 
@@ -39,7 +39,7 @@ exports.updateDetailPajak = async (req, res) => {
       const detailPajak = await DetailPajak.findOne({
         where: {
           id: detailPajak_id,
-          transaksi_id: transaksi_id,
+          transaksisId:transaksi_id,
         },
       });
   
@@ -49,7 +49,7 @@ exports.updateDetailPajak = async (req, res) => {
   
       // Update detail pajak dengan data baru
       await detailPajak.update({
-        pajak_id,
+        pajaksId:pajak_id,
         harga,
       });
   
@@ -71,7 +71,7 @@ exports.updateDetailPajak = async (req, res) => {
       const detailPajak = await DetailPajak.findOne({
         where: {
           id: detailPajak_id,
-          transaksi_id: transaksi_id,
+          transaksisId:transaksi_id,
         },
       });
   

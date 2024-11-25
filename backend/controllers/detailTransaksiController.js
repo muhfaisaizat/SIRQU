@@ -1,4 +1,4 @@
-const DetailTransaksi = require('../models/detailTransaksi');
+const DetailTransaksi = require('../models/detailTransaksis');
 
 exports.createDetailTransaksi = async (req, res) => {
   const { transaksi_id, product_id, stok } = req.body;
@@ -9,8 +9,8 @@ exports.createDetailTransaksi = async (req, res) => {
     }
 
     const detailTransaksi = await DetailTransaksi.create({
-      transaksi_id,
-      product_id,
+      transaksisId:transaksi_id,
+      productsId:product_id,
       stok,
     });
 
@@ -39,7 +39,7 @@ exports.updateDetailTransaksi = async (req, res) => {
       const detailTransaksi = await DetailTransaksi.findOne({
         where: {
           id: detailTransaksi_id,
-          transaksi_id: transaksi_id,
+          transaksisId:transaksi_id,
         },
       });
   
@@ -51,7 +51,7 @@ exports.updateDetailTransaksi = async (req, res) => {
       }
   
       // Perbarui detail transaksi
-      detailTransaksi.product_id = product_id;
+      detailTransaksi.productsId = product_id;
       detailTransaksi.stok = stok;
   
       // Simpan perubahan
@@ -76,7 +76,7 @@ exports.updateDetailTransaksi = async (req, res) => {
       const detailTransaksi = await DetailTransaksi.findOne({
         where: {
           id: detailTransaksi_id,
-          transaksi_id: transaksi_id,
+          transaksisId:transaksi_id,
         },
       });
   
