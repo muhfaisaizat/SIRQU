@@ -9,6 +9,7 @@ import {
     DialogClose,
 } from "@/components/ui/dialog";
 import { X } from "lucide-react";
+import { API_URL } from "../../../../helpers/networt";
 
 const ViewOutlet = ({ outlet }) => {
   if (!outlet) return null; 
@@ -35,7 +36,7 @@ const ViewOutlet = ({ outlet }) => {
           <div className='w-full flex flex-wrap gap-[12px]'>
             <div className="relative w-[120px] h-[120px]">
               <img
-                src={outlet.foto}
+                src={outlet.foto ? `${API_URL}/images/${outlet.foto}` : "https://github.com/shadcn.png"}
                 alt={outlet.nama}
                 className="w-full h-full border object-cover rounded-[8px]"
               />
@@ -43,7 +44,7 @@ const ViewOutlet = ({ outlet }) => {
           </div>
           <div className="flex align-middle h-auto">
             <p className="w-[150px] text-slate-500">No. Outlet</p>
-            <p>{outlet.id}</p>
+            <p>00{outlet.id}</p>
           </div>
           <div className="flex align-middle h-auto">
             <p className="w-[150px] text-slate-500">Nama Outlet</p>

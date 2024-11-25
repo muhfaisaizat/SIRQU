@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -27,47 +27,37 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
-
-const AddOutlet = ({ onAddOutlet }) => {
+const AddOutlet = ({ onAddOutlet, fetchData }) => {
     const { toast } = useToast();
     const [nama, setNama] = useState('');
     const [alamat, setAlamat] = useState('');
-    const [images, setImages] = useState([]);
+    const [imageFile, setImageFile] = useState(null); // Simpan file asli
+    const fileInputRef = useRef(null); // Referensi untuk input file
 
-    const handleDrop = (event) => {
-        event.preventDefault();
-        const files = Array.from(event.dataTransfer.files);
-        const newImages = files.map((file) => URL.createObjectURL(file));
-        setImages((prevImages) => [...prevImages, ...newImages]);
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file); // Simpan file asli
+        }
     };
 
     const handleUploadClick = () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.multiple = true;
-        input.onchange = (e) => {
-            const files = Array.from(e.target.files);
-            const newImages = files.map((file) => URL.createObjectURL(file));
-            setImages((prevImages) => [...prevImages, ...newImages]);
-        };
-        input.click();
+        if (fileInputRef.current) {
+            fileInputRef.current.click(); // Buka dialog file secara programatis
+        }
     };
 
-    const handleDelete = (index) => {
-        setImages(images.filter((_, i) => i !== index));
+    const handleDelete = () => {
+        setImageFile(null); // Hapus file
     };
+
 
     const handleSave = () => {
-        if (nama && alamat && images.length > 0) {
-            // Buat objek outlet baru
-            const newOutlet = {
-                nama,
-                alamat,
-                foto: images[0] // Menggunakan gambar pertama sebagai foto utama
-            };
-            onAddOutlet(newOutlet);
+        if (nama && alamat && imageFile.length > 0) {
+       
             handleBatal();
         }
     };
@@ -93,11 +83,12 @@ const AddOutlet = ({ onAddOutlet }) => {
         setCurrentStep(0);
         setNama('');
         setAlamat('');
-        setImages([]);
+        setImageFile(null);
         setcontenstep(0);
+        fetchData();
     };
 
-    const handlecekError = () => {
+    const handlecekError = async () => {
 
         if (!nama) {
             toast({
@@ -117,7 +108,7 @@ const AddOutlet = ({ onAddOutlet }) => {
             });
             return;
         }
-        if (images.length === 0) {
+        if (imageFile.length === 0) {
             toast({
                 variant: "destructive",
                 title: "Error!",
@@ -126,7 +117,38 @@ const AddOutlet = ({ onAddOutlet }) => {
             });
             return;
         }
-        setCurrentStep(1);
+        try {
+            const token = localStorage.getItem("token");
+            const formCreate = new FormData();
+            formCreate.append('nama', nama);
+            formCreate.append('alamat', alamat);
+            formCreate.append('position', 'Toko Cabang');
+            if (imageFile) {
+                formCreate.append("image", imageFile); // Tambahkan file gambar
+            }
+            formCreate.append('syaratKetentuan', false );
+            const response = await axios.post(`${API_URL}/api/outlets`, formCreate, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            setCurrentStep(1);
+           
+        } catch (error) {
+            console.error('Error adding user:', error);
+            const errorMessage =
+                error.response?.data?.message || error.message || "Unknown error occurred";
+
+            toast({
+                variant: "destructive",
+                title: "Error ",
+                description: errorMessage,
+                status: "error",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
+        
 
     };
 
@@ -198,28 +220,43 @@ const AddOutlet = ({ onAddOutlet }) => {
                                             Upload dalam format .jpg/.png
                                             ukuran maksimal 5 mb</p>
                                     </div>
-                                    <div className='w-full flex flex-wrap gap-[12px]' onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
-                                        {images.map((image, index) => (
-                                            <div key={index} className="relative w-[120px] h-[120px] group">
-                                                <img
-                                                    src={image}
-                                                    alt={`Pilih gambar ${index + 1}`}
-                                                    className="w-full h-full border object-cover rounded-[8px]"
-                                                />
-                                                <button onClick={() => handleDelete(index)} className="absolute top-2 right-2 bg-white text-red-500 text-xs p-[4px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                    <Trash size="12" />
-                                                </button>
-                                            </div>
-                                        ))}
-                                        <Button
-                                            variant="outline"
-                                            className='w-[120px] h-[120px] rounded-[8px] flex flex-col items-center justify-center text-center border-dashed border-2 border-slate-300'
+                                    <div
+                                    className="w-full flex flex-wrap gap-[12px]"
+                                    onDrop={(e) => e.preventDefault()}
+                                    onDragOver={(e) => e.preventDefault()}
+                                >
+                                    {imageFile ? (
+                                        <div className="relative w-[120px] h-[120px] group">
+                                            <img
+                                                src={URL.createObjectURL(imageFile)}
+                                                alt="Preview"
+                                                className="w-full h-full border object-cover rounded-[8px]"
+                                            />
+                                            <button
+                                                onClick={handleDelete}
+                                                className="absolute top-2 right-2 bg-white text-red-500 text-xs p-[4px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            className="w-[120px] h-[120px] rounded-[8px] flex flex-col items-center justify-center text-center border-dashed border-2 border-slate-300"
                                             onClick={handleUploadClick}
                                         >
-                                            <GalleryAdd size="24" color='#717179' variant="Bulk" />
+                                            <GalleryAdd size="24" color="#717179" variant="Bulk" />
                                             <p className="whitespace-normal text-slate-500">Pilih atau letakkan gambar disini</p>
-                                        </Button>
-                                    </div>
+                                        </button>
+                                    )}
+                                    {/* Input File Hidden */}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        ref={fileInputRef}
+                                        className="hidden"
+                                    />
+                                </div>
                                 </div>
                                 <DialogFooter>
                                     <DialogClose asChild>
@@ -316,7 +353,7 @@ const AddOutlet = ({ onAddOutlet }) => {
                         <h1 className='text-[16px] font-semibold'>Sukses membuat cabang baru</h1>
                         <DialogFooter>
                             <DialogClose asChild>
-                                <Button type="button" variant="outline" className='text-[14px] h-[36px]' onClick={handleSave}>
+                                <Button type="button" variant="outline" className='text-[14px] h-[36px]' onClick={handleBatal}>
                                     Selesai
                                 </Button>
                             </DialogClose>
