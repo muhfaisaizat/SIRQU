@@ -45,7 +45,7 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import ImageUpload from '@/components/ui/ImageUpload'
-import { Eye, EyeSlash } from 'iconsax-react';
+import { Eye, EyeSlash, Refresh, Copy } from 'iconsax-react';
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from "@/components/ui/toast"
 import { Label } from "@/components/ui/label"
@@ -279,6 +279,7 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
     const handleEditClick = (id) => {
         setSelectedId(id);
         setIsDialogOpen(true);
+        setIsDialogOpenview(false);
     };
     const handleviewClick = (id) => {
         setSelectedId(id);
@@ -520,6 +521,97 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
         setFiltersStatus({ status: [] });  
         setColumnFilters([]);  
       };
+
+
+      const [ tokenuser , setTokenUser] = useState('');
+      const [inputType, setInputType] = useState('password'); 
+      const [isButtonDisabled, setIsButtonDisabled] = useState(true); 
+      const [timeLeft, setTimeLeft] = useState(0)
+      const [buttonText, setButtonText] = useState('Generate');
+
+      // Fungsi untuk membuat token acak dengan format 'xxxx-xxxx-xxxx-xxxx'
+      const generateToken = () => {
+          const randomString = () => Math.random().toString(36).substring(2, 6); // 4 karakter acak
+          const newToken = `${randomString()}-${randomString()}-${randomString()}-${randomString()}`;
+          setTokenUser(newToken);
+          const currentTime = new Date().getTime();
+        localStorage.setItem('tokenGeneratedTime', currentTime);
+      };
+
+      const handleFocus = () => {
+        setInputType('text'); // Tampilkan token ketika input difokuskan
+    };
+
+    // Fungsi untuk menangani blur pada input dan menyembunyikan token
+    const handleBlur = () => {
+        setInputType('password'); // Sembunyikan token ketika input kehilangan fokus
+    };
+
+    const formatTimeLeft = (timeInMillis) => {
+        const hours = Math.floor(timeInMillis / (1000 * 60 * 60));
+        const minutes = Math.floor((timeInMillis % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeInMillis % (1000 * 60)) / 1000);
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+      // Menghitung sisa waktu hingga 48 jam
+      const checkButtonStatus = () => {
+        const tokenGeneratedTime = localStorage.getItem('tokenGeneratedTime');
+        if (tokenGeneratedTime) {
+            const currentTime = new Date().getTime();
+            const timeDifference = currentTime - tokenGeneratedTime; // Selisih waktu dalam milidetik
+            // const remainingTime = 48 * 60 * 60 * 1000 - timeDifference; // 48 jam dalam milidetik
+            const remainingTime = 1 * 1 * 10 * 1000 - timeDifference; // 48 jam dalam milidetik
+
+            if (remainingTime > 0) {
+                setIsButtonDisabled(true); // Tombol tetap disabled
+                setButtonText('Generate');
+                setTimeLeft(remainingTime); // Update sisa waktu
+            } else {
+                setIsButtonDisabled(false); // Tombol bisa digunakan lagi
+                setButtonText('Regenerate');
+                setTimeLeft(0); // Reset sisa waktu
+            }
+        } else {
+            setIsButtonDisabled(false); // Tombol bisa digunakan jika belum ada waktu yang disimpan
+            setButtonText('Generate');
+        }
+    };
+
+    // Update sisa waktu setiap detik
+    useEffect(() => {
+        checkButtonStatus();
+        const interval = setInterval(() => {
+            checkButtonStatus(); // Cek status tombol setiap detik
+        }, 1000);
+
+        // Bersihkan interval setelah komponen di-unmount
+        return () => clearInterval(interval);
+    }, []);
+
+
+    const copyToClipboard = () => {
+        if (tokenuser) {
+            navigator.clipboard.writeText(tokenuser)
+                .then(() => {
+                    toast({
+                        title: "Copy Sukses!",
+                        description: "Token berhasil disalin.",
+                        action: <ToastAction altText="Try again">Cancel</ToastAction>,
+                    });
+                })
+                .catch((err) => {
+                    console.error('Gagal menyalin: ', err);
+                    toast({
+                        variant: "destructive",
+                        title: 'Copy Error',
+                        description: `Gagal menyalin.${err}`,
+                        status: 'error',
+                        action: <ToastAction altText="Try again">Cancel</ToastAction>,
+                    });
+                });
+        }
+    };
 
     return (
         <div className="w-full grid gap-[16px] mt-[24px]">
@@ -853,6 +945,28 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
                                 </SelectContent>
                             </Select>
                         </div>
+                        <div className="grid gap-1">
+                            <Label htmlFor="nama" className="text-[14px]">ID token<span className='text-rose-500'>*</span></Label>
+                            <div className="flex justify-between gap-[8px]">
+                            <Input
+                                id="token"
+                                placeholder="Tekan generate"
+                                type={inputType} 
+                                onFocus={handleFocus}
+                                onBlur={handleBlur} 
+                                required
+                                className="h-[36px] text-[14px] rounded-lg border-slate-300"
+                                value={tokenuser}
+                            />
+                             <Button  onClick={generateToken} disabled={isButtonDisabled} variant='outline' className='text-[14px] h-[36px] border-slate-300' >{buttonText}<Refresh size={14} className="ml-2" /></Button>
+                            </div>
+                            
+                        </div>
+                        {isButtonDisabled && (
+                        <div className="grid gap-1 bg-amber-50 py-[8px] px-[12px] rounded-[8px]">
+                            <p className="text-[14px] text-amber-500 font-medium">ID token berhasil dibuat, harap menunggu {formatTimeLeft(timeLeft)} jam untuk regenerate id token</p>
+                        </div>
+                        )}
                     </div>
                     <DialogFooter>
                         <Button type="submit" onClick={handleSubmit}>Simpan</Button>
@@ -876,7 +990,7 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
 
             {/* view */}
             <Dialog open={isDialogOpenview} onOpenChange={setIsDialogOpenview}>
-                <DialogContent className="sm:max-w-[425px] p-[25px]">
+                <DialogContent className="sm:max-w-[505px] p-[25px]">
                     <div className='flex justify-between'>
                         <DialogHeader>
                             <DialogTitle className='text-[18px] py-[16px]'>Detail Pengguna</DialogTitle>
@@ -915,6 +1029,31 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
                         <div className="flex align-middle h-[36px]">
                             <p className="w-[150px] text-slate-500">Tanggal Dibuat</p>
                             <p>{formData.date}</p>
+                        </div>
+                        <div className="flex items-center  ">
+                        {!tokenuser ? (
+                                <div className="flex items-center px-[12px] gap-[16px] h-[36px] bg-slate-100 rounded-[6px]">
+                                    <p className="text-slate-400">Pergi ke edit profile untuk generate ID token</p>
+                                    <Button
+                                        onClick={() => {
+                                            // setIsDialogOpenview(false);
+                                            handleEditClick(formData.id);
+                                        }}
+                                        variant='ghost'
+                                        className='text-[14px] font-medium'
+                                    >
+                                        Edit profile
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="flex items-center px-[12px] gap-[16px] h-[36px] bg-slate-100 rounded-[6px]">
+                                    <p className="text-slate-400">ID token</p>
+                                    <p>{tokenuser}</p>
+                                    <Button onClick={copyToClipboard} variant='ghost' className='p-0'>
+                                        <Copy size={16} />
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </DialogContent>
