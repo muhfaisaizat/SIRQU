@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -28,6 +28,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Trash } from 'iconsax-react';
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
 
 
@@ -46,11 +48,92 @@ const AddProduk = ({ buttonProps, title, showIcon }) => {
 
 
 
-    const DataOutlet = [
-        { id: "m5gr84i9", name: 'Outlet 1' },
-        { id: "m5gr84i7", name: 'Outlet 2' },
-        { id: "m5gr84i8", name: 'Outlet 3' }
-    ];
+    const [DataOutlet, setDataOutlet] = useState([
+        // { id: "m5gr84i9", name: 'Cabang 1' },
+        // { id: "m5gr84i7", name: 'Cabang 2' },
+        // { id: "m5gr84i8", name: 'Cabang 3' },
+    ]);
+
+
+    const [DataKategori, setDataKategori] = useState([
+        // { id: "m5gr84i9", name: 'Makanan Ringan' },
+        // { id: "m5gr84i7", name: 'Populer' },
+        // { id: "m5gr84i8", name: 'sayur-sayuran' }
+    ])
+
+    const formatOutletData = (apiData) => {
+        return {
+            id: apiData.id_outlet.toString(),
+            name: apiData.nama_outlet
+        };
+    };
+
+
+    const formatkategoriData = (apiData) => {
+        return {
+            id: apiData.id_kategori.toString(),
+            name: apiData.nama_kategori
+        };
+    };
+
+
+    const fetchDataOutlet = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/outlets`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+           // Log untuk memastikan data yang diterima
+    
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatOutletData);
+               
+                setDataOutlet(formattedData);
+                // console.log(formattedData)
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+    const fetchDataKategori = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/categories`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+           // Log untuk memastikan data yang diterima
+    
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatkategoriData);
+               
+                setDataKategori(formattedData);
+                // console.log(formattedData)
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchDataOutlet();
+        fetchDataKategori();
+    }, []);
 
     const [selectedOutlets, setSelectedOutlets] = useState([]);
 
@@ -77,11 +160,7 @@ const AddProduk = ({ buttonProps, title, showIcon }) => {
     };
 
 
-    const DataKategori = [
-        { id: "m5gr84i9", name: 'Makanan Ringan' },
-        { id: "m5gr84i7", name: 'Populer' },
-        { id: "m5gr84i8", name: 'sayur-sayuran' }
-    ]
+   
 
     const [selectedKategori, setSelectedKategori] = useState([]);
 
@@ -145,12 +224,14 @@ const AddProduk = ({ buttonProps, title, showIcon }) => {
 
     // upload image
     const [images, setImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]);
 
     const handleDrop = (event) => {
         event.preventDefault();
         const files = Array.from(event.dataTransfer.files);
         const newImages = files.map((file) => URL.createObjectURL(file));
         setImages((prevImages) => [...prevImages, ...newImages]);
+        setImageFiles((prevFiles) => [...prevFiles, ...files]);
     };
 
     const handleUploadClick = () => {
@@ -162,12 +243,14 @@ const AddProduk = ({ buttonProps, title, showIcon }) => {
             const files = Array.from(e.target.files);
             const newImages = files.map((file) => URL.createObjectURL(file));
             setImages((prevImages) => [...prevImages, ...newImages]);
+            setImageFiles((prevFiles) => [...prevFiles, ...files]);
         };
         input.click();
     };
 
     const handleDelete = (index) => {
         setImages(images.filter((_, i) => i !== index));
+        setImageFiles(imageFiles.filter((_, i) => i !== index));
     };
 
     const handleEdit = (index) => {
@@ -181,7 +264,7 @@ const AddProduk = ({ buttonProps, title, showIcon }) => {
 
 
     // validasi error
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (selectedOutlets.length === 0) {
@@ -252,13 +335,81 @@ const AddProduk = ({ buttonProps, title, showIcon }) => {
         }
 
 
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.post(`${API_URL}/api/products`, {
+                name: namaproduk,
+                description: deskripsi,
+                price: uang,
+                stock: stock,
+                unlimited_stock: isUnlimitedStock
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
 
+            const produkId = response.data.id;
 
-        toast({
-            title: "Sukses!",
-            description: "Produk berhasil ditambahkan.",
-            action: <ToastAction altText="Try again">Cancel</ToastAction>,
-        });
+            const promises = selectedOutlets.map(outlet =>
+                axios.post(`${API_URL}/api/products/outlets`, {
+                    productsId: produkId,
+                    outletsId: outlet.id,
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                })
+            );
+
+            const promiseskategori = selectedKategori.map(kategori =>
+                axios.post(`${API_URL}/api/product/categories`, {
+                    productsId: produkId,
+                    categoriesId: kategori.id,
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                })
+            );
+
+            const uploadPromises = imageFiles.map((file) => {
+                const formData = new FormData();
+                formData.append('productsId', produkId); 
+                formData.append('image', file);
+
+                return axios.post(`${API_URL}/api/products/productImage`, formData, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+            });
+
+            await Promise.all([...promises, ...promiseskategori, ...uploadPromises]);
+
+            toast({
+                title: "Sukses!",
+                description: "Produk berhasil ditambahkan.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+           
+        } catch (error) {
+            console.error('Error adding user:', error);
+            const errorMessage =
+                error.response?.data?.message || error.message || "Unknown error occurred";
+
+            toast({
+                variant: "destructive",
+                title: "Error ",
+                description: errorMessage,
+                status: "error",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
+
+       
 
         setIsOpen(false);
     };
