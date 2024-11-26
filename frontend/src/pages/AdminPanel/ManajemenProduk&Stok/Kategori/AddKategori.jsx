@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { X } from "lucide-react"
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
 const AddKategori = ({ buttonProps, title, showIcon }) => {
     const { toast } = useToast();
@@ -34,7 +36,80 @@ const AddKategori = ({ buttonProps, title, showIcon }) => {
 
 
 
-    const handleSubmit = (e) => {
+    
+
+
+    const [DataOutlet, setDataOutlet] = useState([
+        // { id: "m5gr84i9", name: 'Cabang 1' },
+        // { id: "m5gr84i7", name: 'Cabang 2' },
+        // { id: "m5gr84i8", name: 'Cabang 3' },
+    ]);
+
+    const formatOutletData = (apiData) => {
+        return {
+            id: apiData.id_outlet.toString(),
+            name: apiData.nama_outlet
+        };
+    };
+
+
+    const fetchDataOutlet = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/outlets`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+           // Log untuk memastikan data yang diterima
+    
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatOutletData);
+               
+                setDataOutlet(formattedData);
+                // console.log(formattedData)
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchDataOutlet();
+    }, []);
+
+    const [selectedOutlets, setSelectedOutlets] = useState([]);
+
+    const handleSelectOutlet = (outlet) => {
+        setSelectedOutlets((prevSelected) => {
+            if (prevSelected.some((o) => o.id === outlet.id)) {
+                return prevSelected.filter((o) => o.id !== outlet.id);
+            } else {
+                return [...prevSelected, outlet];
+            }
+        });
+    };
+
+    const handleSelectAll = () => {
+        if (selectedOutlets.length === DataOutlet.length) {
+            setSelectedOutlets([]); // Unselect all if all are selected
+        } else {
+            setSelectedOutlets(DataOutlet); // Select all outlets
+        }
+    };
+
+    const handleRemoveOutlet = (id) => {
+        setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+    };
+
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Validasi untuk nama kategori
@@ -59,44 +134,54 @@ const AddKategori = ({ buttonProps, title, showIcon }) => {
             return;
         }
 
-        toast({
-            title: "Sukses!",
-            description: "Kategori berhasil ditambahkan.",
-            action: <ToastAction altText="Try again">Cancel</ToastAction>,
-        });
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.post(`${API_URL}/api/categories`, {
+                name: kategori,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+
+            const categoriesId = response.data.id;
+
+            const promises = selectedOutlets.map(outlet =>
+                axios.post(`${API_URL}/api/categories/outlets`, {
+                    categoriesId: categoriesId,
+                    outletsId: outlet.id,
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                })
+            );
+
+            await Promise.all(promises);
+
+            toast({
+                title: "Sukses!",
+                description: "Kategori berhasil ditambahkan.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+           
+        } catch (error) {
+            console.error('Error adding user:', error);
+            const errorMessage =
+                error.response?.data?.message || error.message || "Unknown error occurred";
+
+            toast({
+                variant: "destructive",
+                title: "Error ",
+                description: errorMessage,
+                status: "error",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
+
+       
 
         setIsOpen(false);
-    };
-
-
-    const DataOutlet = [
-        { id: "m5gr84i9", name: 'Outlet 1' },
-        { id: "m5gr84i7", name: 'Outlet 2' },
-        { id: "m5gr84i8", name: 'Outlet 3' }
-    ];
-
-    const [selectedOutlets, setSelectedOutlets] = useState([]);
-
-    const handleSelectOutlet = (outlet) => {
-        setSelectedOutlets((prevSelected) => {
-            if (prevSelected.some((o) => o.id === outlet.id)) {
-                return prevSelected.filter((o) => o.id !== outlet.id);
-            } else {
-                return [...prevSelected, outlet];
-            }
-        });
-    };
-
-    const handleSelectAll = () => {
-        if (selectedOutlets.length === DataOutlet.length) {
-            setSelectedOutlets([]); // Unselect all if all are selected
-        } else {
-            setSelectedOutlets(DataOutlet); // Select all outlets
-        }
-    };
-
-    const handleRemoveOutlet = (id) => {
-        setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
     };
 
     return (

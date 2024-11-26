@@ -3,12 +3,12 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'; // Pastikan path ini benar
 
 const chartData = [
-    // { month: 'January', penjualan: 1860000 },
-    // { month: 'February', penjualan: 3050000 },
-    // { month: 'March', penjualan: 2370000 },
-    // { month: 'April', penjualan: 730000 },
-    // { month: 'May', penjualan: 2090000 },
-    // { month: 'June', penjualan: 2140000 },
+    { month: 'January', penjualan: 1860000 },
+    { month: 'February', penjualan: 3050000 },
+    { month: 'March', penjualan: 2370000 },
+    { month: 'April', penjualan: 730000 },
+    { month: 'May', penjualan: 2090000 },
+    { month: 'June', penjualan: 2140000 },
 ];
 
 
