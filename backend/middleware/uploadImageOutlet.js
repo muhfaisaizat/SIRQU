@@ -7,7 +7,7 @@ const fileStorage = multer.diskStorage({
     cb(null, path.join(__dirname, '../images')); // Folder penyimpanan gambar
   },
   filename: (req, file, cb) => {
-    const customFileName = `Outlet_${req.body.name}_${file.originalname}`; // Format nama file sesuai permintaan
+    const customFileName = `Outlet_${req.body.nama}_${file.originalname}`; // Format nama file sesuai permintaan
     cb(null, customFileName);
   },
 });

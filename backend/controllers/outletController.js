@@ -1,6 +1,7 @@
 // controllers/outletController.js
 const Outlet = require('../models/outlets'); // Pastikan path model sesuai dengan struktur proyek Anda
 const path = require('path');
+const fs = require('fs');
 const User = require('../models/users');
 const sequelize = require('../config/database');
 // Import model yang diperlukan
@@ -147,32 +148,45 @@ exports.getOutletById = async (req, res) => {
 
 // Memperbarui outlet (termasuk gambar)
 exports.updateOutlet = async (req, res) => {
-    try {
-      // Ambil outlet berdasarkan ID
-      const outlet = await Outlet.findByPk(req.params.id);
-      if (!outlet) {
-        return res.status(404).json({ error: 'Outlet not found' });
-      }
-  
-      // Jika gambar baru diupload, ganti path gambar
-      const imagePath = req.file ? `Outlet_${req.body.nama}_${req.file.originalname}` : outlet.image;
-  
-      // Perbarui outlet
-      const updated = await Outlet.update({ ...req.body, image: imagePath }, {
-        where: { id: req.params.id },
-      });
-  
-      if (updated[0] === 1) { // updated[0] berisi jumlah baris yang diperbarui
-        const updatedOutlet = await Outlet.findByPk(req.params.id);
-        res.status(200).json(updatedOutlet);
-      } else {
-        res.status(404).json({ error: 'Outlet not found' });
-      }
-    } catch (error) {
-      res.status(400).json({ error: error.message });
+  try {
+    const { nama, alamat } = req.body; // Data yang akan diperbarui
+    const outlet = await Outlet.findByPk(req.params.id);
+
+    if (!outlet) {
+      return res.status(404).json({ error: 'Outlet not found' });
     }
-  };
-  
+
+    // Handle pembaruan gambar
+    if (req.file) {
+      // Path gambar lama
+      if (outlet.image) {
+        const oldImagePath = path.join(__dirname, '../images', outlet.image);
+
+        // Periksa apakah gambar lama ada, lalu hapus
+        fs.unlink(oldImagePath, (err) => {
+          if (err) {
+            console.error('Error deleting old image:', err);
+          }
+        });
+      }
+
+      // Path gambar baru
+      const imagePath = `Outlet_${req.body.nama}_${req.file.originalname}`;
+      outlet.image = imagePath; // Update field gambar dengan nama file baru
+    }
+
+    // Update detail outlet lainnya
+    outlet.nama = nama || outlet.nama;
+    outlet.alamat = alamat || outlet.alamat;
+
+    await outlet.save();
+
+    res.json({ message: 'Outlet updated successfully', outlet });
+  } catch (error) {
+    console.error('Error updating outlet:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
 // Menghapus outlet
 exports.deleteOutlet = async (req, res) => {

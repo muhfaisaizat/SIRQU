@@ -24,14 +24,13 @@ exports.getProductById = async (req, res) => {
     products.unlimited_stock AS unlimited_stock,
     products.price AS harga_product,
     products.status AS status_product,
-    categories.id AS id_category,
-    categories.name AS nama_category,
+    GROUP_CONCAT(DISTINCT categories.id) AS id_category,
+    GROUP_CONCAT(DISTINCT categories.name) AS nama_category,
     GROUP_CONCAT(DISTINCT outlets.id) AS id_outlet,
     GROUP_CONCAT(DISTINCT outlets.nama) AS nama_outlet,
     GROUP_CONCAT(DISTINCT productimages.image) AS gambar_produk
 FROM 
     products
--- Menggunakan LEFT JOIN untuk semua tabel yang mungkin tidak memiliki data terkait
 LEFT JOIN 
     productscategories ON products.id = productscategories.productsId
 LEFT JOIN 
@@ -43,9 +42,9 @@ LEFT JOIN
 LEFT JOIN 
     productimages ON products.id = productimages.productsId
 WHERE
-    products.deletedAt IS NULL AND products.id = ?
+    products.deletedAt IS NULL AND products.id = 2
 GROUP BY 
-    products.id, categories.id;
+    products.id;
 
     `;
 
@@ -62,6 +61,8 @@ GROUP BY
     // Format hasil untuk mengubah gambar dan outlet menjadi array
     const formattedProduct = {
       ...product[0], // Ambil objek produk pertama
+      id_category: product[0].id_category ? product[0].id_category.split(',').map(id => parseInt(id)) : [], // Mengubah string id_outlet menjadi array
+      nama_category: product[0].nama_category ? product[0].nama_category.split(',') : [], // Mengubah string nama_outlet menjadi array
       id_outlet: product[0].id_outlet ? product[0].id_outlet.split(',').map(id => parseInt(id)) : [], // Mengubah string id_outlet menjadi array
       nama_outlet: product[0].nama_outlet ? product[0].nama_outlet.split(',') : [], // Mengubah string nama_outlet menjadi array
       gambar_produk: product[0].gambar_produk ? product[0].gambar_produk.split(',') : [] // Mengubah string gambar_produk menjadi array
@@ -170,27 +171,28 @@ exports.getProducts = async (req, res) => {
     products.unlimited_stock AS unlimited_stock,
     products.price AS harga_product,
     products.status AS status_product,
-    categories.id AS id_category,
-    categories.name AS nama_category,
-    outlets.id AS id_outlet,
-    outlets.nama AS nama_outlet,
-    GROUP_CONCAT(productimages.image) AS gambar_produk
-    FROM 
-        products
-    LEFT JOIN 
-        productscategories ON products.id = productscategories.productsId
-    LEFT JOIN 
-        categories ON productscategories.categoriesId = categories.id
-    LEFT JOIN 
-        productsoutlets ON products.id = productsoutlets.productsId
-    LEFT JOIN 
-        outlets ON productsoutlets.outletsId = outlets.id
-    LEFT JOIN
-        productimages ON products.id = productimages.productsId
-    WHERE
-        products.deletedAt IS NULL
-    GROUP BY 
-        products.id, categories.id, outlets.id
+    GROUP_CONCAT(DISTINCT categories.id) AS id_category,
+    GROUP_CONCAT(DISTINCT categories.name) AS nama_category,
+    GROUP_CONCAT(DISTINCT outlets.id) AS id_outlet,
+    GROUP_CONCAT(DISTINCT outlets.nama) AS nama_outlet,
+    GROUP_CONCAT(DISTINCT productimages.image) AS gambar_produk
+FROM 
+    products
+LEFT JOIN 
+    productscategories ON products.id = productscategories.productsId
+LEFT JOIN 
+    categories ON productscategories.categoriesId = categories.id
+LEFT JOIN 
+    productsoutlets ON products.id = productsoutlets.productsId
+LEFT JOIN 
+    outlets ON productsoutlets.outletsId = outlets.id
+LEFT JOIN
+    productimages ON products.id = productimages.productsId
+WHERE
+    products.deletedAt IS NULL
+GROUP BY 
+    products.id;
+
     `;
 
     // Jalankan query untuk mendapatkan data menu
@@ -200,6 +202,10 @@ exports.getProducts = async (req, res) => {
     const formattedMenus = menus.map(menu => {
       return {
         ...menu,
+        id_category: menu.id_category ? menu.id_category.split(',').map(id => parseInt(id)) : [], // Mengubah string id_outlet menjadi array
+        nama_category: menu.nama_category ? menu.nama_category.split(',') : [], // Mengubah string nama_outlet menjadi array
+        id_outlet: menu.id_outlet ? menu.id_outlet.split(',').map(id => parseInt(id)) : [], // Mengubah string id_outlet menjadi array
+        nama_outlet: menu.nama_outlet ? menu.nama_outlet.split(',') : [], // Mengubah string nama_outlet menjadi array
         gambar_produk: menu.gambar_produk ? menu.gambar_produk.split(',') : [] // Mengubah string menjadi array
       };
     });
