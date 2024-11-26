@@ -30,20 +30,101 @@ import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from "@/components/ui/toast";
 import NoData from './NoData';
 import { Checkbox } from '@/components/ui/checkbox';
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
 
 
 const DataTable = () => {
-    const DataOutlet = [
-        { id: "m5gr84i9", name: 'Outlet 1' },
-        { id: "m5gr84i7", name: 'Outlet 2' },
-        { id: "m5gr84i8", name: 'Outlet 3' }
-    ];
-    const DataKategori = [
-        { id: "m5gr84i9", name: 'Makanan' },
-        { id: "m5gr84i7", name: 'Buah' },
-        { id: "m5gr84i8", name: 'Sayuran' }
-    ];
+    const [DataOutlet, setDataOutlet] = useState([
+        // { id: "m5gr84i9", name: 'Outlet 1' },
+        // { id: "m5gr84i7", name: 'Outlet 2' },
+        // { id: "m5gr84i8", name: 'Outlet 3' }
+    ]);
+
+    const formatOutletData = (apiData) => {
+        return {
+            id: apiData.id_outlet.toString(),
+            name: apiData.nama_outlet
+        };
+    };
+
+
+    const fetchDataOutlet = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/outlets`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+           // Log untuk memastikan data yang diterima
+    
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatOutletData);
+               
+                setDataOutlet(formattedData);
+                // console.log(formattedData)
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchDataOutlet();
+    }, []);
+
+    const [DataKategori, setDataKategori] = useState([
+        // { id: "m5gr84i9", name: 'Makanan' },
+        // { id: "m5gr84i7", name: 'Buah' },
+        // { id: "m5gr84i8", name: 'Sayuran' }
+    ])
+
+    const formatkategoriData = (apiData) => {
+        return {
+            id: apiData.id_kategori.toString(),
+            name: apiData.nama_kategori
+        };
+    };
+
+    const fetchDataKategori = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/categories`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+           // Log untuk memastikan data yang diterima
+    
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatkategoriData);
+               
+                setDataKategori(formattedData);
+                // console.log(formattedData)
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchDataKategori();
+    }, []);
+
     const DataStatus = [
         { id: "m5gr84i9", name: 'Aktif' },
         { id: "m5gr84i7", name: 'Tidak Aktif' },
@@ -100,25 +181,29 @@ const DataTable = () => {
     ];
 
     // Filter data 
-    const filteredData = Data.filter(item => {
-        // Filter berdasarkan searchTerm
-        const matchesSearchTerm = searchTerm
-            ? item.nama.toLowerCase().includes(searchTerm.toLowerCase())
-            : true; // Jika searchTerm kosong, selalu cocok
+   const filteredData = Data.filter(item => {
+    const matchesSearchTerm = searchTerm
+        ? item.nama.toLowerCase().includes(searchTerm.toLowerCase())
+        : true;
 
-        // Filter berdasarkan selectedCategory
-        const matchesCategory = selectedCategory
-            ? item.kategori.toLowerCase() === selectedCategory.name.toLowerCase()
-            : true; // Jika tidak ada kategori terpilih, selalu cocok
+    // Cek kategori yang dipilih
+    const matchesCategory = selectedCategory
+        ? item.kategori.toLowerCase() === selectedCategory.name.toLowerCase()
+        : true;
 
-        // Filter berdasarkan selectedCategory
-        const matchesStatus = selectedStatus
-            ? item.status.toLowerCase() === selectedStatus.name.toLowerCase()
-            : true; // Jika tidak ada kategori terpilih, selalu cocok
+    // Cek status yang dipilih
+    const matchesStatus = selectedStatus
+        ? item.status.toLowerCase() === selectedStatus.name.toLowerCase()
+        : true;
 
-        // Kembalikan hasil filter berdasarkan outlet, searchTerm, dan selectedCategory
-        return item.outlet === selectedOutlet.name && matchesSearchTerm && matchesCategory && matchesStatus;
-    });
+    // Cek outlet yang dipilih
+    const matchesOutlet = selectedOutlet
+        ? item.outlet === selectedOutlet.name
+        : true;
+
+    return matchesSearchTerm && matchesCategory && matchesStatus && matchesOutlet;
+});
+
 
 
     const handleEditClick = (id) => {
