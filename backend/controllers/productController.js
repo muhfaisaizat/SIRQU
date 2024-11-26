@@ -15,70 +15,117 @@ const sequelize = require('../config/database');
 // Get product by ID
 exports.getProductById = async (req, res) => {
   try {
-    const queryProduct = `
+    const { id } = req.params;
+    const products = await Product.sequelize.query(
+      `
       SELECT 
-    products.id AS id_product,
-    products.name AS nama_product,
-    products.description AS deskripsi_product,
-    products.stock AS stok_product,
-    products.unlimited_stock AS unlimited_stock,
-    products.price AS harga_product,
-    products.status AS status_product,
-    GROUP_CONCAT(DISTINCT categories.id) AS id_category,
-    GROUP_CONCAT(DISTINCT categories.name) AS nama_category,
-    GROUP_CONCAT(DISTINCT outlets.id) AS id_outlet,
-    GROUP_CONCAT(DISTINCT outlets.nama) AS nama_outlet,
-    GROUP_CONCAT(DISTINCT productimages.image) AS gambar_produk
-FROM 
-    products
-LEFT JOIN 
-    productscategories ON products.id = productscategories.productsId
-LEFT JOIN 
-    categories ON productscategories.categoriesId = categories.id
-LEFT JOIN 
-    productsoutlets ON products.id = productsoutlets.productsId
-LEFT JOIN 
-    outlets ON productsoutlets.outletsId = outlets.id
-LEFT JOIN 
-    productimages ON products.id = productimages.productsId
-WHERE
-    products.deletedAt IS NULL AND products.id = 2
-GROUP BY 
-    products.id;
+          p.id AS product_id,
+          p.name AS product_name,
+          p.description,
+          p.price,
+          p.stock,
+          p.unlimited_stock,
+          p.status,
+          p.createdAt AS product_created_at,
+          GROUP_CONCAT(DISTINCT c.name ORDER BY c.name ASC SEPARATOR ', ') AS category_names,
+          GROUP_CONCAT(DISTINCT o.nama ORDER BY o.nama ASC SEPARATOR ', ') AS outlet_names
+      FROM 
+          products p
+      LEFT JOIN 
+          productscategories pc ON p.id = pc.productsId
+      LEFT JOIN 
+          categories c ON pc.categoriesId = c.id
+      LEFT JOIN 
+          productsoutlets po ON p.id = po.productsId
+      LEFT JOIN 
+          outlets o ON po.outletsId = o.id
+      WHERE 
+          p.deletedAt IS NULL AND p.id = ${id}
+      GROUP BY 
+          p.id, p.name, p.description, p.price, p.stock, p.unlimited_stock, p.status, p.createdAt
+      ORDER BY 
+          p.createdAt DESC;
+      `,
+      { type: sequelize.QueryTypes.SELECT }
+    );
 
-    `;
+    // Menambahkan detailCategories dan detailOutlets untuk setiap produk
+    const productsWithDetails = await Promise.all(
+      products.map(async (product) => {
+        // Mendapatkan detail kategori
+        const detailCategories = await Product.sequelize.query(
+          `
+          SELECT 
+              pc.*,
+              c.name AS category_name
+          FROM 
+              productscategories pc
+          LEFT JOIN 
+              categories c ON pc.categoriesId = c.id
+          WHERE 
+              pc.deletedAt IS NULL AND pc.productsId = :productsId;
+          `,
+          {
+            type: sequelize.QueryTypes.SELECT,
+            replacements: { productsId: product.product_id },
+          }
+        );
 
-    // Jalankan query untuk mendapatkan data produk berdasarkan ID
-    const [product] = await sequelize.query(queryProduct, {
-      replacements: [req.params.id] // Menyisipkan id produk ke dalam query
-    });
+        // Mendapatkan detail outlet
+        const detailOutlets = await Product.sequelize.query(
+          `
+          SELECT 
+              po.*,
+              o.nama AS outlet_name
+          FROM 
+              productsoutlets po
+          LEFT JOIN 
+              outlets o ON po.outletsId = o.id
+          WHERE 
+              po.deletedAt IS NULL AND po.productsId = :productsId;
+          `,
+          {
+            type: sequelize.QueryTypes.SELECT,
+            replacements: { productsId: product.product_id },
+          }
+        );
 
-    // Cek apakah produk ditemukan
-    if (!product.length) {
-      return res.status(404).json({ error: "Product not found" });
-    }
+        const detailImages = await Product.sequelize.query(
+          `
+          SELECT 
+          * 
+          FROM 
+          productimages
+          WHERE
+          productimages.deletedAt IS NULL AND productimages.productsId= :productsId;
+          `,
+          {
+            type: sequelize.QueryTypes.SELECT,
+            replacements: { productsId: product.product_id },
+          }
+        );
 
-    // Format hasil untuk mengubah gambar dan outlet menjadi array
-    const formattedProduct = {
-      ...product[0], // Ambil objek produk pertama
-      id_category: product[0].id_category ? product[0].id_category.split(',').map(id => parseInt(id)) : [], // Mengubah string id_outlet menjadi array
-      nama_category: product[0].nama_category ? product[0].nama_category.split(',') : [], // Mengubah string nama_outlet menjadi array
-      id_outlet: product[0].id_outlet ? product[0].id_outlet.split(',').map(id => parseInt(id)) : [], // Mengubah string id_outlet menjadi array
-      nama_outlet: product[0].nama_outlet ? product[0].nama_outlet.split(',') : [], // Mengubah string nama_outlet menjadi array
-      gambar_produk: product[0].gambar_produk ? product[0].gambar_produk.split(',') : [] // Mengubah string gambar_produk menjadi array
-    };
+        return {
+          ...product,
+          detailCategories, // Menambahkan detail kategori ke produk
+          detailOutlets,    // Menambahkan detail outlet ke produk
+          detailImages
+        };
+      })
+    );
 
-    // Mengembalikan respons dengan data produk
+    // Mengembalikan hasil query dalam format JSON
     return res.status(200).json({
       success: true,
-      message: 'Data produk berhasil diambil',
-      data: formattedProduct,
+      message: 'Products with details fetched successfully',
+      data: productsWithDetails,
     });
   } catch (error) {
-    console.error('Error fetching product:', error);
+    // Menangani error
+    console.error('Error fetching products:', error);
     return res.status(500).json({
       success: false,
-      message: 'Terjadi kesalahan saat mengambil data produk',
+      message: 'Failed to fetch products',
       error: error.message,
     });
   }
@@ -162,65 +209,117 @@ exports.deleteProduct = async (req, res) => {
 // Mendapatkan semua data produk
 exports.getProducts = async (req, res) => {
   try {
-    // Query SQL untuk mengambil data menu dengan produk, kategori, dan outlet
-    const queryMenu = `SELECT 
-    products.id AS id_product,
-    products.name AS nama_product,
-    products.description AS deskripsi_product,
-    products.stock AS stok_product,
-    products.unlimited_stock AS unlimited_stock,
-    products.price AS harga_product,
-    products.status AS status_product,
-    GROUP_CONCAT(DISTINCT categories.id) AS id_category,
-    GROUP_CONCAT(DISTINCT categories.name) AS nama_category,
-    GROUP_CONCAT(DISTINCT outlets.id) AS id_outlet,
-    GROUP_CONCAT(DISTINCT outlets.nama) AS nama_outlet,
-    GROUP_CONCAT(DISTINCT productimages.image) AS gambar_produk
-FROM 
-    products
-LEFT JOIN 
-    productscategories ON products.id = productscategories.productsId
-LEFT JOIN 
-    categories ON productscategories.categoriesId = categories.id
-LEFT JOIN 
-    productsoutlets ON products.id = productsoutlets.productsId
-LEFT JOIN 
-    outlets ON productsoutlets.outletsId = outlets.id
-LEFT JOIN
-    productimages ON products.id = productimages.productsId
-WHERE
-    products.deletedAt IS NULL
-GROUP BY 
-    products.id;
+    // Query utama untuk mendapatkan daftar produk
+    const products = await Product.sequelize.query(
+      `
+      SELECT 
+          p.id AS product_id,
+          p.name AS product_name,
+          p.description,
+          p.price,
+          p.stock,
+          p.unlimited_stock,
+          p.status,
+          p.createdAt AS product_created_at,
+          GROUP_CONCAT(DISTINCT c.name ORDER BY c.name ASC SEPARATOR ', ') AS category_names,
+          GROUP_CONCAT(DISTINCT o.nama ORDER BY o.nama ASC SEPARATOR ', ') AS outlet_names
+      FROM 
+          products p
+      LEFT JOIN 
+          productscategories pc ON p.id = pc.productsId
+      LEFT JOIN 
+          categories c ON pc.categoriesId = c.id
+      LEFT JOIN 
+          productsoutlets po ON p.id = po.productsId
+      LEFT JOIN 
+          outlets o ON po.outletsId = o.id
+      WHERE 
+          p.deletedAt IS NULL
+      GROUP BY 
+          p.id, p.name, p.description, p.price, p.stock, p.unlimited_stock, p.status, p.createdAt
+      ORDER BY 
+          p.createdAt DESC;
+      `,
+      { type: sequelize.QueryTypes.SELECT }
+    );
 
-    `;
+    // Menambahkan detailCategories dan detailOutlets untuk setiap produk
+    const productsWithDetails = await Promise.all(
+      products.map(async (product) => {
+        // Mendapatkan detail kategori
+        const detailCategories = await Product.sequelize.query(
+          `
+          SELECT 
+              pc.*,
+              c.name AS category_name
+          FROM 
+              productscategories pc
+          LEFT JOIN 
+              categories c ON pc.categoriesId = c.id
+          WHERE 
+              pc.deletedAt IS NULL AND pc.productsId = :productsId;
+          `,
+          {
+            type: sequelize.QueryTypes.SELECT,
+            replacements: { productsId: product.product_id },
+          }
+        );
 
-    // Jalankan query untuk mendapatkan data menu
-    const [menus] = await sequelize.query(queryMenu);
+        // Mendapatkan detail outlet
+        const detailOutlets = await Product.sequelize.query(
+          `
+          SELECT 
+              po.*,
+              o.nama AS outlet_name
+          FROM 
+              productsoutlets po
+          LEFT JOIN 
+              outlets o ON po.outletsId = o.id
+          WHERE 
+              po.deletedAt IS NULL AND po.productsId = :productsId;
+          `,
+          {
+            type: sequelize.QueryTypes.SELECT,
+            replacements: { productsId: product.product_id },
+          }
+        );
 
-    // Format hasil untuk mengubah gambar menjadi array
-    const formattedMenus = menus.map(menu => {
-      return {
-        ...menu,
-        id_category: menu.id_category ? menu.id_category.split(',').map(id => parseInt(id)) : [], // Mengubah string id_outlet menjadi array
-        nama_category: menu.nama_category ? menu.nama_category.split(',') : [], // Mengubah string nama_outlet menjadi array
-        id_outlet: menu.id_outlet ? menu.id_outlet.split(',').map(id => parseInt(id)) : [], // Mengubah string id_outlet menjadi array
-        nama_outlet: menu.nama_outlet ? menu.nama_outlet.split(',') : [], // Mengubah string nama_outlet menjadi array
-        gambar_produk: menu.gambar_produk ? menu.gambar_produk.split(',') : [] // Mengubah string menjadi array
-      };
-    });
+        const detailImages = await Product.sequelize.query(
+          `
+          SELECT 
+          * 
+          FROM 
+          productimages
+          WHERE
+          productimages.deletedAt IS NULL AND productimages.productsId= :productsId;
+          `,
+          {
+            type: sequelize.QueryTypes.SELECT,
+            replacements: { productsId: product.product_id },
+          }
+        );
 
-    // Mengembalikan respons dengan data menu
+        return {
+          ...product,
+          detailCategories, // Menambahkan detail kategori ke produk
+          detailOutlets,    // Menambahkan detail outlet ke produk
+          detailImages
+        };
+      })
+    );
+
+    // Mengembalikan hasil query dalam format JSON
     return res.status(200).json({
       success: true,
-      message: 'Data menu berhasil diambil',
-      data: formattedMenus,
+      message: 'Products with details fetched successfully',
+      data: productsWithDetails,
     });
   } catch (error) {
-    console.error('Error fetching menu:', error);
+    // Menangani error
+    console.error('Error fetching products:', error);
     return res.status(500).json({
       success: false,
-      message: 'Terjadi kesalahan saat mengambil data menu',
+      message: 'Failed to fetch products',
       error: error.message,
     });
   }
