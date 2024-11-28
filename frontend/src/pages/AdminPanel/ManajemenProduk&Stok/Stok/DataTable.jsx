@@ -41,6 +41,7 @@ const DataTable = () => {
         // { id: "m5gr84i7", name: 'Outlet 2' },
         // { id: "m5gr84i8", name: 'Outlet 3' }
     ]);
+    const [selectedOutlet, setSelectedOutlet] = useState(null);
 
     const formatOutletData = (apiData) => {
         return {
@@ -66,6 +67,7 @@ const DataTable = () => {
                 const formattedData = response.data.data.map(formatOutletData);
                
                 setDataOutlet(formattedData);
+                setSelectedOutlet(formattedData[0])
                 // console.log(formattedData)
                 // setOriginalData(formattedData); // Set originalData di sini
             } else {
@@ -126,22 +128,23 @@ const DataTable = () => {
     }, []);
 
     const DataStatus = [
-        { id: "m5gr84i9", name: 'Aktif' },
-        { id: "m5gr84i7", name: 'Tidak Aktif' },
-        { id: "m5gr84i8", name: 'Habis' }
+        { id: "m5gr84i9", name: 'Produk Aktif' },
+        { id: "m5gr84i7", name: 'Produk Tidak Aktif' },
+        { id: "m5gr84i8", name: 'Produk Habis' }
     ];
 
     const { toast } = useToast();
-    const [selectedOutlet, setSelectedOutlet] = useState(DataOutlet[0]);
     const [searchTerm, setSearchTerm] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
     const [formData, setFormData] = useState({
+        produkId:'',
         nama: '',
         kategori: '',
         status: '',
         stok: '',
-        foto: ''
+        foto: '',
+        deskripsi:''
     });
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState(null);
@@ -165,45 +168,87 @@ const DataTable = () => {
         setSelectedStatus(null);
     }
 
-    const Data = [
-        { id: "m5gr84i9", outlet: 'Outlet 1', nama: 'Sate taichan extracombo', kategori: 'Makanan', status: 'Aktif', stok: '4', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr84ig", outlet: 'Outlet 1', nama: 'Mangga', kategori: 'Buah', status: 'Aktif', stok: '99', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr8478", outlet: 'Outlet 1', nama: 'Bubur ', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr8498", outlet: 'Outlet 1', nama: 'Sate taichan extracombo', kategori: 'Makanan', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr84e2", outlet: 'Outlet 2', nama: 'Sate taichan ', kategori: 'Makanan', status: 'Aktif', stok: '4', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr847d", outlet: 'Outlet 2', nama: 'Sate taichan ', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr840d", outlet: 'Outlet 2', nama: 'Melon ', kategori: 'Buah', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr849w", outlet: 'Outlet 2', nama: 'Sate taichan ', kategori: 'Makanan', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr84iv", outlet: 'Outlet 3', nama: 'Sate ', kategori: 'Makanan', status: 'Aktif', stok: '4', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr847w", outlet: 'Outlet 3', nama: 'Sate ', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr849i", outlet: 'Outlet 3', nama: 'Sate ', kategori: 'Makanan', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
-        { id: "m5gr849o", outlet: 'Outlet 3', nama: 'Sawi ', kategori: 'Sayuran', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
-    ];
+    // const Data = [
+    //     { id: "m5gr84i9", outlet: 'Outlet 1', nama: 'Sate taichan extracombo', kategori: 'Makanan', status: 'Aktif', stok: '4', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr84ig", outlet: 'Outlet 1', nama: 'Mangga', kategori: 'Buah', status: 'Aktif', stok: '99', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr8478", outlet: 'Outlet 1', nama: 'Bubur ', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr8498", outlet: 'Outlet 1', nama: 'Sate taichan extracombo', kategori: 'Makanan', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr84e2", outlet: 'Outlet 2', nama: 'Sate taichan ', kategori: 'Makanan', status: 'Aktif', stok: '4', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr847d", outlet: 'Outlet 2', nama: 'Sate taichan ', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr840d", outlet: 'Outlet 2', nama: 'Melon ', kategori: 'Buah', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr849w", outlet: 'Outlet 2', nama: 'Sate taichan ', kategori: 'Makanan', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr84iv", outlet: 'Outlet 3', nama: 'Sate ', kategori: 'Makanan', status: 'Aktif', stok: '4', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr847w", outlet: 'Outlet 3', nama: 'Sate ', kategori: 'Makanan', status: 'Tidak Aktif', stok: '98', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr849i", outlet: 'Outlet 3', nama: 'Sate ', kategori: 'Makanan', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
+    //     { id: "m5gr849o", outlet: 'Outlet 3', nama: 'Sawi ', kategori: 'Sayuran', status: 'Habis', stok: '0', foto: 'https://github.com/shadcn.png' },
+    // ];
+
+    const [Data, setData] = useState([]);
+
+    const formatData = (apiData) => {
+        return apiData.map((item, index) => ({
+            id: index + 1, 
+            produkId: item.product_id, 
+            outlet: item.outlet_name,
+            nama: item.product_name,
+            kategori: item.category_name,
+            status: item.status,
+            stok: item.stock,
+            foto: item.product_image,
+            unlimited_stock: item.unlimited_stock,
+            deskripsi: item.description
+        }));
+    };
+   
+    const fetchData = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/products/menu`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+   
+           // Log untuk memastikan data yang diterima
+   
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = formatData(response.data.data);
+               
+                setData(formattedData);
+                // console.log(formattedData)
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+    // Ambil data dari API
+    useEffect(() => {
+    
+        fetchData();
+        
+    }, []);
+
+
 
     // Filter data 
    const filteredData = Data.filter(item => {
     const matchesSearchTerm = searchTerm
-        ? item.nama.toLowerCase().includes(searchTerm.toLowerCase())
-        : true;
+            ? item.nama.toLowerCase().includes(searchTerm.toLowerCase())
+            : true; // Jika searchTerm kosong, selalu cocok
+        // Filter berdasarkan selectedCategory
+        const matchesCategory = selectedCategory
+            ? item.kategori.toLowerCase() === selectedCategory.name.toLowerCase()
+            : true; // Jika tidak ada kategori terpilih, selalu cocok
+        // Filter berdasarkan selectedCategory
+        const matchesStatus = selectedStatus
+            ? item.status.toLowerCase() === selectedStatus.name.toLowerCase()
+            : true; // Jika tidak ada kategori terpilih, selalu cocok
 
-    // Cek kategori yang dipilih
-    const matchesCategory = selectedCategory
-        ? item.kategori.toLowerCase() === selectedCategory.name.toLowerCase()
-        : true;
-
-    // Cek status yang dipilih
-    const matchesStatus = selectedStatus
-        ? item.status.toLowerCase() === selectedStatus.name.toLowerCase()
-        : true;
-
-    // Cek outlet yang dipilih
-    const matchesOutlet = selectedOutlet
-        ? item.outlet === selectedOutlet.name
-        : true;
-
-    return matchesSearchTerm && matchesCategory && matchesStatus && matchesOutlet;
+    return item.outlet === selectedOutlet.name && matchesSearchTerm && matchesCategory && matchesStatus;
 });
-
 
 
     const handleEditClick = (id) => {
@@ -217,14 +262,22 @@ const DataTable = () => {
         const selectedData = Data.find(item => item.id === selectedId);
         if (selectedData) {
             setFormData({
+                produkId: selectedData.produkId,
                 nama: selectedData.nama,
                 kategori: selectedData.kategori,
                 status: selectedData.status,
                 stok: selectedData.stok,
-                foto: selectedData.foto
+                foto: selectedData.foto,
+                deskripsi: selectedData.deskripsi
             });
 
-            setCount(selectedData.stok)
+            if (selectedData.stok=== null) {
+                setCount(0)
+            } else {
+                setCount(selectedData.stok)
+            }
+
+            
 
         }
     }, [selectedId]);
@@ -236,17 +289,40 @@ const DataTable = () => {
         setCount(count > 0 ? count - 1 : 0); // Mengurangi nilai, tidak boleh kurang dari 0
     };
 
+    const handleSubmit = async (id) => {
+        const token = localStorage.getItem("token");
+        const stokValue = count === 0 ? 0 : count;  
+        const unlimitedStockValue = count === 0 ? true : false; 
+        try {
+            
+            const response = await axios.put(`${API_URL}/api/products/${id}/status?stock=${stokValue}&status=${formData.status}&unlimited_stock=${unlimitedStockValue}`,{}, {
+                headers: {
+                     'accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            toast({
+                title: "Sukses!",
+                description: "Stok berhasil diperbarui.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });    
+            
+            fetchData();
+        } catch (error) {
+            console.error('Error:', error);
+            const errorMessage =
+                error.response?.data?.message || error.message || "Unknown error occurred";
 
+            toast({
+                variant: "destructive",
+                title: "Error ",
+                description: errorMessage,
+                status: "error",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        toast({
-            title: "Sukses!",
-            description: "Stok berhasil diperbarui.",
-            action: <ToastAction altText="Try again">Cancel</ToastAction>,
-        });
-
+        
         setIsDialogOpen(false);
     };
 
@@ -335,19 +411,19 @@ const DataTable = () => {
                     filteredData.map((item) => (
                         <div key={item.id} className='w-[360px] h-[175px] border border-slate-300 rounded-[8px] p-[16px] grid gap-[17px]'>
                             <div className='flex gap-[17px]'>
-                                <img src={item.foto} alt={item.nama} className='w-[86px] h-[86px] rounded-[6px]' />
+                                <img src={item.foto ? `${API_URL}/images/${item.foto}` : "https://github.com/shadcn.png"} alt={item.nama} className='w-[86px] h-[86px] rounded-[6px]' />
                                 <div className='grid gap-[12px]'>
                                     <div className='flex gap-[12px]'>
                                         <h2 className='text-[14px] text-slate-500 font-medium'>{item.kategori}</h2>
                                         <Badge
-                                            variant={item.status === "Aktif" ? "secondary" : item.status === "Tidak Aktif" ? "destructive" : item.status === "Habis" ? "destructive" : "outline"}
+                                            variant={item.status === "Produk Aktif" ? "secondary" : item.status === "Produk Tidak Aktif" ? "destructive" : item.status === "Produk Habis" ? "destructive" : "outline"}
                                             className="text-[12px] px-[11px]"
                                         >
                                             {item.status}
                                         </Badge>
                                     </div>
                                     <h1 className='text-[16px] font-semibold'>{item.nama}</h1>
-                                    <h1 className='text-[14px] font-medium'>Stok : {item.stok}</h1>
+                                    <h1 className='text-[14px] font-medium'>Stok : {item.stok !== null ? item.stok : "-"}</h1>
                                 </div>
                             </div>
                             <Button variant="outline" className="ml-auto h-[32px] w-full text-[14px] border-slate-300" onClick={() => handleEditClick(item.id)}>
@@ -378,7 +454,7 @@ const DataTable = () => {
                     </div>
                     <div className="grid gap-[16px] text-[14px]">
                         <div className='flex gap-[17px]'>
-                            <img src={formData.foto} alt={formData.nama} className='w-[86px] h-[86px] rounded-[6px]' />
+                            <img src={formData.foto ? `${API_URL}/images/${formData.foto}` : "https://github.com/shadcn.png"} alt={formData.nama} className='w-[86px] h-[86px] rounded-[6px]' />
                             <div className=''>
                                 <p className='text-[14px] text-slate-500 font-medium'>{formData.kategori}</p>
                                 <p className='text-[16px] font-semibold'>{formData.nama}</p>
@@ -389,13 +465,13 @@ const DataTable = () => {
                             <div className="flex items-center space-x-2">
                                 <Switch
                                     id="airplane-mode"
-                                    checked={formData.status === "Aktif"}
+                                    checked={formData.status === "Produk Aktif"}
                                     onCheckedChange={(checked) => {
-                                        const newStatus = checked ? "Aktif" : "Tidak Aktif" || "Habis";
+                                        const newStatus = checked ? "Produk Aktif" : "Produk Tidak Aktif" || "Produk Habis";
                                         setFormData({ ...formData, status: newStatus });
                                     }}
                                 />
-                                <Label htmlFor="airplane-mode" className="text-[14px]">Produk {formData.status} </Label>
+                                <Label htmlFor="airplane-mode" className="text-[14px]">{formData.status} </Label>
                             </div>
                         </div>
                         <div className='flex'>
@@ -422,7 +498,7 @@ const DataTable = () => {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button className='text-[14px] h-[36px]' onClick={handleSubmit}>Simpan</Button>
+                            <Button className='text-[14px] h-[36px]' onClick={() => handleSubmit(formData.produkId)}>Simpan</Button>
                         </DialogFooter>
                     </div>
 

@@ -13,6 +13,82 @@ const roleMiddleware = require('../middleware/roleMiddleware');
 
 /**
  * @swagger
+ * /api/products/menu:
+ *   get:
+ *     summary: Get menu details with product, category, and outlet information
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: List of products with categories and outlets
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       product_id:
+ *                         type: integer
+ *                         description: Product ID
+ *                         example: 1
+ *                       product_name:
+ *                         type: string
+ *                         description: Product name
+ *                         example: "Product A"
+ *                       description:
+ *                         type: string
+ *                         description: Product description
+ *                         example: "A detailed description"
+ *                       price:
+ *                         type: number
+ *                         format: float
+ *                         description: Product price
+ *                         example: 100.5
+ *                       stock:
+ *                         type: integer
+ *                         description: Stock available
+ *                         example: 50
+ *                       unlimited_stock:
+ *                         type: boolean
+ *                         description: Indicates if stock is unlimited
+ *                         example: false
+ *                       status:
+ *                         type: string
+ *                         description: Product status
+ *                         example: "active"
+ *                       product_created_at:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Product creation timestamp
+ *                         example: "2024-01-01T00:00:00.000Z"
+ *                       category_id:
+ *                         type: integer
+ *                         description: Category ID
+ *                         example: 2
+ *                       category_name:
+ *                         type: string
+ *                         description: Category name
+ *                         example: "Category B"
+ *                       outlet_id:
+ *                         type: integer
+ *                         description: Outlet ID
+ *                         example: 1
+ *                       outlet_name:
+ *                         type: string
+ *                         description: Outlet name
+ *                         example: "Outlet X"
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/menu', roleMiddleware(['Admin', 'Manager']), productController.getProductMenu);
+
+/**
+ * @swagger
  * /api/products:
  *   post:
  *     summary: Buat produk baru
@@ -311,6 +387,10 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productController.getProdu
  */
 
 router.put('/:id/status', roleMiddleware(['Admin', 'Manager']), productController.updateProductStatus);
+
+
+
+
 
 
 

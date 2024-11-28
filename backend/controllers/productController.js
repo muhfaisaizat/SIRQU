@@ -397,3 +397,61 @@ exports.updateProductStatus = async (req, res) => {
     });
   }
 };
+
+
+exports.getProductMenu = async (req, res) => {
+  try {
+    const products = await Product.sequelize.query (`
+        SELECT 
+    p.id AS product_id,
+    p.name AS product_name,
+    p.description,
+    p.price,
+    p.stock,
+    p.unlimited_stock,
+    p.status,
+    p.createdAt AS product_created_at,
+    c.id AS category_id,
+    c.name AS category_name,
+    o.id AS outlet_id,
+    o.nama AS outlet_name,
+    MAX(pi.image) AS product_image  
+FROM 
+    products p
+LEFT JOIN 
+    productscategories pc ON p.id = pc.productsId
+LEFT JOIN 
+    categories c ON pc.categoriesId = c.id
+LEFT JOIN 
+    productsoutlets po ON p.id = po.productsId
+LEFT JOIN 
+    outlets o ON po.outletsId = o.id
+LEFT JOIN 
+    productimages pi ON p.id = pi.productsId  
+WHERE 
+    p.deletedAt IS NULL 
+    AND po.deletedAt IS NULL 
+    AND pc.deletedAt IS NULL
+    AND pi.deletedAt IS NULL 
+GROUP BY
+    p.id, c.id, o.id 
+ORDER BY 
+    p.id, c.name, o.nama;
+      `,
+      { type: Product.sequelize.QueryTypes.SELECT }
+    );
+
+
+      // Response ke client
+      res.status(200).json({
+          success: true,
+          data: products,
+      });
+  } catch (error) {
+      console.error('Error fetching menu:', error);
+      res.status(500).json({
+          success: false,
+          message: 'Failed to fetch menu data',
+      });
+  }
+};

@@ -1308,11 +1308,11 @@ const DataTableDemo = ({ data, setData, originalData, setOriginalData, fetchData
                         <DialogHeader>
                             <DialogTitle className='text-[18px] py-[16px]'>Edit produk</DialogTitle>
                         </DialogHeader>
-                        <DialogClose asChild>
-                            <Button type="button" variant="ghost">
+                        
+                            <Button onClick={handleBatal} type="button" variant="ghost">
                                 <X className='h-[16px] w-[16px]' />
                             </Button>
-                        </DialogClose>
+                       
 
                     </div>
                     <div className="grid gap-[16px] py-[32px]">
