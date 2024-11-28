@@ -19,6 +19,8 @@ const productImageRoutes = require('./routes/productImageRoutes')
 // const receiptRoutes = require('./routes/receiptRoutes');
 const belanjaRoutes = require('./routes/belanjaRoutes');
 const categoriesBelanjaRoutes = require('./routes/categoryBelanjaRoutes');
+const promosiRoutes = require('./routes/promosiRoutes');
+const promosiOutletRoutes = require('./routes/promosiOutletRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 const path = require('path'); 
@@ -61,6 +63,8 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 // app.use('/api', receiptRoutes);
 app.use('/api/belanja', belanjaRoutes);
 app.use('/api/categoriesbelanjas', categoriesBelanjaRoutes);
+app.use('/api/promosi', promosiRoutes);
+app.use('/api/promosi/outlets', promosiOutletRoutes);
 
 // Swagger Documentation
 swaggerDocs(app);
