@@ -194,7 +194,7 @@ const AddKategori = ({ buttonProps, title, showIcon }) => {
                     <DialogContent className="sm:max-w-[505px]">
                         <div className='flex justify-between'>
                             <DialogHeader>
-                                <DialogTitle className='text-[18px] py-[16px]'>Edit Kategori</DialogTitle>
+                                <DialogTitle className='text-[18px] py-[16px]'>Tambah Kategori</DialogTitle>
                             </DialogHeader>
                             <DialogClose asChild>
                                 <Button type="button" variant="ghost">
