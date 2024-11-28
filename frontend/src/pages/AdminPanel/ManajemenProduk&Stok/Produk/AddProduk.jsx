@@ -33,7 +33,7 @@ import { API_URL } from "../../../../helpers/networt";
 
 
 
-const AddProduk = ({ buttonProps, title, showIcon }) => {
+const AddProduk = ({ buttonProps, title, showIcon, fetchDataProduk }) => {
     const { toast } = useToast();
     const [isOpen, setIsOpen] = useState(false);
     const [namaproduk, setNamaproduk] = useState('');
@@ -394,6 +394,8 @@ const AddProduk = ({ buttonProps, title, showIcon }) => {
                 description: "Produk berhasil ditambahkan.",
                 action: <ToastAction altText="Try again">Cancel</ToastAction>,
             });
+
+            fetchDataProduk();
            
         } catch (error) {
             console.error('Error adding user:', error);

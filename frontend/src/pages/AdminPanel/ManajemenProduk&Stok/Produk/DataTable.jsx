@@ -64,124 +64,124 @@ import { API_URL } from "../../../../helpers/networt";
 
 
 // Main component
-const DataTableDemo = () => {
+const DataTableDemo = ({ data, setData, originalData, setOriginalData, fetchDataProduk }) => {
 
     // data
-    const [data, setData] = useState([
-        {
-            id: "m5gr84i9",
-            name: 'kopi',
-            kategori: "Makanan ringan, Populer",
-            harga: "50000000",
-            outlet: "Oulet 1, Outlet 2",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-        {
-            id: "3u1reuv4",
-            name: 'susu',
-            kategori: "Populer",
-            harga: "50000",
-            outlet: "Outlet 2",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-        {
-            id: "derv1ws0",
-            name: 'onde-onde',
-            kategori: "Makanan ringan, Populer",
-            harga: "50000",
-            outlet: "Oulet 1, Outlet 2",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-        {
-            id: "5kma53ae",
-            name: 'bakwan',
-            kategori: "Makanan ringan",
-            harga: "50000",
-            outlet: "Outlet 2",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-        {
-            id: "bhqecj4p",
-            name: 'soto',
-            kategori: "Populer",
-            outlet: "Oulet 1, Outlet 2",
-            harga: "50000",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-        {
-            id: "bhqecj4p234",
-            name: 'jairo vernandes',
-            kategori: "12",
-            harga: "50000",
-            outlet: "Oulet 1, Outlet 2",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-        {
-            id: "bhqecj4p23467",
-            name: 'jairo vernandes',
-            kategori: "12",
-            harga: "50000",
-            outlet: "Oulet 1, Outlet 2",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-        {
-            id: "bhqecj4p23467g",
-            name: 'jairo vernandes',
-            kategori: "12",
-            harga: "50000",
-            outlet: "Oulet 1, Outlet 2",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-        {
-            id: "bhqecj4p23467g7",
-            name: 'jairo vernandes',
-            kategori: "12",
-            harga: "50000",
-            outlet: "Oulet 1, Outlet 2",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-        {
-            id: "bhqecj4p23467g76",
-            name: 'jairo vernandes',
-            kategori: "12",
-            harga: "50000",
-            outlet: "Oulet 1, Outlet 2",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-        {
-            id: "bhqecj4p23467g76",
-            name: 'jairo vernandes',
-            kategori: "12",
-            harga: "50000",
-            outlet: "Oulet 1, Outlet 2",
-            date: "23 Oktober 2024",
-            deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
-            foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
-        },
-    ]);
+    // const [data, setData] = useState([
+    //     {
+    //         id: "m5gr84i9",
+    //         name: 'kopi',
+    //         kategori: "Makanan ringan, Populer",
+    //         harga: "50000000",
+    //         outlet: "Oulet 1, Outlet 2",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    //     {
+    //         id: "3u1reuv4",
+    //         name: 'susu',
+    //         kategori: "Populer",
+    //         harga: "50000",
+    //         outlet: "Outlet 2",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    //     {
+    //         id: "derv1ws0",
+    //         name: 'onde-onde',
+    //         kategori: "Makanan ringan, Populer",
+    //         harga: "50000",
+    //         outlet: "Oulet 1, Outlet 2",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    //     {
+    //         id: "5kma53ae",
+    //         name: 'bakwan',
+    //         kategori: "Makanan ringan",
+    //         harga: "50000",
+    //         outlet: "Outlet 2",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    //     {
+    //         id: "bhqecj4p",
+    //         name: 'soto',
+    //         kategori: "Populer",
+    //         outlet: "Oulet 1, Outlet 2",
+    //         harga: "50000",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    //     {
+    //         id: "bhqecj4p234",
+    //         name: 'jairo vernandes',
+    //         kategori: "12",
+    //         harga: "50000",
+    //         outlet: "Oulet 1, Outlet 2",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    //     {
+    //         id: "bhqecj4p23467",
+    //         name: 'jairo vernandes',
+    //         kategori: "12",
+    //         harga: "50000",
+    //         outlet: "Oulet 1, Outlet 2",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    //     {
+    //         id: "bhqecj4p23467g",
+    //         name: 'jairo vernandes',
+    //         kategori: "12",
+    //         harga: "50000",
+    //         outlet: "Oulet 1, Outlet 2",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    //     {
+    //         id: "bhqecj4p23467g7",
+    //         name: 'jairo vernandes',
+    //         kategori: "12",
+    //         harga: "50000",
+    //         outlet: "Oulet 1, Outlet 2",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    //     {
+    //         id: "bhqecj4p23467g76",
+    //         name: 'jairo vernandes',
+    //         kategori: "12",
+    //         harga: "50000",
+    //         outlet: "Oulet 1, Outlet 2",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    //     {
+    //         id: "bhqecj4p23467g76",
+    //         name: 'jairo vernandes',
+    //         kategori: "12",
+    //         harga: "50000",
+    //         outlet: "Oulet 1, Outlet 2",
+    //         date: "23 Oktober 2024",
+    //         deskripsi: 'Ini adalah makanan sejeni sate hanya saja tidak memiliki kuah sehingga makanan ini cocok untuk dimakan bersama kucing',
+    //         foto: 'https://github.com/shadcn.png, https://github.com/shadcn.png'
+    //     },
+    // ]);
 
-    // status
-    const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
+    // // status
+    // const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
 
     // Define columns
     const columns = [
@@ -277,7 +277,7 @@ const DataTableDemo = () => {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleEditClick(id)}>Edit Produk</DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
+                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500" onClick={() => handleDeleteProduk(id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -293,16 +293,20 @@ const DataTableDemo = () => {
     const [rowSelection, setRowSelection] = useState({})
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
     const [selectedOutlets, setSelectedOutlets] = useState([]); // State untuk menyimpan outlet yang dipilih
+    const [selectedCreateOutlets, setSelectedCreateOutlets] = useState([]);
+    const [selectedDeleteOutlets, setSelectedDeleteOutlets] = useState([]);
+    const [selectedCreateKatagori, setSelectedCreateKatagori] = useState([]);
+    const [selectedDeleteKatagori, setSelectedDeleteKatagori] = useState([]);
 
-const handleOutletChange = (outletId) => {
-    setSelectedOutlets((prevSelected) => {
-        if (prevSelected.includes(outletId)) {
-            return prevSelected.filter(id => id !== outletId); // Hapus outlet jika sudah ada
-        } else {
-            return [...prevSelected, outletId]; // Tambah outlet yang baru dipilih
-        }
-    });
-};
+    const handleOutletChange = (outletId) => {
+        setSelectedOutlets((prevSelected) => {
+            if (prevSelected.includes(outletId)) {
+                return prevSelected.filter(id => id !== outletId); // Hapus outlet jika sudah ada
+            } else {
+                return [...prevSelected, outletId]; // Tambah outlet yang baru dipilih
+            }
+        });
+    };
 
 
     // Tentukan jumlah halaman berdasarkan total data dan pageSize
@@ -344,13 +348,16 @@ const handleOutletChange = (outletId) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDialogOpenview, setIsDialogOpenview] = useState(false);
     const [formData, setFormData] = useState({
+        id:'',
         nama: '',
         deskripsi: '',
         kategori: '',
         harga: '',
         outlet: '',
         date: '',
-        foto: ''
+        foto: [],
+        stock: '',
+        unlimited_stock: '',
     });
     const { toast } = useToast();
     const [deskripsi, setdeskripsi] = useState('');
@@ -389,13 +396,13 @@ const handleOutletChange = (outletId) => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-    
-           // Log untuk memastikan data yang diterima
-    
+
+            // Log untuk memastikan data yang diterima
+
             // Pastikan response.data adalah array
             if (Array.isArray(response.data.data)) {
                 const formattedData = response.data.data.map(formatOutletData);
-               
+
                 setDataOutlet(formattedData);
                 // console.log(formattedData)
                 // setOriginalData(formattedData); // Set originalData di sini
@@ -417,10 +424,29 @@ const handleOutletChange = (outletId) => {
             // Memeriksa apakah outlet sudah terpilih
             const isSelected = prevSelected.some((o) => o.id === outlet.id);
             if (isSelected) {
+                const outletToRemove = selectedOutlets.find((o) => o.id === outlet.id);
+                if (outletToRemove.detailId) {
+                    setSelectedDeleteOutlets((prevSelected) => {
+                        const isAlreadyInDeleteOutlets = prevSelected.some((o) => o.outletid === outletToRemove.detailId);
+                        if (!isAlreadyInDeleteOutlets) {
+                            return [...prevSelected, { detailOutletId: outletToRemove.detailId }];
+                        }
+                        return prevSelected;
+                    });
+                    return prevSelected.filter((o) => o.id !== outlet.id);
+                } else {
+                    return prevSelected.filter((o) => o.id !== outlet.id);
+                }
                 // Jika outlet sudah terpilih, hapus dari selectedOutlets
-                return prevSelected.filter((o) => o.id !== outlet.id);
             } else {
                 // Jika outlet belum terpilih, tambahkan ke selectedOutlets
+                setSelectedCreateOutlets((prevSelected) => {
+                    const isAlreadyInCreateOutlets = prevSelected.some((o) => o.outletid === outlet.id);
+                    if (!isAlreadyInCreateOutlets) {
+                        return [...prevSelected, { outletId: outlet.id }];
+                    }
+                    return prevSelected;
+                });
                 return [...prevSelected, outlet];
             }
         });
@@ -429,25 +455,70 @@ const handleOutletChange = (outletId) => {
     const handleSelectAll = () => {
         if (selectedOutlets.length === DataOutlet.length) {
             setSelectedOutlets([]);
+            setSelectedCreateOutlets([]);
+
         } else {
-            // Jika tidak semua outlet dipilih, pilih semua outlet
+
+            setSelectedDeleteOutlets((prevSelected) => {
+                const newDeleteOutlets = selectedOutlets.reduce((acc, outlet) => {
+                    if (!acc.some((o) => o.outletid === outlet.detailId)) {
+                        acc.push({ detailOutletId: outlet.detailId });
+                    }
+                    return acc;
+                }, [...prevSelected]);
+                return newDeleteOutlets;
+            });
+
             setSelectedOutlets(DataOutlet);
+
+            setSelectedCreateOutlets((prevSelected) => {
+                const newOutlets = DataOutlet.reduce((acc, outlet) => {
+                    if (!acc.some((o) => o.id === outlet.id)) {
+                        acc.push({ outletId: outlet.id });
+                    }
+                    return acc;
+                }, [...prevSelected]);
+
+                return newOutlets;
+            });
         }
     };
 
     const handleRemoveOutlet = (id) => {
-        setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+        const outletToRemove = selectedOutlets.find((outlet) => outlet.id === id);
+        if (outletToRemove.detailId) {
+            setSelectedDeleteOutlets((prevSelected) => {
+                const isAlreadyInDeleteOutlets = prevSelected.some((o) => o.outletid === outletToRemove.detailId);
+                if (!isAlreadyInDeleteOutlets) {
+                    return [...prevSelected, { detailOutletId: outletToRemove.detailId }];
+                }
+                return prevSelected;
+            });
+            setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+        } else {
+            setSelectedCreateOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.outletId !== id));
+            setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+        }
     };
-
-
 
     // upload image
     const [images, setImages] = useState([]);
+    const [createImages, setCreateImages] = useState([]);
+    const [deleteImages, setDeleteImages] = useState([]);
+
+    // useEffect(() => {
+    //     console.log('f', images);
+    //     console.log('c', createImages);
+    //     console.log('d', deleteImages);
+    // }, [images]);
+
 
     const handleDrop = (event) => {
         event.preventDefault();
         const files = Array.from(event.dataTransfer.files);
-        const newImages = files.map((file) => URL.createObjectURL(file));
+        const newImages = files.map((file) => {
+            return { id: Date.now(), image: URL.createObjectURL(file) };
+        });
         setImages((prevImages) => [...prevImages, ...newImages]);
     };
 
@@ -458,20 +529,120 @@ const handleOutletChange = (outletId) => {
         input.multiple = true;
         input.onchange = (e) => {
             const files = Array.from(e.target.files);
-            const newImages = files.map((file) => URL.createObjectURL(file));
+            const newFile = files.map((file) => {
+                return { id: Date.now(), image: file };
+            });
+            const newImages = files.map((file) => {
+                return { id: Date.now(), image: URL.createObjectURL(file) };
+            });
+            console.log(newFile);
+            console.log(newImages);
             setImages((prevImages) => [...prevImages, ...newImages]);
+            setCreateImages((prevImages) => [...prevImages, ...newFile]);
         };
         input.click();
     };
 
-    const handleDelete = (index) => {
-        setImages(images.filter((_, i) => i !== index));
+    const handleDelete = (id) => {
+        const imagesToRemove = images.find((m) => m.id === id);
+
+        if (imagesToRemove.detailId) {
+
+            setDeleteImages((prevSelected) => {
+                const isAlreadyInDelete = prevSelected.some((o) => o.imagesid === imagesToRemove.detailId);
+                if (!isAlreadyInDelete) {
+                    return [...prevSelected, { detailImagesId: imagesToRemove.detailId }];
+                }
+                return prevSelected;
+            });
+
+            setImages((prevImages) => {
+                const flatImages = prevImages.flat();
+                const newImages = flatImages.filter((image) => image.id !== id);
+                return newImages;
+            });
+
+        } else {
+
+            setCreateImages((prevImages) => {
+                const flatImages = prevImages.flat();
+                const newImages = flatImages.filter((image) => image.id !== id);
+                return newImages;
+            });
+
+            setImages((prevImages) => {
+                const flatImages = prevImages.flat();
+                const newImages = flatImages.filter((image) => image.id !== id);
+                return newImages;
+            });
+        }
+
+
     };
 
-    const handleEdit = (index) => {
-        // Logika untuk mengedit gambar
-        // Misalnya: memunculkan dialog untuk mengganti gambar
-        console.log(`Edit image at index ${index}`);
+
+    const handleEdit = (id) => {
+        const imagesToRemove = images.find((m) => m.id === id);
+        if (imagesToRemove.detailId) {
+
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.multiple = true;
+            input.onchange = (e) => {
+                const files = Array.from(e.target.files);
+                const newFile = files.map((file) => {
+                    return { id: Date.now(), image: file };
+                });
+                const newImages = files.map((file) => {
+                    return { id: Date.now(), image: URL.createObjectURL(file) };
+                });
+                setImages((prevImages) => [...prevImages, ...newImages]);
+                setCreateImages((prevImages) => [...prevImages, ...newFile]);
+                setDeleteImages((prevSelected) => {
+                    const isAlreadyInDelete = prevSelected.some((o) => o.imagesid === imagesToRemove.detailId);
+                    if (!isAlreadyInDelete) {
+                        return [...prevSelected, { detailImagesId: imagesToRemove.detailId }];
+                    }
+                    return prevSelected;
+                });
+
+                setImages((prevImages) => {
+                    const flatImages = prevImages.flat();
+                    const newImages = flatImages.filter((image) => image.id !== id);
+                    return newImages;
+                });
+
+            };
+            input.click();
+        } else {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.multiple = true;
+            input.onchange = (e) => {
+                const files = Array.from(e.target.files);
+                const newFile = files.map((file) => {
+                    return { id: Date.now(), image: file };
+                });
+                const newImages = files.map((file) => {
+                    return { id: Date.now(), image: URL.createObjectURL(file) };
+                });
+                setImages((prevImages) => [...prevImages, ...newImages]);
+                setCreateImages((prevImages) => [...prevImages, ...newFile]);
+                setCreateImages((prevImages) => {
+                    const flatImages = prevImages.flat();
+                    const newImages = flatImages.filter((image) => image.id !== id);
+                    return newImages;
+                });
+                setImages((prevImages) => {
+                    const flatImages = prevImages.flat();
+                    const newImages = flatImages.filter((image) => image.id !== id);
+                    return newImages;
+                });
+            };
+            input.click();
+        }
     };
 
 
@@ -497,13 +668,13 @@ const handleOutletChange = (outletId) => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-    
-           // Log untuk memastikan data yang diterima
-    
+
+            // Log untuk memastikan data yang diterima
+
             // Pastikan response.data adalah array
             if (Array.isArray(response.data.data)) {
                 const formattedData = response.data.data.map(formatkategoriData);
-               
+
                 setDataKategori(formattedData);
                 // console.log(formattedData)
                 // setOriginalData(formattedData); // Set originalData di sini
@@ -520,13 +691,40 @@ const handleOutletChange = (outletId) => {
         fetchDataKategori();
     }, []);
 
+
     const [selectedKategori, setSelectedKategori] = useState([]);
+
+    //   useEffect(() => {
+    //     console.log('s',selectedKategori)
+    //     console.log('c',selectedCreateKatagori)
+    //     console.log('d',selectedDeleteKatagori)
+    // }, [selectedKategori, selectedCreateKatagori, selectedDeleteKatagori]);
 
     const handleSelectkategori = (kategori) => {
         setSelectedKategori((prevSelected) => {
             if (prevSelected.some((o) => o.id === kategori.id)) {
-                return prevSelected.filter((o) => o.id !== kategori.id);
+                const kategoriToRemove = selectedKategori.find((o) => o.id === kategori.id);
+                if (kategoriToRemove.detailId) {
+                    setSelectedDeleteKatagori((prevSelected) => {
+                        const isAlreadyInDelete = prevSelected.some((o) => o.outletid === kategoriToRemove.detailId);
+                        if (!isAlreadyInDelete) {
+                            return [...prevSelected, { detailKategoriId: kategoriToRemove.detailId }];
+                        }
+                        return prevSelected;
+                    });
+                    return prevSelected.filter((o) => o.id !== kategori.id);
+                } else {
+                    return prevSelected.filter((o) => o.id !== kategori.id);
+                }
+
             } else {
+                setSelectedCreateKatagori((prevSelected) => {
+                    const isAlreadyInCreate = prevSelected.some((o) => o.kategoriid === kategori.id);
+                    if (!isAlreadyInCreate) {
+                        return [...prevSelected, { kategoriId: kategori.id }];
+                    }
+                    return prevSelected;
+                });
                 return [...prevSelected, kategori];
             }
         });
@@ -535,13 +733,49 @@ const handleOutletChange = (outletId) => {
     const handleSelectAllkategori = () => {
         if (selectedKategori.length === DataKategori.length) {
             setSelectedKategori([]); // Unselect all if all are selected
+            setSelectedCreateKatagori([]);
         } else {
+            setSelectedDeleteKatagori((prevSelected) => {
+                const newDelete = selectedKategori.reduce((acc, kategori) => {
+                    if (!acc.some((o) => o.kategoriid === kategori.detailId)) {
+                        acc.push({ detailKategoriId: kategori.detailId });
+                    }
+                    return acc;
+                }, [...prevSelected]);
+                return newDelete;
+            });
+
             setSelectedKategori(DataKategori); // Select all outlets
+
+            setSelectedCreateKatagori((prevSelected) => {
+                const newKategori = DataKategori.reduce((acc, kategori) => {
+                    if (!acc.some((o) => o.id === kategori.id)) {
+                        acc.push({ kategoriId: kategori.id });
+                    }
+                    return acc;
+                }, [...prevSelected]);
+
+                return newKategori;
+            });
         }
     };
 
     const handleRemoveKategori = (id) => {
-        setSelectedKategori((prevSelected) => prevSelected.filter((kategori) => kategori.id !== id));
+        const kategoriToRemove = selectedKategori.find((kategori) => kategori.id === id);
+        if (kategoriToRemove.detailId) {
+            setSelectedDeleteKatagori((prevSelected) => {
+                const isAlreadyInDelete = prevSelected.some((o) => o.kategoriid === kategoriToRemove.detailId);
+                if (!isAlreadyInDelete) {
+                    return [...prevSelected, { detailKategoriId: kategoriToRemove.detailId }];
+                }
+                return prevSelected;
+            });
+            setSelectedKategori((prevSelected) => prevSelected.filter((kategori) => kategori.id !== id));
+        } else {
+            setSelectedCreateKatagori((prevSelected) => prevSelected.filter((kategori) => kategori.id !== id));
+            setSelectedKategori((prevSelected) => prevSelected.filter((kategori) => kategori.id !== id));
+        }
+
     };
 
 
@@ -570,10 +804,25 @@ const handleOutletChange = (outletId) => {
     const handleEditClick = (id) => {
         const selectedData = data.find(item => item.id === id);
         if (selectedData) {
-            const outlets = selectedData.outlet.split(", ").map((name, index) => ({ id: `outlet-${index}`, name }));
+            const outlets = selectedData.detailOutlet[0]?.map((item) => ({
+                id: String(item.outletsId),
+                productsId: item.productsId,
+                detailId: item.id,
+                name: String(item.outlet_name),
+            }));
             setSelectedOutlets(outlets);
-            const kategori = selectedData.kategori.split(", ").map((name, index) => ({ id: `kategori-${index}`, name }));
+            const kategori = selectedData.detailKategori[0]?.map((item) => ({
+                id: String(item.categoriesId),
+                productsId: item.productsId,
+                detailId: item.id,
+                name: String(item.category_name),
+            }));
             setSelectedKategori(kategori);
+            const foto = selectedData.foto[0]?.map((item) => ({
+                ...item,
+                detailId: item.id,
+            }));
+            setImages(foto);
             setSelectedId(id);
             setIsDialogOpen(true);
         }
@@ -583,12 +832,42 @@ const handleOutletChange = (outletId) => {
         setSelectedId(id);
         setIsDialogOpenview(true);
     };
+    const handleDeleteProduk = async (id) => {
+        const token = localStorage.getItem("token");
+    
+        try {
+          // Send a DELETE request to the API endpoint
+          await axios.delete(`${API_URL}/api/products/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          toast({
+            title: "Sukses!",
+            description: "Produk berhasil dihapus.",
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
+        fetchDataProduk();
+          
+        } catch (error) {
+          console.error("Error deleting data:", error);
+          const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+          toast({
+            variant: "destructive",
+            title: "Error!",
+            description: errorMessage,
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
+        }
+    };
 
 
     useEffect(() => {
         const selectedData = data.find(item => item.id === selectedId);
         if (selectedData) {
             setFormData({
+                id: selectedData.id,
                 nama: selectedData.name,
                 uang: selectedData.harga,
                 deskripsi: selectedData.deskripsi,
@@ -596,20 +875,23 @@ const handleOutletChange = (outletId) => {
                 harga: selectedData.harga,
                 outlet: selectedData.outlet,
                 date: selectedData.date,
-                foto: selectedData.foto
+                foto: selectedData.foto,
+                stock: selectedData.stock,
+                unlimited_stock: selectedData.unlimited_stock
             });
 
             // Format dan set nilai uang ke dalam input
             const formattedUang = formatNumber(selectedData.harga.toString());
             setUang(formattedUang);
             setdeskripsi(selectedData.deskripsi);
-            const splittedFotos = selectedData.foto.split(', ');
-            setImages(splittedFotos);
+            // const splittedFotos = selectedData.foto.split(', ');
+
         }
     }, [selectedId]);
 
 
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const { nama } = formData;
 
@@ -671,15 +953,137 @@ const handleOutletChange = (outletId) => {
             return;
         }
 
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.put(`${API_URL}/api/products/${formData.id}`, {
+                name: formData.nama,
+                description: deskripsi,
+                price: uang,
+                stock: formData.stock,
+                unlimited_stock: formData.unlimited_stock,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+        
+            const produkId = response.data.id;
+        
+            // Delete outlets if any
+            const promisesdelete = selectedDeleteOutlets.length > 0
+                ? selectedDeleteOutlets.map(outlet =>
+                    axios.delete(`${API_URL}/api/products/outlets/${outlet.detailOutletId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    })
+                )
+                : [];
+        
+            // Create outlets if any
+            const promises = selectedCreateOutlets.length > 0
+                ? selectedCreateOutlets.map(outlet =>
+                    axios.post(`${API_URL}/api/products/outlets`, {
+                        productsId: produkId,
+                        outletsId: outlet.outletId,
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    })
+                )
+                : [];
+        
+            // Delete categories if any
+            const promisesKategoriDelete = selectedDeleteKatagori.length > 0
+                ? selectedDeleteKatagori.map(kategori =>
+                    axios.delete(`${API_URL}/api/product/categories/${kategori.detailKategoriId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    })
+                )
+                : [];
+        
+            // Create categories if any
+            const promiseskategori = selectedCreateKatagori.length > 0
+                ? selectedCreateKatagori.map(kategori =>
+                    axios.post(`${API_URL}/api/product/categories`, {
+                        productsId: produkId,
+                        categoriesId: kategori.kategoriId,
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    })
+                )
+                : [];
+        
+            // Delete images if any
+            const uploadPromisesDelete = deleteImages.length > 0
+                ? deleteImages.map((file) => 
+                    axios.delete(`${API_URL}/api/products/productImage/${file.detailImagesId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    })
+                )
+                : [];
+        
+            // Upload images if any
+            const uploadPromises = createImages.length > 0
+                ? createImages.map((file) => {
+                    const formData = new FormData();
+                    formData.append('productsId', produkId); 
+                    formData.append('image', file.image);
+        
+                    return axios.post(`${API_URL}/api/products/productImage`, formData, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                })
+                : [];
+        
+            // Execute all promises
+            await Promise.all([...promisesdelete, ...promises, ...promisesKategoriDelete, ...promiseskategori, ...uploadPromisesDelete, ...uploadPromises]);
+        
+            toast({
+                title: "Sukses!",
+                description: "Produk berhasil diperbarui.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        
+            fetchDataProduk();
+        
+        } catch (error) {
+            console.error('Error adding user:', error);
+            const errorMessage =
+                error.response?.data?.message || error.message || "Unknown error occurred";
+        
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: errorMessage,
+                status: "error",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
+        
 
 
-        toast({
-            title: "Sukses!",
-            description: "Produk berhasil diperbarui.",
-            action: <ToastAction altText="Try again">Cancel</ToastAction>,
-        });
 
+        
+        setCreateImages([]);
+        setDeleteImages([]);
+        setSelectedCreateKatagori([]);
+        setSelectedDeleteKatagori([]);
+        setSelectedCreateOutlets([]);
+        setSelectedDeleteOutlets([]);
         setIsDialogOpen(false);
+        
     };
 
     useEffect(() => {
@@ -688,16 +1092,29 @@ const handleOutletChange = (outletId) => {
 
     const [checkedOutlets, setCheckedOutlets] = useState([]);
 
-const handleCheckboxChange = (outletName, isChecked) => {
-  const updatedCheckedOutlets = isChecked
-    ? [...checkedOutlets, outletName] // Tambah outlet yang dicentang
-    : checkedOutlets.filter((name) => name !== outletName); // Hapus outlet yang tidak dicentang
+    const handleCheckboxChange = (outletName, isChecked) => {
+        const updatedCheckedOutlets = isChecked
+            ? [...checkedOutlets, outletName] // Tambah outlet yang dicentang
+            : checkedOutlets.filter((name) => name !== outletName); // Hapus outlet yang tidak dicentang
 
-  setCheckedOutlets(updatedCheckedOutlets);
+        setCheckedOutlets(updatedCheckedOutlets);
 
-  // Munculkan alert berisi outlet yang sudah dicentang
-  alert(`Outlet yang dicentang: ${updatedCheckedOutlets.join(", ")}`);
-};
+        // Munculkan alert berisi outlet yang sudah dicentang
+        alert(`Outlet yang dicentang: ${updatedCheckedOutlets.join(", ")}`);
+    };
+
+    const handleBatal =()=>{
+        setCreateImages([]);
+        setDeleteImages([]);
+        setSelectedCreateKatagori([]);
+        setSelectedDeleteKatagori([]);
+        setSelectedCreateOutlets([]);
+        setSelectedDeleteOutlets([]);
+        setSelectedKategori([]);
+        setSelectedOutlets([]);
+        setImages([]);
+        setIsDialogOpen(false);
+    }
 
     return (
         <div className="w-full grid gap-[16px] mt-[24px]">
@@ -720,9 +1137,9 @@ const handleCheckboxChange = (outletName, isChecked) => {
                         <DropdownMenuContent align="start" className="w-[184px]">
                             {DataKategori.map((kategori) => (
                                 <DropdownMenuItem key={kategori.id} className="h-[36px] p-[12px]">
-                                    <Checkbox 
-                                    
-                                    className="capitalize" 
+                                    <Checkbox
+
+                                        className="capitalize"
                                     />
                                     <span className="ml-[8px] text-[14px]">{kategori.name}</span>
                                 </DropdownMenuItem>
@@ -738,9 +1155,9 @@ const handleCheckboxChange = (outletName, isChecked) => {
                         <DropdownMenuContent align="start" className="w-[184px]">
                             {DataOutlet.map((outlet) => (
                                 <DropdownMenuItem key={outlet.id} className="h-[36px] p-[12px]">
-                                    <Checkbox 
-                                    
-                                    className="capitalize" 
+                                    <Checkbox
+
+                                        className="capitalize"
                                     />
                                     <span className="ml-[8px] text-[14px]">{outlet.name}</span>
                                 </DropdownMenuItem>
@@ -761,7 +1178,7 @@ const handleCheckboxChange = (outletName, isChecked) => {
                             .map((column) => (
                                 <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]">
                                     <Checkbox
-                                        
+
                                         className="capitalize"
                                         checked={column.getIsVisible()}
                                         onCheckedChange={(value) =>
@@ -818,7 +1235,7 @@ const handleCheckboxChange = (outletName, isChecked) => {
                                         colSpan={columns.length}
                                         className="h-24 text-center"
                                     >
-                                        <NoData/>
+                                        <NoData />
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -977,17 +1394,17 @@ const handleCheckboxChange = (outletName, isChecked) => {
                                     ukuran maksimal 5 mb</p>
                             </div>
                             <div className='w-full flex flex-wrap gap-[12px]' onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
-                                {images.map((image, index) => (
+                                {images.map((item, index) => (
                                     <div key={index} className="relative w-[120px] h-[120px] group">
                                         <img
-                                            src={image}
-                                            alt={`Pilih gambar ${index + 1}`}
+                                            src={item.image.startsWith('blob:') ? item.image : `${API_URL}/images/${item.image}`}
+                                            alt={`${item.image}`}
                                             className="w-full h-full border object-cover rounded-[8px]"
                                         />
-                                        <button  onClick={() => handleEdit(index)}  className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <button onClick={() => handleEdit(item.id)} className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                             <div className='bg-white text-[12px] px-[8px] rounded-full'>Ubah</div>
                                         </button>
-                                        <button onClick={() => handleDelete(index)} className="absolute top-2 right-2 bg-white text-red-500 text-xs p-[4px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <button onClick={() => handleDelete(item.id)} className="absolute top-2 right-2 bg-white text-red-500 text-xs p-[4px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                             <Trash size="12" />
                                         </button>
                                     </div>
@@ -1067,11 +1484,11 @@ const handleCheckboxChange = (outletName, isChecked) => {
                     <p className='text-[14px] font-normal text-slate-500'>* Untuk mengelola <span className="text-black">Stok Produk</span> silahkan buka pada menu <span className="text-black">Kelola Stok</span></p>
 
                     <DialogFooter className="gap-[12px]">
-                        <DialogClose asChild>
-                            <Button type="button" variant="outline" className='text-[14px] h-[36px]'>
+                       
+                            <Button type="button" onClick={handleBatal}  variant="outline" className='text-[14px] h-[36px]'>
                                 Batal
                             </Button>
-                        </DialogClose>
+                        
                         <Button type="submit" onClick={handleSubmit} className='text-[14px] h-[36px]'>Simpan Perubahan</Button>
                     </DialogFooter>
                 </DialogContent>
@@ -1095,14 +1512,13 @@ const handleCheckboxChange = (outletName, isChecked) => {
                     </div>
                     <div className="grid gap-[16px] py-[16px] text-[14px]">
                         <div className='w-full flex flex-wrap gap-[12px]'>
-                            {images.map((image, index) => (
+                            {formData.foto?.flatMap((outerArray) => outerArray).map((fotoObj, index) => (
                                 <div key={index} className="relative w-[120px] h-[120px]">
                                     <img
-                                        src={image}
-                                        alt={`Pilih gambar ${index + 1}`}
+                                        src={fotoObj.image ? `${API_URL}/images/${fotoObj.image}` : "https://github.com/shadcn.png"}
+                                        alt={`Gambar ${index + 1}`}
                                         className="w-full h-full border object-cover rounded-[8px]"
                                     />
-
                                 </div>
                             ))}
                         </div>

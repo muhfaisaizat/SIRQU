@@ -25,39 +25,76 @@ import { API_URL } from "../../../../helpers/networt";
 
 const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, isDialogOpen, setIsDialogOpen, setIdOutlet, setnamaToko, setIsDialogOpenbukatoko, setuangModal }) => {
     const DataOutlet = [
-        { id: "1", name: 'Toko utama' },
+        { id: "19", name: 'Cabang 1' },
         { id: "m5gr84i7", name: 'Cabang 2' },
         { id: "m5gr84i8", name: 'Cabang 3' }
     ];
-    const DataKategori = [
-        { id: "m5gr84i9", name: 'Makanan' },
-        { id: "m5gr84i7", name: 'Minuman' },
-        { id: "m5gr84i8", name: 'Dessert' },
-        { id: "m5gr84if", name: 'Cemilan' },
-        { id: "m5gr84is", name: 'es krim' },
-        { id: "m5gr84ia", name: 'snak' },
-    ];
-    // const DataMenu = [
-    //     { id: "m5gr84i9", name: 'Sate', outlet: 'Cabang 1', kategori: 'Makanan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: 99, harga: 20000, foto: 'https://github.com/shadcn.png' },
-    //     { id: "m5gr84uh", name: 'Onde-onde', outlet: 'Cabang 1', kategori: 'Cemilan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-    //     { id: "m5gr8468", name: 'Kopi', outlet: 'Cabang 1', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-    //     { id: "m5gr8456", name: 'Le mineral', outlet: 'Cabang 1', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-    //     { id: "m5gr84iw", name: 'Sate', outlet: 'Cabang 2', kategori: 'Makanan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-    //     { id: "m5gr84ud", name: 'Onde-onde', outlet: 'Cabang 2', kategori: 'Cemilan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-    //     { id: "m5gr845s", name: 'Le mineral', outlet: 'Cabang 2', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-    // ];
 
-    const [DataMenu, setDataMenu] = useState([]);
+    const [DataKategori, setDataKategori] = useState([
+        // { id: "m5gr84i9", name: 'Makanan Ringan' },
+        // { id: "m5gr84i7", name: 'Populer' },
+        // { id: "m5gr84i8", name: 'sayur-sayuran' }
+    ])
+
+    const formatkategoriData = (apiData) => {
+        return {
+            id: apiData.id_kategori.toString(),
+            name: apiData.nama_kategori
+        };
+    };
+
+    const fetchDataKategori = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/categories`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+           // Log untuk memastikan data yang diterima
+    
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatkategoriData);
+               
+                setDataKategori(formattedData);
+                // console.log(formattedData)
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchDataKategori();
+    }, []);
+    
+    const DataMenu = [
+        { id: "1", name: 'Sate', outlet: 'Cabang 1', kategori: 'Makanan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: 99, harga: 20000, foto: 'https://github.com/shadcn.png' },
+        { id: "1", name: 'Onde-onde', outlet: 'Cabang 1', kategori: 'Cemilan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+        { id: "1", name: 'Kopi', outlet: 'Cabang 1', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+        { id: "1", name: 'Le mineral', outlet: 'Cabang 1', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+        { id: "1", name: 'Sate', outlet: 'Cabang 2', kategori: 'Makanan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+        { id: "1", name: 'Onde-onde', outlet: 'Cabang 2', kategori: 'Cemilan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+        { id: "1", name: 'Le mineral', outlet: 'Cabang 2', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+    ];
+
+    // const [DataMenu, setDataMenu] = useState([]);
 
     const formatMenuData = (apiData) => {
         return {
-            id: `${apiData.id_product}`,
-            name: apiData.nama_product,
-            outlet: apiData.nama_outlet,
-            kategori: apiData.nama_category,
-            deskripsi: apiData.deskripsi_product,
-            stok: apiData.stok_product,
-            harga: apiData.harga_product,
+            id: `${apiData.product_id}`,
+            name: apiData.product_name,
+            outlet: apiData.outlet_names,
+            kategori: apiData.category_names,
+            deskripsi: apiData.description,
+            stok: apiData.stock,
+            harga: apiData.price,
             foto: 'https://github.com/shadcn.png'
         };
     };
@@ -71,12 +108,13 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
                 },
             });
 
-
+console.log(response.data.data)
 
             // Akses data array dari response.data.data
             if (Array.isArray(response.data.data)) {
                 const formattedData = response.data.data.map(formatMenuData);
-                setDataMenu(formattedData);
+                // setDataMenu(formattedData);
+                console.log('format:',formattedData)
             } else {
                 console.error("Data yang diterima bukan array");
             }

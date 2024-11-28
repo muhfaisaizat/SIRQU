@@ -40,7 +40,7 @@ exports.getProductById = async (req, res) => {
       LEFT JOIN 
           outlets o ON po.outletsId = o.id
       WHERE 
-          p.deletedAt IS NULL AND p.id = ${id}
+          p.deletedAt IS NULL AND po.deletedAt IS NULL AND pc.deletedAt IS NULL AND p.id = ${id}
       GROUP BY 
           p.id, p.name, p.description, p.price, p.stock, p.unlimited_stock, p.status, p.createdAt
       ORDER BY 
@@ -234,7 +234,7 @@ exports.getProducts = async (req, res) => {
       LEFT JOIN 
           outlets o ON po.outletsId = o.id
       WHERE 
-          p.deletedAt IS NULL
+          p.deletedAt IS NULL AND po.deletedAt IS NULL AND pc.deletedAt IS NULL
       GROUP BY 
           p.id, p.name, p.description, p.price, p.stock, p.unlimited_stock, p.status, p.createdAt
       ORDER BY 
