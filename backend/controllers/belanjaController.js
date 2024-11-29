@@ -139,180 +139,180 @@ exports.getCardBelanja = async (req, res) => {
   try {
     const query = `
       SELECT 
-        -- Revenue Data
-        SUM(CASE 
-            WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
-                 AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-            THEN belanjas.totalBelanja 
-            ELSE 0 
-        END) AS Total_Belanja_Bulan_Ini,
-        
-        SUM(CASE 
-            WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) 
-            THEN belanjas.totalBelanja 
-            ELSE 0 
-        END) AS Total_Belanja_Tahun_Ini,
-        
-        AVG(CASE 
-            WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
-                 AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-            THEN belanjas.totalBelanja 
-            ELSE NULL 
-        END) AS Pengeluaran_Rata_Rata_Bulan_Ini,
+    -- Revenue Data
+    SUM(CASE 
+        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
+             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+        THEN belanjas.totalBelanja 
+        ELSE 0 
+    END) AS Total_Belanja_Bulan_Ini,
+    
+    SUM(CASE 
+        WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) 
+        THEN belanjas.totalBelanja 
+        ELSE 0 
+    END) AS Total_Belanja_Tahun_Ini,
+    
+    AVG(CASE 
+        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
+             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+        THEN belanjas.totalBelanja 
+        ELSE NULL 
+    END) AS Pengeluaran_Rata_Rata_Bulan_Ini,
 
-        -- Revenue Data for Previous Month and Year
-        SUM(CASE 
-            WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                 AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-            THEN belanjas.totalBelanja 
-            ELSE 0 
-        END) AS Total_Belanja_Bulan_Lalu,
+    -- Revenue Data for Previous Month and Year
+    SUM(CASE 
+        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+        THEN belanjas.totalBelanja 
+        ELSE 0 
+    END) AS Total_Belanja_Bulan_Lalu,
 
-        SUM(CASE 
+    SUM(CASE 
+        WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
+        THEN belanjas.totalBelanja 
+        ELSE 0 
+    END) AS Total_Belanja_Tahun_Lalu,
+
+    AVG(CASE 
+        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+        THEN belanjas.totalBelanja 
+        ELSE NULL 
+    END) AS Pengeluaran_Rata_Rata_Bulan_Lalu,
+
+    -- Percentage Growth with +/- (Rounded to Integer)
+    CASE
+        WHEN SUM(CASE 
             WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
             THEN belanjas.totalBelanja 
             ELSE 0 
-        END) AS Total_Belanja_Tahun_Lalu,
+        END) > 0 
+        THEN CONCAT(
+            CASE 
+                WHEN SUM(CASE 
+                    WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE 0 
+                END) - SUM(CASE 
+                    WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
+                    THEN belanjas.totalBelanja 
+                    ELSE 0 
+                END) >= 0 THEN '+' 
+                ELSE '-' 
+            END,
+            ROUND(
+                ABS(SUM(CASE 
+                    WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE 0 
+                END) - SUM(CASE 
+                    WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
+                    THEN belanjas.totalBelanja 
+                    ELSE 0 
+                END)) 
+                / SUM(CASE 
+                    WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
+                    THEN belanjas.totalBelanja 
+                    ELSE 0 
+                END) * 100, 0),  -- Rounded to 0 decimal places
+            '%'
+        )
+        ELSE NULL 
+    END AS Banding_Persentase_Total_Belanja_Tahun_Ini,
 
-        AVG(CASE 
+    CASE
+        WHEN SUM(CASE 
+            WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                 AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+            THEN belanjas.totalBelanja 
+            ELSE 0 
+        END) > 0 
+        THEN CONCAT(
+            CASE 
+                WHEN SUM(CASE 
+                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
+                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE 0 
+                END) - SUM(CASE 
+                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE 0 
+                END) >= 0 THEN '+' 
+                ELSE '-' 
+            END,
+            ROUND(
+                ABS(SUM(CASE 
+                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
+                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE 0 
+                END) - SUM(CASE 
+                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE 0 
+                END)) 
+                / SUM(CASE 
+                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE 0 
+                END) * 100, 0),  -- Rounded to 0 decimal places
+            '%'
+        )
+        ELSE NULL 
+    END AS Banding_Persentase_Total_Belanja_Bulan_Ini,
+
+    CASE
+        WHEN AVG(CASE 
             WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
                  AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
             THEN belanjas.totalBelanja 
             ELSE NULL 
-        END) AS Pengeluaran_Rata_Rata_Bulan_Lalu,
-
-        -- Percentage Growth with +/-
-        CASE
-            WHEN SUM(CASE 
-                WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
-                THEN belanjas.totalBelanja 
-                ELSE 0 
-            END) > 0 
-            THEN CONCAT(
-                CASE 
-                    WHEN SUM(CASE 
-                        WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE 0 
-                    END) - SUM(CASE 
-                        WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
-                        THEN belanjas.totalBelanja 
-                        ELSE 0 
-                    END) >= 0 THEN '+' 
-                    ELSE '-' 
-                END,
-                ROUND(
-                    ABS(SUM(CASE 
-                        WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE 0 
-                    END) - SUM(CASE 
-                        WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
-                        THEN belanjas.totalBelanja 
-                        ELSE 0 
-                    END)) 
-                    / SUM(CASE 
-                        WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
-                        THEN belanjas.totalBelanja 
-                        ELSE 0 
-                    END) * 100, 2),
-                '%'
-            )
-            ELSE NULL 
-        END AS Banding_Persentase_Total_Belanja_Tahun_Ini,
-
-        CASE
-            WHEN SUM(CASE 
-                WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                     AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                THEN belanjas.totalBelanja 
-                ELSE 0 
-            END) > 0 
-            THEN CONCAT(
-                CASE 
-                    WHEN SUM(CASE 
-                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
-                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE 0 
-                    END) - SUM(CASE 
-                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE 0 
-                    END) >= 0 THEN '+' 
-                    ELSE '-' 
-                END,
-                ROUND(
-                    ABS(SUM(CASE 
-                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
-                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE 0 
-                    END) - SUM(CASE 
-                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+        END) > 0 
+        THEN CONCAT(
+            CASE 
+                WHEN AVG(CASE 
+                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
+                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
                     THEN belanjas.totalBelanja 
-                    ELSE 0 
-                    END)) 
-                    / SUM(CASE 
-                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE 0 
-                    END) * 100, 2),
-                '%'
-            )
-            ELSE NULL 
-        END AS Banding_Persentase_Total_Belanja_Bulan_Ini,
+                    ELSE NULL 
+                END) - AVG(CASE 
+                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE NULL 
+                END) >= 0 THEN '+' 
+                ELSE '-' 
+            END,
+            ROUND(
+                ABS(AVG(CASE 
+                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
+                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE NULL 
+                END) - AVG(CASE 
+                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE NULL 
+                END)) 
+                / AVG(CASE 
+                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    THEN belanjas.totalBelanja 
+                    ELSE NULL 
+                END) * 100, 0),  -- Rounded to 0 decimal places
+            '%'
+        )
+        ELSE NULL 
+    END AS Banding_Persentase_Pengeluaran_Rata_Rata_Bulan_Ini
 
-        CASE
-            WHEN AVG(CASE 
-                WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                     AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                THEN belanjas.totalBelanja 
-                ELSE NULL 
-            END) > 0 
-            THEN CONCAT(
-                CASE 
-                    WHEN AVG(CASE 
-                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
-                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE NULL 
-                    END) - AVG(CASE 
-                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE NULL 
-                    END) >= 0 THEN '+' 
-                    ELSE '-' 
-                END,
-                ROUND(
-                    ABS(AVG(CASE 
-                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
-                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE NULL 
-                    END) - AVG(CASE 
-                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE NULL 
-                    END)) 
-                    / AVG(CASE 
-                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                        THEN belanjas.totalBelanja 
-                        ELSE NULL 
-                    END) * 100, 2),
-                '%'
-            )
-            ELSE NULL 
-        END AS Banding_Persentase_Pengeluaran_Rata_Rata_Bulan_Ini
-
-      FROM belanjas
-      WHERE belanjas.outletsId = :outletId;
+FROM belanjas
+WHERE belanjas.outletsId = :outletId;
     `;
 
     // Execute query with outletId from params
