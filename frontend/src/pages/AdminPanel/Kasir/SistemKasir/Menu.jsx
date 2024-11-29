@@ -24,11 +24,55 @@ import { API_URL } from "../../../../helpers/networt";
 
 
 const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, isDialogOpen, setIsDialogOpen, setIdOutlet, setnamaToko, setIsDialogOpenbukatoko, setuangModal }) => {
-    const DataOutlet = [
-        { id: "19", name: 'Cabang 1' },
-        { id: "m5gr84i7", name: 'Cabang 2' },
-        { id: "m5gr84i8", name: 'Cabang 3' }
-    ];
+    const [DataOutlet, setDataOutlet] = useState([
+        // { id: "m5gr84i9", name: 'Outlet 1' },
+        // { id: "m5gr84i7", name: 'Outlet 2' },
+        // { id: "m5gr84i8", name: 'Outlet 3' }
+    ]);
+
+    const [selectedOutlet, setSelectedOutlet] = useState(null);
+
+    const formatOutletData = (apiData) => {
+        return {
+            id: apiData.id_outlet.toString(),
+            name: apiData.nama_outlet
+        };
+    };
+
+
+    const fetchDataOutlet = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/outlets`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+           // Log untuk memastikan data yang diterima
+    
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatOutletData);
+               
+                setDataOutlet(formattedData);
+                setSelectedOutlet(formattedData[0] || null);  // Fallback to null if data is empty
+            setnamaToko(formattedData[0]?.name || ''); // Fallback to empty string if no data
+            setIdOutlet(formattedData[0]?.id || ''); 
+                // console.log(formattedData)
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchDataOutlet();
+    }, []);
 
     const [DataKategori, setDataKategori] = useState([
         // { id: "m5gr84i9", name: 'Makanan Ringan' },
@@ -74,46 +118,49 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
         fetchDataKategori();
     }, []);
     
-    const DataMenu = [
-        { id: "1", name: 'Sate', outlet: 'Cabang 1', kategori: 'Makanan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: 99, harga: 20000, foto: 'https://github.com/shadcn.png' },
-        { id: "1", name: 'Onde-onde', outlet: 'Cabang 1', kategori: 'Cemilan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-        { id: "1", name: 'Kopi', outlet: 'Cabang 1', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-        { id: "1", name: 'Le mineral', outlet: 'Cabang 1', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-        { id: "1", name: 'Sate', outlet: 'Cabang 2', kategori: 'Makanan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-        { id: "1", name: 'Onde-onde', outlet: 'Cabang 2', kategori: 'Cemilan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-        { id: "1", name: 'Le mineral', outlet: 'Cabang 2', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
-    ];
+    // const DataMenu = [
+    //     { id: "1", name: 'Sate', outlet: 'Cabang 1', kategori: 'Makanan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: 99, harga: 20000, foto: 'https://github.com/shadcn.png' },
+    //     { id: "1", name: 'Onde-onde', outlet: 'Cabang 1', kategori: 'Cemilan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+    //     { id: "1", name: 'Kopi', outlet: 'Cabang 1', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+    //     { id: "1", name: 'Le mineral', outlet: 'Cabang 1', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+    //     { id: "1", name: 'Sate', outlet: 'Cabang 2', kategori: 'Makanan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+    //     { id: "1", name: 'Onde-onde', outlet: 'Cabang 2', kategori: 'Cemilan', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+    //     { id: "1", name: 'Le mineral', outlet: 'Cabang 2', kategori: 'Minuman', deskripsi: 'Sejenis sate satean yang dibakar dan tidak menggunakan bumbu kacang dan sambel serta susu murni', stok: '40', harga: 20000, foto: 'https://github.com/shadcn.png' },
+    // ];
 
-    // const [DataMenu, setDataMenu] = useState([]);
+    const [DataMenu, setDataMenu] = useState([]);
 
     const formatMenuData = (apiData) => {
-        return {
-            id: `${apiData.product_id}`,
-            name: apiData.product_name,
-            outlet: apiData.outlet_names,
-            kategori: apiData.category_names,
-            deskripsi: apiData.description,
-            stok: apiData.stock,
-            harga: apiData.price,
-            foto: 'https://github.com/shadcn.png'
-        };
+        return apiData.map((item, index) => ({
+            id: index + 1, 
+            produkId: item.product_id, 
+            outlet: item.outlet_name,
+            name: item.product_name,
+            kategori: item.category_name,
+            harga: item.price,
+            stok: item.stock,
+            foto: item.product_image,
+            deskripsi: item.description
+        }));
     };
 
     const fetchData = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await axios.get(`${API_URL}/api/products`, {
+            const response = await axios.get(`${API_URL}/api/products/menu`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-console.log(response.data.data)
+// console.log(response.data.data)
 
             // Akses data array dari response.data.data
             if (Array.isArray(response.data.data)) {
-                const formattedData = response.data.data.map(formatMenuData);
-                // setDataMenu(formattedData);
+                const formattedData = formatMenuData(response.data.data);
+                setDataMenu(formattedData);
+                // setSelectedOutlet(formattedData[0])
+                
                 console.log('format:',formattedData)
             } else {
                 console.error("Data yang diterima bukan array");
@@ -129,12 +176,12 @@ console.log(response.data.data)
         fetchData();
     }, []);
 
-    const [selectedOutlet, setSelectedOutlet] = useState(DataOutlet[0]);
+    
     const [searchTerm, setSearchTerm] = useState("");
-    useEffect(() => {
-        setnamaToko(selectedOutlet.name);
-        setIdOutlet(selectedOutlet.id);
-    }, [selectedOutlet]);
+    // useEffect(() => {
+    //     setnamaToko(selectedOutlet.name);
+    //     setIdOutlet(selectedOutlet.id);
+    // }, [selectedOutlet]);
 
     const handleSelectOutlet = (outlet) => {
         setIsDialogOpenbukatoko(true);
@@ -157,20 +204,22 @@ console.log(response.data.data)
     // Filter data 
     const filteredData = DataMenu.filter(item => {
         // Filter berdasarkan searchTerm
+        const matchesOutlet = selectedOutlet ? item.outlet === selectedOutlet.name : true;
         const matchesSearchTerm = searchTerm
             ? item.name.toLowerCase().includes(searchTerm.toLowerCase())
             : true;
-        // Filter berdasarkan selectedCategory
+    
         const matchesCategory = activeButton === 'Semua'
             ? true
             : item.kategori.toLowerCase() === activeButton.toLowerCase();
-        return item.outlet === selectedOutlet.name && matchesSearchTerm && matchesCategory;
+    
+        return matchesOutlet && matchesSearchTerm && matchesCategory;
     });
 
 
     const handleAddToOrder = (menu) => {
         setDetailOrder((prevOrders) => {
-            const existingOrderIndex = prevOrders.findIndex(order => order.id === menu.id);
+            const existingOrderIndex = prevOrders.findIndex(order => order.id === menu.produkId);
 
             if (existingOrderIndex !== -1) {
                 // Jika item sudah ada, update count-nya
@@ -185,7 +234,7 @@ console.log(response.data.data)
                 return [
                     ...prevOrders,
                     {
-                        id: menu.id,
+                        id: menu.produkId,
                         name: menu.name,
                         harga: menu.harga,
                         foto: menu.foto,
@@ -302,7 +351,7 @@ console.log(response.data.data)
                                             <img
                                                 alt="ecommerce"
                                                 className="object-cover object-center w-full h-full block"
-                                                src={menu.foto}
+                                                src={menu.foto ? `${API_URL}/images/${menu.foto}` : "https://github.com/shadcn.png"}
                                             />
                                         </a>
                                         <h1 className='text-[16px] font-semibold'>{menu.name}</h1>

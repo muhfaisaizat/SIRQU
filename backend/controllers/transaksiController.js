@@ -3,12 +3,13 @@ const sequelize = require('../config/database');
 
 exports.createTransaksi = async (req, res) => {
   try {
-    const { outlet_id, kasir_id, tipe_order, name, catatan, tipe_bayar, ket_bayar, sub_total, total, bayar, kembalian } = req.body;
+    const { outlet_id, kasir_id, user_id, tipe_order, name, catatan, tipe_bayar, ket_bayar, sub_total, total, bayar, kembalian } = req.body;
 
     // Buat transaksi baru
     const newTransaksi = await Transaksi.create({
       outletsId: outlet_id,
       kasirsId: kasir_id,
+      userId: user_id,
       tipeOrder: tipe_order,
       name: name || undefined, // Gunakan default jika name kosong, hook akan mengisi
       catatan: catatan,
@@ -39,7 +40,7 @@ exports.createTransaksi = async (req, res) => {
 
 exports.updateTransaksi = async (req, res) => {
   const { id } = req.params;
-  const { outlet_id, kasir_id, tipe_order, name, catatan, tipe_bayar, ket_bayar, sub_total, total, bayar, kembalian } = req.body;
+  const { outlet_id, kasir_id, user_id, tipe_order, name, catatan, tipe_bayar, ket_bayar, sub_total, total, bayar, kembalian } = req.body;
 
   try {
     // Cari transaksi berdasarkan id
@@ -56,6 +57,7 @@ exports.updateTransaksi = async (req, res) => {
     await transaksi.update({
       outletsId: outlet_id,
       kasirsId: kasir_id,
+      userId: user_id,
       tipeOrder: tipe_order,
       name: name || undefined, // Gunakan default jika name kosong
       catatan: catatan,
@@ -118,6 +120,7 @@ exports.readTransaksi = async (req, res) => {
         t.id AS transaksi_id,
         t.outletsId AS outlet_id,
         t.kasirsId AS kasir_id,
+        t.userId AS user_id,
         t.tipeOrder AS tipe_order,
         t.name AS transaksi_name,
         t.catatan,
@@ -135,7 +138,7 @@ exports.readTransaksi = async (req, res) => {
       JOIN 
         outlets AS o ON t.outletsId = o.id
       JOIN 
-        users AS u ON t.kasirsId = u.id
+        users AS u ON t.userId = u.id
       WHERE
          t.deletedAt IS NULL
     `;
@@ -229,6 +232,7 @@ exports.readTransaksibyid = async (req, res) => {
         t.id AS transaksi_id,
         t.outletsId AS outlet_id,
         t.kasirsId AS kasir_id,
+        t.userId AS user_id,
         t.tipeOrder AS tipe_order,
         t.name AS transaksi_name,
         t.catatan,
@@ -246,7 +250,7 @@ exports.readTransaksibyid = async (req, res) => {
       JOIN 
         outlets AS o ON t.outletsId = o.id
       JOIN 
-        users AS u ON t.kasirsId = u.id
+        users AS u ON t.userId = u.id
       WHERE
          t.id = ${id}  -- Filter berdasarkan ID transaksi
     `;
@@ -334,7 +338,7 @@ exports.readTransaksibyid = async (req, res) => {
 
 exports.readTransaksiDate = async (req, res) => {
   try {
-    const { status } = req.query; // Ambil parameter status dari query
+    const { status, id_kasir } = req.query; // Ambil parameter status dari query
 
     // Inisialisasi query SQL dasar
     let queryTransaksi = `
@@ -342,12 +346,13 @@ exports.readTransaksiDate = async (req, res) => {
         t.id AS transaksi_id,
         t.outletsId AS outlet_id,
         t.kasirsId AS kasir_id,
+        t.userId AS user_id,
         t.tipeOrder AS tipe_order,
         t.name AS transaksi_name,
         t.catatan,
-        t.outletsId AS outlet_id,
-        t.kasirsId AS kasir_id,
-        t.tipeOrder AS tipe_order,
+        t.tipeBayar AS tipe_bayar,
+        t.ketBayar AS ket_bayar,
+        t.subTotal AS sub_total,
         t.total,
         t.bayar,
         t.kembalian,
@@ -359,14 +364,14 @@ exports.readTransaksiDate = async (req, res) => {
       JOIN 
         outlets AS o ON t.outletsId = o.id
       JOIN 
-        users AS u ON t.kasirsId = u.id
+        users AS u ON t.userId = u.id
       WHERE  
         t.deletedAt IS NULL
     `;
 
     // Tambahkan kondisi untuk status 'active' atau 'history'
     if (status === 'active') {
-      queryTransaksi += ' AND DATE(t.createdAt) = DATE(NOW())';
+      queryTransaksi += ` AND DATE(t.createdAt) = DATE(NOW()) AND t.kasirsId = ${id_kasir}`;
     }
 
     // Jalankan query untuk mendapatkan data transaksi

@@ -28,7 +28,7 @@ exports.getKasirList = async (req, res) => {
       LEFT JOIN 
           users ON kasirs.usersId = users.id
       WHERE 
-          kasirs.deletedAt IS NULL
+          kasirs.deletedAt IS NULL AND kasirs.waktuTutup IS NULL
       ORDER BY 
           kasirs.id ASC;
     `;

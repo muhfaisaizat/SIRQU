@@ -130,7 +130,7 @@ const DataTableHistory = () => {
     const fetchData = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await axios.get(`${API_URL}/api/transaksi?status=history`, {
+            const response = await axios.get(`${API_URL}/api/transaksi?status=history&id_kasir=0`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

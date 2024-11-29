@@ -37,7 +37,7 @@ const Kasir = () => {
   const fetchDataKasir = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.get(`${API_URL}/api/kasir/1`, {
+      const response = await axios.get(`${API_URL}/api/kasir/${idOutlet}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -55,7 +55,7 @@ const Kasir = () => {
 
     if (waktuTutup === null) {
       setIsDialogOpen(false); 
-      localStorage.setItem("id_kasir", id);
+      // localStorage.setItem("id_kasir", id);
       setWaktuBuka(waktuBuka);
       setUang(modal)
     } else {
@@ -89,8 +89,9 @@ const Kasir = () => {
 
   const fetchDataDaftarOrder = async () => {
     const token = localStorage.getItem("token");
+    const id_kasir = localStorage.getItem("id_kasir");
     try {
-      const response = await axios.get(`${API_URL}/api/transaksi?status=active`, {
+      const response = await axios.get(`${API_URL}/api/transaksi?status=active&id_kasir=${id_kasir}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -275,7 +276,7 @@ const Kasir = () => {
         />
       </div>
       {isDialogOpen && (
-        <BukaToko setIsDialogOpen={setIsDialogOpen} Buka={Buka} uang={uang} setUang={setUang} idOutlet={idOutlet} namaToko={namaToko} />
+        <BukaToko setIsDialogOpen={setIsDialogOpen} Buka={Buka} uang={uang} setUang={setUang} idOutlet={idOutlet} namaToko={namaToko} fetchDataDaftarOrder={fetchDataDaftarOrder} />
       )}
       {isDialogOpentutup && (
         <TutupToko setIsDialogOpentutup={setIsDialogOpentutup} waktuBuka={waktuBuka} uang={uang} waktuTutup={waktuTutup} Tutup={Tutup} item={item} pendapatanKotor={pendapatanKotor} pendapatanBersih={pendapatanBersih} setUang={setUang} setIsDialogOpenbuka={setIsDialogOpen} />

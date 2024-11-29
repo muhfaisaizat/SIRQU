@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 
 const Card = ({ handlemenu }) => {
     const dataSum = [
-        // { id: 656, nama: 'Outlet 1', pendapatan: 400000000, Pnaikturun: -20, order: 200, Onaikturun: +20, produk: 20, stokhabis: 10 }
-        { id: 656, nama: 'Outlet 1', pendapatan: 0, Pnaikturun: null, order: 0, Onaikturun: null, produk: 0, stokhabis: null }
+        { id: 656, nama: 'Outlet 1', pendapatan: 400000000, Pnaikturun: -20, order: 200, Onaikturun: +20, produk: 20, stokhabis: 10 }
+        // { id: 656, nama: 'Outlet 1', pendapatan: 0, Pnaikturun: null, order: 0, Onaikturun: null, produk: 0, stokhabis: null }
     ];
 
     return (

@@ -234,11 +234,13 @@ const Order = ({ DetailOrder, fetchDataDaftarOrder, setDetailOrder, setTransaksi
 
         const token = localStorage.getItem("token");
         const iduser = localStorage.getItem("id");
+        const id_kasir = localStorage.getItem("id_kasir");
         try {
             // Buat transaksi baru terlebih dahulu
             const createTransaksi = await axios.post(`${API_URL}/api/transaksi`, {
                 outlet_id: idOutlet,
-                kasir_id: iduser,
+                kasir_id: id_kasir,
+                user_id: iduser,
                 tipe_order: tipeOrder,
                 name: namaCustomer,
                 catatan: catatan,
@@ -422,7 +424,7 @@ const Order = ({ DetailOrder, fetchDataDaftarOrder, setDetailOrder, setTransaksi
 
                         DetailOrder.map((order, index) => (
                             <section key={index} ref={el => sectionRefs.current[index] = el} className='flex gap-[11px] pb-[16px] border-b border-slate-300 w-full'>
-                                <img src={order.foto} alt={order.name} className='w-[74px] h-[76px] rounded-[6px]' />
+                                <img src={order.foto ? `${API_URL}/images/${order.foto}` : "https://github.com/shadcn.png"} alt={order.name} className='w-[74px] h-[76px] rounded-[6px]' />
                                 <div className='grid gap-[12px] w-full'>
                                     <h1 className='text-[16px] font-semibold'>{order.name.length > 21 ? `${order.name.slice(0, 21)}...` : order.name}</h1>
                                     <div className='flex justify-between'>

@@ -133,8 +133,9 @@ const DataTableAktif = () => {
 
     const fetchData = async () => {
         const token = localStorage.getItem("token");
+        const id_kasir = localStorage.getItem("id_kasir");
         try {
-            const response = await axios.get(`${API_URL}/api/transaksi?status=active`, {
+            const response = await axios.get(`${API_URL}/api/transaksi?status=active&id_kasir=${id_kasir}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

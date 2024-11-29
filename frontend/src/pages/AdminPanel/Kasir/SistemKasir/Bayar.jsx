@@ -198,12 +198,14 @@ const Bayar = ({ Transaksi, setTransaksi,fetchDataDaftarOrder, setDaftarOrder, D
         if  (DaftarOrder.some(item => Number(item.id) === Number(Transaksi[0]?.id))) {
             const token = localStorage.getItem("token");
             const iduser = localStorage.getItem("id");
+            const id_kasir = localStorage.getItem("id_kasir");
     
             try {
                 // Buat transaksi baru terlebih dahulu
                 const createTransaksi = await axios.put(`${API_URL}/api/transaksi/${Transaksi[0]?.id}`, {
                     outlet_id: idOutlet,
-                    kasir_id: iduser,
+                    kasir_id: id_kasir,
+                    user_id: iduser,
                     tipe_order: Transaksi[0]?.tipeOrder,
                     name: Transaksi[0]?.nama,
                     catatan: Transaksi[0]?.catatan,
@@ -286,12 +288,14 @@ const Bayar = ({ Transaksi, setTransaksi,fetchDataDaftarOrder, setDaftarOrder, D
         } else {
             const token = localStorage.getItem("token");
             const iduser = localStorage.getItem("id");
+            const id_kasir = localStorage.getItem("id_kasir");
     
             try {
                 // Buat transaksi baru terlebih dahulu
                 const createTransaksi = await axios.post(`${API_URL}/api/transaksi`, {
                     outlet_id: idOutlet,
-                    kasir_id: iduser,
+                    kasir_id: id_kasir,
+                    user_id: iduser,
                     tipe_order: Transaksi[0]?.tipeOrder,
                     name: Transaksi[0]?.nama,
                     catatan: Transaksi[0]?.catatan,

@@ -22,6 +22,16 @@ module.exports = {
       kasirsId: {
         type: Sequelize.INTEGER,
         references: {
+          model: 'kasirs', // Referensi ke tabel outlets
+          key: 'id'
+        },
+        onDelete: 'CASCADE', // Jika outlet dihapus, hapus juga data di tabel junction
+        onUpdate: 'CASCADE',
+        primaryKey: true
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {
           model: 'users', // Referensi ke tabel outlets
           key: 'id'
         },

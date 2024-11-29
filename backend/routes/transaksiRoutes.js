@@ -18,6 +18,7 @@ const router = express.Router();
  *             required:
  *               - outlet_id
  *               - kasir_id
+ *               - user_id
  *               - tipe_order
  *               - total
  *             properties:
@@ -27,6 +28,9 @@ const router = express.Router();
  *               kasir_id:
  *                 type: integer
  *                 description: ID dari kasir yang memproses transaksi
+ *               user_id:
+ *                 type: integer
+ *                 description: ID dari user yang memproses transaksi
  *               tipe_order:
  *                 type: string
  *                 description: Tipe order (misalnya "Dine-in", "Takeaway", dll.)
@@ -87,6 +91,7 @@ router.post('/',roleMiddleware(['Admin','Manager','Kasir']),createTransaksi);
  *             required:
  *               - outlet_id
  *               - kasir_id
+ *               - user_id
  *               - tipe_order
  *               - total
  *             properties:
@@ -96,6 +101,9 @@ router.post('/',roleMiddleware(['Admin','Manager','Kasir']),createTransaksi);
  *               kasir_id:
  *                 type: integer
  *                 description: ID dari kasir yang memproses transaksi
+ *               user_id:
+ *                 type: integer
+ *                 description: ID dari user yang memproses transaksi
  *               tipe_order:
  *                 type: string
  *                 description: Tipe order (misalnya "Dine-in", "Takeaway", dll.)
@@ -173,6 +181,13 @@ router.delete('/:id', roleMiddleware(['Admin', 'Manager','Kasir']), deleteTransa
  *           type: string
  *           enum: [active, history]
  *         description: Pilihan status transaksi
+ *       - in: query
+ *         name: id_kasir
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           description: masukan id kasir
+ *           example: 0
  *     responses:
  *       200:
  *         description: List of transactions retrieved successfully

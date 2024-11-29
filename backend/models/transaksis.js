@@ -42,6 +42,15 @@ Transaksis.init({
   kasirsId: {
     type: DataTypes.INTEGER,
     references: {
+      model: 'kasirs',
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    references: {
       model: 'users',
       key: 'id',
     },
