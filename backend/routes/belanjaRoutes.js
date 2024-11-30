@@ -175,4 +175,51 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), belanjaController.updat
  */
 router.delete('/:id', roleMiddleware(['Admin', 'Manager']), belanjaController.deleteBelanja);
 
+/**
+ * @swagger
+ * /api/belanja/outlet/{outletId}:
+ *   get:
+ *     summary: Get card belanja data by Outlet ID
+ *     tags: [Belanja]
+ *     parameters:
+ *       - name: outletId
+ *         in: path
+ *         required: true
+ *         description: The ID of the outlet to retrieve the belanja data for
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: The belanja card data for the specified outlet
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 Total_Belanja_Bulan_Ini:
+ *                   type: number
+ *                 Total_Belanja_Tahun_Ini:
+ *                   type: number
+ *                 Pengeluaran_Rata_Rata_Bulan_Ini:
+ *                   type: number
+ *                 Total_Belanja_Bulan_Lalu:
+ *                   type: number
+ *                 Total_Belanja_Tahun_Lalu:
+ *                   type: number
+ *                 Pengeluaran_Rata_Rata_Bulan_Lalu:
+ *                   type: number
+ *                 Banding_Persentase_Total_Belanja_Tahun_Ini:
+ *                   type: string
+ *                 Banding_Persentase_Total_Belanja_Bulan_Ini:
+ *                   type: string
+ *                 Banding_Persentase_Pengeluaran_Rata_Rata_Bulan_Ini:
+ *                   type: string
+ *       404:
+ *         description: No data found for the specified outlet ID
+ *       400:
+ *         description: Invalid request
+ */
+router.get('/outlet/:outletId', roleMiddleware(['Admin', 'Manager']), belanjaController.getCardBelanja);
+
+
 module.exports = router;
