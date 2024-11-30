@@ -21,6 +21,10 @@ const belanjaRoutes = require('./routes/belanjaRoutes');
 const categoriesBelanjaRoutes = require('./routes/categoryBelanjaRoutes');
 const promosiRoutes = require('./routes/promosiRoutes');
 const promosiOutletRoutes = require('./routes/promosiOutletRoutes');
+const detailStrukTekssRoutes = require('./routes/detailStrukTekssRoutes');
+const detailStrukMediasRoutes = require('./routes/detailStrukMediasRoutes');
+const detailStrukLogoRoutes = require('./routes/detailStrukLogoRoutes');
+const struksRoutes = require('./routes/struksRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 const path = require('path'); 
@@ -65,6 +69,10 @@ app.use('/api/belanja', belanjaRoutes);
 app.use('/api/categoriesbelanjas', categoriesBelanjaRoutes);
 app.use('/api/promosi', promosiRoutes);
 app.use('/api/promosi/outlets', promosiOutletRoutes);
+app.use('/api/setting-struk', detailStrukTekssRoutes);
+app.use('/api/setting-struk', detailStrukMediasRoutes);
+app.use('/api/setting-struk',  detailStrukLogoRoutes );
+app.use('/api/setting-struk',  struksRoutes );
 
 // Swagger Documentation
 swaggerDocs(app);
