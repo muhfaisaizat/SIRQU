@@ -235,30 +235,9 @@ exports.getTransaksiStruk = async (req, res) => {
             WHERE 
               dt.transaksisId = ${id}
           `);
-    
-        // Loop melalui setiap transaksi untuk mengambil data detail_transaksi, detail_pajak, dan detail_diskon
-        for (const transaksi of transaksis) {
-          // Query untuk mengambil detail transaksi
-          const queryDetailTransaksi = `
-            SELECT 
-              dt.id,
-              dt.transaksisId AS transaksi_id,
-              dt.productsId AS product_id,
-              p.name AS product_name,
-              p.price AS product_price,
-              dt.stok 
-            FROM 
-              detailtransaksis AS dt
-            JOIN 
-              products AS p ON dt.productsId = p.id
-            WHERE 
-              dt.transaksisId = ${transaksi.transaksi_id}
-          `;
-          const [detailTransaksis] = await sequelize.query(queryDetailTransaksi);
-    
-          // Query untuk mengambil detail pajak
-          const queryDetailPajak = `
-             SELECT 
+
+        const [DetailPajak] = await sequelize.query(`
+           SELECT 
               dp.id,
               dp.transaksisId AS transaksi_id,
               dp.pajaksId AS pajak_id,
@@ -269,32 +248,25 @@ exports.getTransaksiStruk = async (req, res) => {
             JOIN 
               pajaks AS pj ON dp.pajaksId = pj.id
             WHERE 
-              dp.transaksisId = ${transaksi.transaksi_id}
-          `;
-          const [detailPajaks] = await sequelize.query(queryDetailPajak);
+              dp.transaksisId = ${id}
+          `);
+
+        const [DetailDiskon] = await sequelize.query(`
+            SELECT 
+          dd.id,
+          dd.transaksisId AS transaksi_id,
+          dd.diskonsId AS diskon_id,
+          d.namaPromosi AS diskon_name,
+          dd.harga
+        FROM 
+          detaildiskons AS dd
+        JOIN 
+          promosis AS d ON dd.diskonsId = d.id
+        WHERE 
+          dd.transaksisId = ${id}
+          `);
     
-          // Query untuk mengambil detail diskon
-          const queryDetailDiskon = `
-           SELECT 
-              dd.id,
-              dd.transaksisId AS transaksi_id,
-              dd.diskonsId AS diskon_id,
-              d.name AS diskon_name,
-              dd.harga
-            FROM 
-              detaildiskons AS dd
-            JOIN 
-              diskons AS d ON dd.diskonsId = d.id
-            WHERE 
-              dd.transaksisId = ${transaksi.transaksi_id}
-          `;
-          const [detailDiskons] = await sequelize.query(queryDetailDiskon);
-    
-          // Cek apakah detail_transaksis, detail_pajaks, dan detail_diskons kosong
-          transaksi.detailtransaksi = detailTransaksis.length === 0 ? {} : detailTransaksis;
-          transaksi.detailpajaks = detailPajaks.length === 0 ? {} : detailPajaks;
-          transaksi.detaildiskons = detailDiskons.length === 0 ? {} : detailDiskons;
-        }
+      
 
         console.log(DetailTransaksi);
         const formatRupiah = (value) => {
@@ -320,6 +292,20 @@ exports.getTransaksiStruk = async (req, res) => {
                <p class="font-bold" >${detail.product_name}</p>
               </div>
               <p>${formatRupiah(detail.product_price)}</p>
+          </div>
+      `).join('');
+
+        const detailaPajakHTML = DetailPajak.map((detail) => `
+          <div class="flex justify-between">
+          <p>${detail.pajak_name}</p>
+          <p>${formatRupiah(detail.harga)}</p>
+          </div>
+      `).join('');
+      
+        const detailaDiskonHTML = DetailDiskon.map((detail) => `
+          <div class="flex justify-between">
+          <p>${detail.diskon_name}</p>
+          <p>- ${formatRupiah(detail.harga)}</p>
           </div>
       `).join('');
 
@@ -423,14 +409,8 @@ exports.getTransaksiStruk = async (req, res) => {
                     <p>Sub Total</p>
                     <p>${transaksiSubTotal}</p>
                     </div>
-                     <!--<div class="flex justify-between">-->
-                     <!--<p>Pajak 10%</p>-->
-                     <!--<p>Rp 3.000</p>-->
-                     <!--</div>-->
-                     <!--<div class="flex justify-between">-->
-                     <!--<p>Diskon 8.8</p>-->
-                     <!--<p>-Rp 13.000</p>-->
-                     <!--</div>-->
+                     ${detailaPajakHTML}
+                     ${detailaDiskonHTML}
                     <div class="flex justify-between text-[20px] font-bold">
                     <p>Total</p>
                     <p>${transaksiTotal}</p>
