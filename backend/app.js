@@ -25,6 +25,7 @@ const detailStrukTekssRoutes = require('./routes/detailStrukTekssRoutes');
 const detailStrukMediasRoutes = require('./routes/detailStrukMediasRoutes');
 const detailStrukLogoRoutes = require('./routes/detailStrukLogoRoutes');
 const struksRoutes = require('./routes/struksRoutes');
+const pajaksRoutes = require('./routes/pajaksRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 const path = require('path'); 
@@ -73,6 +74,7 @@ app.use('/api/setting-struk', detailStrukTekssRoutes);
 app.use('/api/setting-struk', detailStrukMediasRoutes);
 app.use('/api/setting-struk',  detailStrukLogoRoutes );
 app.use('/api/setting-struk',  struksRoutes );
+app.use('/api/pajaks',  pajaksRoutes );
 
 // Swagger Documentation
 swaggerDocs(app);
