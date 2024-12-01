@@ -22,7 +22,7 @@ module.exports = {
       diskonsId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'diskons', // Referensi ke tabel categories
+          model: 'promosis', // Referensi ke tabel categories
           key: 'id'
         },
         onDelete: 'CASCADE', // Jika product dihapus, hapus juga data di tabel junction

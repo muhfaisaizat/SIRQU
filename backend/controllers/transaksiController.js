@@ -189,12 +189,12 @@ exports.readTransaksi = async (req, res) => {
           dd.id,
           dd.transaksisId AS transaksi_id,
           dd.diskonsId AS diskon_id,
-          d.name AS diskon_name,
+          d.namaPromosi AS diskon_name,
           dd.harga
         FROM 
           detaildiskons AS dd
         JOIN 
-          diskons AS d ON dd.diskonsId = d.id
+          promosis AS d ON dd.diskonsId = d.id
         WHERE 
           dd.transaksisId = ${transaksi.transaksi_id}
       `;
@@ -301,12 +301,12 @@ exports.readTransaksibyid = async (req, res) => {
           dd.id,
           dd.transaksisId AS transaksi_id,
           dd.diskonsId AS diskon_id,
-          d.name AS diskon_name,
+          d.namaPromosi AS diskon_name,
           dd.harga
         FROM 
           detaildiskons AS dd
         JOIN 
-          diskons AS d ON dd.diskonsId = d.id
+          promosis AS d ON dd.diskonsId = d.id
         WHERE 
           dd.transaksisId = ${transaksi.transaksi_id}
       `;
@@ -420,12 +420,12 @@ exports.readTransaksiDate = async (req, res) => {
           dd.id,
           dd.transaksisId AS transaksi_id,
           dd.diskonsId AS diskon_id,
-          d.name AS diskon_name,
+          d.namaPromosi AS diskon_name,
           dd.harga
         FROM 
           detaildiskons AS dd
         JOIN 
-          diskons AS d ON dd.diskonsId = d.id
+          promosis AS d ON dd.diskonsId = d.id
         WHERE 
           dd.transaksisId = ${transaksi.transaksi_id}
       `;
