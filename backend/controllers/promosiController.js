@@ -54,7 +54,8 @@ exports.createPromosi = async (req, res) => {
       tanggalBerakhir,
       jamMulai,
       jamBerakhir,
-      pilihHari: ['Setiap Hari']  // Simpan hanya "Setiap Hari"
+      pilihHari: ['Setiap Hari'],  // Simpan hanya "Setiap Hari"
+      status: 'Promosi Aktif',
     })
       .then(promosi => res.status(201).json(promosi))
       .catch(err => res.status(400).json({ error: err.message }));
@@ -72,7 +73,8 @@ exports.createPromosi = async (req, res) => {
       tanggalBerakhir,
       jamMulai,
       jamBerakhir,
-      pilihHari: pilihHariArray // Pastikan pilihHari disimpan sebagai array
+      pilihHari: pilihHariArray, // Pastikan pilihHari disimpan sebagai array
+      status: 'Promosi Aktif',
     });
 
     // Mengembalikan response sukses dengan data promosi
@@ -96,6 +98,13 @@ exports.getAllPromosi = async (req, res) => {
     promosis.minimalBeli AS minimal_beli,
     promosis.kategori AS kategori_promosi,
     promosis.nilaiKategori AS nilai_kategori,
+    promosis.status AS status,
+    -- Cek status apakah harus menjadi "Promosi Tidak Aktif"
+    CASE 
+        WHEN NOW() > CONCAT(promosis.tanggalBerakhir, ' ', promosis.jamBerakhir) THEN 'Promosi Tidak Aktif'
+        WHEN NOW() < CONCAT(promosis.tanggalMulai, ' ', promosis.jamMulai) THEN 'Promosi Tidak Aktif' 
+        ELSE promosis.status
+    END AS status,
     CASE 
         WHEN promosis.kategori = '%' THEN CONCAT(promosis.nilaiKategori, '%')   -- Jika kategori '%', tambahkan persen
         WHEN promosis.kategori = 'Rp' THEN CONCAT('Rp ', promosis.nilaiKategori) -- Jika kategori 'Rp', tambahkan 'Rp'
@@ -114,13 +123,11 @@ exports.getAllPromosi = async (req, res) => {
     -- Format createdAt dan updatedAt agar sesuai dengan database
     DATE_FORMAT(promosis.createdAt, '%Y-%m-%d %H:%i:%s') AS createdAt,
     DATE_FORMAT(promosis.updatedAt, '%Y-%m-%d %H:%i:%s') AS updatedAt,
-    promosis.deletedAt
+    DATE_FORMAT(promosis.deletedAt, '%Y-%m-%d %H:%i:%s') AS deletedAt
     FROM 
         promosis
     LEFT JOIN 
         promosisoutlets ON promosis.id = promosisoutlets.promosisId
-    WHERE 
-          promosis.deletedAt IS NULL
     GROUP BY 
         promosis.id;
       `;
@@ -152,42 +159,45 @@ exports.getPromosiById = async (req, res) => {
       // Query SQL untuk mengambil data promosi berdasarkan ID
       const queryPromosiById = `
         SELECT 
-          promosis.id AS id_promosi,
-          promosis.namaPromosi AS nama_promosi,
-          promosis.deskripsi AS deskripsi_promosi,
-          promosis.tipeAktivasi AS tipe_aktivasi,
-          promosis.minimalBeli AS minimal_beli,
-          promosis.kategori AS kategori_promosi,
-          promosis.nilaiKategori AS nilai_kategori,
-          CASE 
-              WHEN promosis.kategori = '%' THEN CONCAT(promosis.nilaiKategori, '%')   -- Jika kategori '%', tambahkan persen
-              WHEN promosis.kategori = 'Rp' THEN CONCAT('Rp ', promosis.nilaiKategori) -- Jika kategori 'Rp', tambahkan 'Rp'
-              ELSE promosis.nilaiKategori -- Untuk kategori lain, cukup tampilkan nilaiKategori
-          END AS bonus,
-          -- Format durasi: 28 Nov - 30 Des 2024
-          CONCAT(
-              DATE_FORMAT(promosis.tanggalMulai, '%d %b %Y'), ' - ', 
-              DATE_FORMAT(promosis.tanggalBerakhir, '%d %b %Y')
-          ) AS durasi,
-          -- Pindahkan outletsId di sini, setelah durasi dan sebelum jam_mulai
-          GROUP_CONCAT(CONCAT('"', promosisoutlets.outletsId, '"')) AS outletsId,
-          promosis.jamMulai AS jam_mulai,
-          promosis.jamBerakhir AS jam_berakhir,
-          promosis.pilihHari AS pilihan_hari,
-          -- Format createdAt dan updatedAt agar sesuai dengan database
-          DATE_FORMAT(promosis.createdAt, '%Y-%m-%d %H:%i:%s') AS createdAt,
-          DATE_FORMAT(promosis.updatedAt, '%Y-%m-%d %H:%i:%s') AS updatedAt,
-          promosis.deletedAt
-        FROM 
-          promosis
-        LEFT JOIN 
-          promosisoutlets ON promosis.id = promosisoutlets.promosisId
-        WHERE 
-          promosis.id = :id  -- Filter berdasarkan ID yang diterima
-          AND promosis.deletedAt IS NULL
-        GROUP BY 
-          promosis.id;
-      `;
+    promosis.id AS id_promosi,
+    promosis.namaPromosi AS nama_promosi,
+    promosis.deskripsi AS deskripsi_promosi,
+    promosis.tipeAktivasi AS tipe_aktivasi,
+    promosis.minimalBeli AS minimal_beli,
+    promosis.kategori AS kategori_promosi,
+    promosis.nilaiKategori AS nilai_kategori,
+    -- Cek status apakah harus menjadi "Promosi Tidak Aktif"
+    CASE 
+        WHEN NOW() > CONCAT(promosis.tanggalBerakhir, ' ', promosis.jamBerakhir) THEN 'Promosi Tidak Aktif'
+        WHEN NOW() < CONCAT(promosis.tanggalMulai, ' ', promosis.jamMulai) THEN 'Promosi Tidak Aktif' 
+        ELSE promosis.status
+    END AS status,
+    CASE 
+        WHEN promosis.kategori = '%' THEN CONCAT(promosis.nilaiKategori, '%')   -- Jika kategori '%', tambahkan persen
+        WHEN promosis.kategori = 'Rp' THEN CONCAT('Rp ', promosis.nilaiKategori) -- Jika kategori 'Rp', tambahkan 'Rp'
+        ELSE promosis.nilaiKategori -- Untuk kategori lain, cukup tampilkan nilaiKategori
+    END AS bonus,
+    -- Format durasi: 28 Nov - 30 Des 2024
+    CONCAT(
+        DATE_FORMAT(promosis.tanggalMulai, '%d %b %Y'), ' - ', 
+        DATE_FORMAT(promosis.tanggalBerakhir, '%d %b %Y')
+    ) AS durasi,
+    GROUP_CONCAT(CONCAT('"', promosisoutlets.outletsId, '"')) AS outletsId,
+    promosis.jamMulai AS jam_mulai,
+    promosis.jamBerakhir AS jam_berakhir,
+    promosis.pilihHari AS pilihan_hari,
+    DATE_FORMAT(promosis.createdAt, '%Y-%m-%d %H:%i:%s') AS createdAt,
+    DATE_FORMAT(promosis.updatedAt, '%Y-%m-%d %H:%i:%s') AS updatedAt,
+    DATE_FORMAT(promosis.deletedAt, '%Y-%m-%d %H:%i:%s') AS deletedAt
+FROM 
+    promosis
+LEFT JOIN 
+    promosisoutlets ON promosis.id = promosisoutlets.promosisId
+WHERE 
+    promosis.id = :id  -- Filter berdasarkan ID yang diterima
+GROUP BY 
+    promosis.id;
+     `;
     
       // Jalankan query untuk mendapatkan data promosi berdasarkan ID
       const [promosi] = await sequelize.query(queryPromosiById, {
@@ -324,15 +334,21 @@ exports.updatePromosi = async (req, res) => {
   
   // Soft delete promosi
 exports.deletePromosi = async (req, res) => {
-    try {
-      const promosi = await Promosi.findByPk(req.params.id);
-      if (!promosi) {
-        return res.status(404).json({ error: "Promosi not found" });
-      }
-      await promosi.destroy();
-      res.status(204).end();
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+  try {
+    const promosi = await Promosi.findByPk(req.params.id);
+    if (!promosi) {
+      return res.status(404).json({ error: "Promosi not found" });
     }
-  };
-  
+
+    // Update status menjadi "Promosi Tidak Aktif"
+    promosi.status = "Promosi Tidak Aktif";
+    await promosi.save(); // Simpan perubahan status ke database
+
+    // Soft delete promosi
+    await promosi.destroy();
+
+    res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

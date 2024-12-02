@@ -54,6 +54,11 @@ module.exports = {
         allowNull: false,
         defaultValue: [], // Default array kosong
       },
+      status: {
+        type: Sequelize.ENUM('Promosi Aktif', 'Promosi Tidak Aktif'),
+        allowNull: false,
+        defaultValue: 'Promosi Aktif'
+      },
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),

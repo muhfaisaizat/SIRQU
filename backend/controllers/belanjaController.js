@@ -138,17 +138,19 @@ exports.deleteBelanja = async (req, res) => {
 exports.getCardBelanja = async (req, res) => {
   try {
     const query = `
-      SELECT 
+SELECT 
     -- Revenue Data
     SUM(CASE 
         WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
              AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+             AND belanjas.deletedAt IS NULL
         THEN belanjas.totalBelanja 
         ELSE 0 
     END) AS Total_Belanja_Bulan_Ini,
     
     SUM(CASE 
         WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) 
+             AND belanjas.deletedAt IS NULL
         THEN belanjas.totalBelanja 
         ELSE 0 
     END) AS Total_Belanja_Tahun_Ini,
@@ -156,6 +158,7 @@ exports.getCardBelanja = async (req, res) => {
     AVG(CASE 
         WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
              AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+             AND belanjas.deletedAt IS NULL
         THEN belanjas.totalBelanja 
         ELSE NULL 
     END) AS Pengeluaran_Rata_Rata_Bulan_Ini,
@@ -164,12 +167,14 @@ exports.getCardBelanja = async (req, res) => {
     SUM(CASE 
         WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
              AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+             AND belanjas.deletedAt IS NULL
         THEN belanjas.totalBelanja 
         ELSE 0 
     END) AS Total_Belanja_Bulan_Lalu,
 
     SUM(CASE 
         WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
+             AND belanjas.deletedAt IS NULL
         THEN belanjas.totalBelanja 
         ELSE 0 
     END) AS Total_Belanja_Tahun_Lalu,
@@ -177,14 +182,16 @@ exports.getCardBelanja = async (req, res) => {
     AVG(CASE 
         WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
              AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+             AND belanjas.deletedAt IS NULL
         THEN belanjas.totalBelanja 
         ELSE NULL 
     END) AS Pengeluaran_Rata_Rata_Bulan_Lalu,
 
-    -- Percentage Growth with +/- (Rounded to Integer)
+    -- Percentage Growth with +/- (Total Yearly)
     CASE
         WHEN SUM(CASE 
             WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
+            AND belanjas.deletedAt IS NULL
             THEN belanjas.totalBelanja 
             ELSE 0 
         END) > 0 
@@ -192,39 +199,49 @@ exports.getCardBelanja = async (req, res) => {
             CASE 
                 WHEN SUM(CASE 
                     WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                    AND belanjas.deletedAt IS NULL
                     THEN belanjas.totalBelanja 
                     ELSE 0 
                 END) - SUM(CASE 
                     WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
+                    AND belanjas.deletedAt IS NULL
                     THEN belanjas.totalBelanja 
                     ELSE 0 
                 END) >= 0 THEN '+' 
                 ELSE '-' 
             END,
             ROUND(
-                ABS(SUM(CASE 
-                    WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                    THEN belanjas.totalBelanja 
-                    ELSE 0 
-                END) - SUM(CASE 
-                    WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
-                    THEN belanjas.totalBelanja 
-                    ELSE 0 
-                END)) 
-                / SUM(CASE 
-                    WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
-                    THEN belanjas.totalBelanja 
-                    ELSE 0 
-                END) * 100, 0),  -- Rounded to 0 decimal places
+                LEAST(
+                    ABS(SUM(CASE 
+                        WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                        AND belanjas.deletedAt IS NULL
+                        THEN belanjas.totalBelanja 
+                        ELSE 0 
+                    END) - SUM(CASE 
+                        WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
+                        AND belanjas.deletedAt IS NULL
+                        THEN belanjas.totalBelanja 
+                        ELSE 0 
+                    END)) 
+                    / SUM(CASE 
+                        WHEN YEAR(belanjas.createdAt) = YEAR(NOW()) - 1 
+                        AND belanjas.deletedAt IS NULL
+                        THEN belanjas.totalBelanja 
+                        ELSE 0 
+                    END) * 100,
+                    100
+                ), 0),  -- Maximum percentage capped at 100
             '%'
         )
         ELSE NULL 
     END AS Banding_Persentase_Total_Belanja_Tahun_Ini,
 
+    -- Percentage Growth with +/- (Total Monthly)
     CASE
         WHEN SUM(CASE 
             WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
                  AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                 AND belanjas.deletedAt IS NULL
             THEN belanjas.totalBelanja 
             ELSE 0 
         END) > 0 
@@ -233,43 +250,53 @@ exports.getCardBelanja = async (req, res) => {
                 WHEN SUM(CASE 
                     WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
                          AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                         AND belanjas.deletedAt IS NULL
                     THEN belanjas.totalBelanja 
                     ELSE 0 
                 END) - SUM(CASE 
                     WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
                          AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                         AND belanjas.deletedAt IS NULL
                     THEN belanjas.totalBelanja 
                     ELSE 0 
                 END) >= 0 THEN '+' 
                 ELSE '-' 
             END,
             ROUND(
-                ABS(SUM(CASE 
-                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
-                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                    THEN belanjas.totalBelanja 
-                    ELSE 0 
-                END) - SUM(CASE 
-                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                    THEN belanjas.totalBelanja 
-                    ELSE 0 
-                END)) 
-                / SUM(CASE 
-                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                    THEN belanjas.totalBelanja 
-                    ELSE 0 
-                END) * 100, 0),  -- Rounded to 0 decimal places
+                LEAST(
+                    ABS(SUM(CASE 
+                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
+                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                             AND belanjas.deletedAt IS NULL
+                        THEN belanjas.totalBelanja 
+                        ELSE 0 
+                    END) - SUM(CASE 
+                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                             AND belanjas.deletedAt IS NULL
+                        THEN belanjas.totalBelanja 
+                        ELSE 0 
+                    END)) 
+                    / SUM(CASE 
+                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                             AND belanjas.deletedAt IS NULL
+                        THEN belanjas.totalBelanja 
+                        ELSE 0 
+                    END) * 100,
+                    100
+                ), 0),  -- Maximum percentage capped at 100
             '%'
         )
         ELSE NULL 
     END AS Banding_Persentase_Total_Belanja_Bulan_Ini,
 
+    -- Percentage Growth with +/- (Average Monthly)
     CASE
         WHEN AVG(CASE 
             WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
                  AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                 AND belanjas.deletedAt IS NULL
             THEN belanjas.totalBelanja 
             ELSE NULL 
         END) > 0 
@@ -278,42 +305,51 @@ exports.getCardBelanja = async (req, res) => {
                 WHEN AVG(CASE 
                     WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
                          AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                         AND belanjas.deletedAt IS NULL
                     THEN belanjas.totalBelanja 
                     ELSE NULL 
                 END) - AVG(CASE 
                     WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
                          AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                         AND belanjas.deletedAt IS NULL
                     THEN belanjas.totalBelanja 
                     ELSE NULL 
                 END) >= 0 THEN '+' 
                 ELSE '-' 
             END,
             ROUND(
-                ABS(AVG(CASE 
-                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
-                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                    THEN belanjas.totalBelanja 
-                    ELSE NULL 
-                END) - AVG(CASE 
-                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                    THEN belanjas.totalBelanja 
-                    ELSE NULL 
-                END)) 
-                / AVG(CASE 
-                    WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
-                         AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
-                    THEN belanjas.totalBelanja 
-                    ELSE NULL 
-                END) * 100, 0),  -- Rounded to 0 decimal places
+                LEAST(
+                    ABS(AVG(CASE 
+                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) 
+                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                             AND belanjas.deletedAt IS NULL
+                        THEN belanjas.totalBelanja 
+                        ELSE NULL 
+                    END) - AVG(CASE 
+                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                             AND belanjas.deletedAt IS NULL
+                        THEN belanjas.totalBelanja 
+                        ELSE NULL 
+                    END)) 
+                    / AVG(CASE 
+                        WHEN MONTH(belanjas.createdAt) = MONTH(NOW()) - 1 
+                             AND YEAR(belanjas.createdAt) = YEAR(NOW()) 
+                             AND belanjas.deletedAt IS NULL
+                        THEN belanjas.totalBelanja 
+                        ELSE NULL 
+                    END) * 100,
+                    100
+                ), 0),  -- Maximum percentage capped at 100
             '%'
         )
         ELSE NULL 
     END AS Banding_Persentase_Pengeluaran_Rata_Rata_Bulan_Ini
 
 FROM belanjas
-WHERE belanjas.outletsId = :outletId;
-    `;
+WHERE belanjas.outletsId = :outletId
+  AND belanjas.deletedAt IS NULL;
+`;
 
     // Execute query with outletId from params
     const belanja = await sequelize.query(query, {

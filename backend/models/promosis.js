@@ -53,6 +53,11 @@ Promosis.init({
     type: DataTypes.JSON, // Menggunakan JSON untuk array hari
     allowNull: false,
   },
+  status: {
+    type: DataTypes.ENUM('Promosi Aktif', 'Promosi Tidak Aktif'),
+    allowNull: false,
+    defaultValue: 'Promosi Aktif'
+  },
   createdAt: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
