@@ -17,49 +17,38 @@ exports.createPromosi = async (req, res) => {
       jamBerakhir,
       pilihHari,
     } = req.body;
-    
-    // Menentukan hari yang valid
-  const validDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu', 'Setiap Hari'];
 
-  // Memeriksa apakah pilihHari ada dalam request dan tidak kosong
-  if (!pilihHari) {
-    return res.status(400).json({ error: "PilihHari tidak boleh kosong." });
-  }
+    // Daftar hari valid
+    const validDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu', 'Setiap Hari'];
 
-  // Mengubah pilihHari menjadi array, jika dalam bentuk string yang dipisahkan koma
-  const pilihHariArray = pilihHari.split(',');
+    // Memeriksa apakah pilihHari ada dalam request dan tidak kosong
+    if (!pilihHari) {
+      return res.status(400).json({ error: "PilihHari tidak boleh kosong." });
+    }
 
-  // Memeriksa apakah semua nilai dalam pilihHari valid
-  const invalidDays = pilihHariArray.filter(hari => !validDays.includes(hari));
+    // Mengubah pilihHari menjadi array jika dalam bentuk string yang dipisahkan koma
+    const pilihHariArray = pilihHari.split(',').map(hari => hari.trim());
 
+    // Memeriksa apakah semua nilai dalam pilihHari valid
+    const invalidDays = pilihHariArray.filter(hari => !validDays.includes(hari));
 
-  // Jika ada hari yang tidak valid, kembalikan error
-  if (invalidDays.length > 0) {
-    return res.status(400).json({
-      error: `Hari yang dipilih tidak valid: ${invalidDays.join(', ')}`
-    });
-  }
+    // Jika ada hari yang tidak valid, kembalikan error
+    if (invalidDays.length > 0) {
+      return res.status(400).json({
+        error: `Hari yang dipilih tidak valid: ${invalidDays.join(', ')}`
+      });
+    }
 
-  // Logika untuk menangani "Setiap Hari"
-  if (pilihHariArray.includes('Setiap Hari')) {
-    // Jika "Setiap Hari" ada dalam array, maka hanya simpan "Setiap Hari"
-    return Promosi.create({
-      namaPromosi,
-      deskripsi,
-      tipeAktivasi,
-      minimalBeli,
-      kategori,
-      nilaiKategori,
-      tanggalMulai,
-      tanggalBerakhir,
-      jamMulai,
-      jamBerakhir,
-      pilihHari: ['Setiap Hari'],  // Simpan hanya "Setiap Hari"
-      status: 'Promosi Aktif',
-    })
-      .then(promosi => res.status(201).json(promosi))
-      .catch(err => res.status(400).json({ error: err.message }));
-  }
+    // Menentukan semua hari dalam seminggu
+    const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
+    // Logika untuk menangani "Setiap Hari"
+    if (pilihHariArray.includes('Setiap Hari') || allDays.every(day => pilihHariArray.includes(day))) {
+      // Jika "Setiap Hari" ada dalam array ATAU semua hari dalam seminggu dipilih,
+      // simpan sebagai "Setiap Hari" ditambah semua hari
+      pilihHariArray.length = 0; // Kosongkan array
+      pilihHariArray.push('Setiap Hari', ...allDays);
+    }
 
     // Membuat entri promosi baru
     const promosi = await Promosi.create({
@@ -73,7 +62,7 @@ exports.createPromosi = async (req, res) => {
       tanggalBerakhir,
       jamMulai,
       jamBerakhir,
-      pilihHari: pilihHariArray, // Pastikan pilihHari disimpan sebagai array
+      pilihHari: pilihHariArray, // Pastikan pilihHari disimpan sesuai logika
       status: 'Promosi Aktif',
     });
 
@@ -84,6 +73,7 @@ exports.createPromosi = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Mendapatkan semua promosi
 exports.getAllPromosi = async (req, res) => {
@@ -115,8 +105,14 @@ exports.getAllPromosi = async (req, res) => {
         DATE_FORMAT(promosis.tanggalMulai, '%d %b %Y'), ' - ', 
         DATE_FORMAT(promosis.tanggalBerakhir, '%d %b %Y')
     ) AS durasi,
-    -- Pindahkan outletsId di sini, setelah durasi dan sebelum jam_mulai
-    GROUP_CONCAT(CONCAT('"', promosisoutlets.outletsId, '"')) AS outletsId,
+    -- Mendapatkan detailOutlet sebagai JSON array
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id', outlets.id,
+            'nama', outlets.nama,
+            'position', outlets.position
+        )
+    ) AS detailOutlet,
     promosis.jamMulai AS jam_mulai,
     promosis.jamBerakhir AS jam_berakhir,
     promosis.pilihHari AS pilihan_hari,
@@ -124,12 +120,14 @@ exports.getAllPromosi = async (req, res) => {
     DATE_FORMAT(promosis.createdAt, '%Y-%m-%d %H:%i:%s') AS createdAt,
     DATE_FORMAT(promosis.updatedAt, '%Y-%m-%d %H:%i:%s') AS updatedAt,
     DATE_FORMAT(promosis.deletedAt, '%Y-%m-%d %H:%i:%s') AS deletedAt
-    FROM 
-        promosis
-    LEFT JOIN 
-        promosisoutlets ON promosis.id = promosisoutlets.promosisId
-    GROUP BY 
-        promosis.id;
+FROM 
+    promosis
+LEFT JOIN 
+    promosisoutlets ON promosis.id = promosisoutlets.promosisId
+LEFT JOIN
+    outlets ON promosisoutlets.outletsId = outlets.id
+GROUP BY 
+    promosis.id;
       `;
   
       // Jalankan query untuk mendapatkan data promosi
@@ -166,6 +164,7 @@ exports.getPromosiById = async (req, res) => {
     promosis.minimalBeli AS minimal_beli,
     promosis.kategori AS kategori_promosi,
     promosis.nilaiKategori AS nilai_kategori,
+    promosis.status AS status,
     -- Cek status apakah harus menjadi "Promosi Tidak Aktif"
     CASE 
         WHEN NOW() > CONCAT(promosis.tanggalBerakhir, ' ', promosis.jamBerakhir) THEN 'Promosi Tidak Aktif'
@@ -182,10 +181,18 @@ exports.getPromosiById = async (req, res) => {
         DATE_FORMAT(promosis.tanggalMulai, '%d %b %Y'), ' - ', 
         DATE_FORMAT(promosis.tanggalBerakhir, '%d %b %Y')
     ) AS durasi,
-    GROUP_CONCAT(CONCAT('"', promosisoutlets.outletsId, '"')) AS outletsId,
+    -- Mendapatkan detailOutlet sebagai JSON array
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id', outlets.id,
+            'nama', outlets.nama,
+            'position', outlets.position
+        )
+    ) AS detailOutlet,
     promosis.jamMulai AS jam_mulai,
     promosis.jamBerakhir AS jam_berakhir,
     promosis.pilihHari AS pilihan_hari,
+    -- Format createdAt dan updatedAt agar sesuai dengan database
     DATE_FORMAT(promosis.createdAt, '%Y-%m-%d %H:%i:%s') AS createdAt,
     DATE_FORMAT(promosis.updatedAt, '%Y-%m-%d %H:%i:%s') AS updatedAt,
     DATE_FORMAT(promosis.deletedAt, '%Y-%m-%d %H:%i:%s') AS deletedAt
@@ -193,8 +200,10 @@ FROM
     promosis
 LEFT JOIN 
     promosisoutlets ON promosis.id = promosisoutlets.promosisId
-WHERE 
-    promosis.id = :id  -- Filter berdasarkan ID yang diterima
+LEFT JOIN
+    outlets ON promosisoutlets.outletsId = outlets.id
+WHERE
+    promosis.id = :id
 GROUP BY 
     promosis.id;
      `;
@@ -230,9 +239,57 @@ GROUP BY
   
   // Update an existing Promosi
 exports.updatePromosi = async (req, res) => {
-    try {
-      const { id } = req.params;  // Ambil ID dari URL
-      const {
+  try {
+    const { id } = req.params; // Ambil ID dari URL
+    const {
+      namaPromosi,
+      deskripsi,
+      tipeAktivasi,
+      minimalBeli,
+      kategori,
+      nilaiKategori,
+      tanggalMulai,
+      tanggalBerakhir,
+      jamMulai,
+      jamBerakhir,
+      pilihHari,
+    } = req.body;
+
+    // Daftar hari valid
+    const validDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu', 'Setiap Hari'];
+
+    // Memeriksa apakah pilihHari ada dalam request dan tidak kosong
+    if (!pilihHari) {
+      return res.status(400).json({ error: "PilihHari tidak boleh kosong." });
+    }
+
+    // Mengubah pilihHari menjadi array jika dalam bentuk string yang dipisahkan koma
+    const pilihHariArray = pilihHari.split(',').map(hari => hari.trim());
+
+    // Memeriksa apakah semua nilai dalam pilihHari valid
+    const invalidDays = pilihHariArray.filter(hari => !validDays.includes(hari));
+
+    // Jika ada hari yang tidak valid, kembalikan error
+    if (invalidDays.length > 0) {
+      return res.status(400).json({
+        error: `Hari yang dipilih tidak valid: ${invalidDays.join(', ')}`
+      });
+    }
+
+    // Menentukan semua hari dalam seminggu
+    const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
+    // Logika untuk menangani "Setiap Hari"
+    if (pilihHariArray.includes('Setiap Hari') || allDays.every(day => pilihHariArray.includes(day))) {
+      // Jika "Setiap Hari" ada dalam array ATAU semua hari dalam seminggu dipilih,
+      // simpan sebagai "Setiap Hari" ditambah semua hari
+      pilihHariArray.length = 0; // Kosongkan array
+      pilihHariArray.push('Setiap Hari', ...allDays);
+    }
+
+    // Update entri promosi berdasarkan ID
+    const updatedPromosi = await Promosi.update(
+      {
         namaPromosi,
         deskripsi,
         tipeAktivasi,
@@ -243,94 +300,26 @@ exports.updatePromosi = async (req, res) => {
         tanggalBerakhir,
         jamMulai,
         jamBerakhir,
-        pilihHari,
-      } = req.body;
-  
-      // Menentukan hari yang valid
-      const validDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu', 'Setiap Hari'];
-  
-      // Memeriksa apakah pilihHari ada dalam request dan tidak kosong
-      if (!pilihHari) {
-        return res.status(400).json({ error: "PilihHari tidak boleh kosong." });
+        pilihHari: pilihHariArray, // Pastikan pilihHari disimpan sesuai logika
+      },
+      {
+        where: { id }, // Mencari berdasarkan ID
       }
-  
-      // Mengubah pilihHari menjadi array, jika dalam bentuk string yang dipisahkan koma
-      const pilihHariArray = pilihHari.split(',');
-  
-      // Memeriksa apakah semua nilai dalam pilihHari valid
-      const invalidDays = pilihHariArray.filter(hari => !validDays.includes(hari));
-  
-      // Jika ada hari yang tidak valid, kembalikan error
-      if (invalidDays.length > 0) {
-        return res.status(400).json({
-          error: `Hari yang dipilih tidak valid: ${invalidDays.join(', ')}`
-        });
-      }
-  
-      // Logika untuk menangani "Setiap Hari"
-      if (pilihHariArray.includes('Setiap Hari')) {
-        // Jika "Setiap Hari" ada dalam array, maka hanya simpan "Setiap Hari"
-        const updatedPromosi = await Promosi.update(
-          {
-            namaPromosi,
-            deskripsi,
-            tipeAktivasi,
-            minimalBeli,
-            kategori,
-            nilaiKategori,
-            tanggalMulai,
-            tanggalBerakhir,
-            jamMulai,
-            jamBerakhir,
-            pilihHari: ['Setiap Hari']  // Simpan hanya "Setiap Hari"
-          },
-          {
-            where: { id }  // Mencari berdasarkan ID
-          }
-        );
-  
-        // Jika data berhasil diupdate, kembalikan hasil update
-        if (updatedPromosi[0] === 1) {
-          const promosi = await Promosi.findByPk(id); // Mendapatkan data yang baru diupdate
-          return res.status(200).json(promosi);
-        } else {
-          return res.status(404).json({ error: "Promosi tidak ditemukan" });
-        }
-      }
-  
-      // Membuat entri promosi baru untuk selain "Setiap Hari"
-      const updatedPromosi = await Promosi.update(
-        {
-          namaPromosi,
-          deskripsi,
-          tipeAktivasi,
-          minimalBeli,
-          kategori,
-          nilaiKategori,
-          tanggalMulai,
-          tanggalBerakhir,
-          jamMulai,
-          jamBerakhir,
-          pilihHari: pilihHariArray // Pastikan pilihHari disimpan sebagai array
-        },
-        {
-          where: { id }  // Mencari berdasarkan ID
-        }
-      );
-  
-      // Jika data berhasil diupdate, kembalikan hasil update
-      if (updatedPromosi[0] === 1) {
-        const promosi = await Promosi.findByPk(id); // Mendapatkan data yang baru diupdate
-        return res.status(200).json(promosi);
-      } else {
-        return res.status(404).json({ error: "Promosi tidak ditemukan" });
-      }
-  
-    } catch (error) {
-      // Mengembalikan response error jika terjadi masalah
-      return res.status(400).json({ error: error.message });
+    );
+
+    // Jika data berhasil diupdate, kembalikan hasil update
+    if (updatedPromosi[0] === 1) {
+      const promosi = await Promosi.findByPk(id); // Mendapatkan data yang baru diupdate
+      return res.status(200).json(promosi);
+    } else {
+      return res.status(404).json({ error: "Promosi tidak ditemukan" });
     }
-  };
+  } catch (error) {
+    // Mengembalikan response error jika terjadi masalah
+    return res.status(400).json({ error: error.message });
+  }
+};
+
   
   // Soft delete promosi
 exports.deletePromosi = async (req, res) => {
