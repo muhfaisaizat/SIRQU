@@ -19,26 +19,53 @@ exports.getCategories = async (req, res) => {
     // Query SQL untuk mengambil data kategori dengan jumlah produk
     const queryCategories = `
       SELECT 
-        categories.id AS id_kategori,
-        categories.name AS nama_kategori,
-        COUNT(productscategories.productsId) AS jumlah_product,
-        GROUP_CONCAT(DISTINCT outlets.nama) AS nama_outlet,
-        GROUP_CONCAT(DISTINCT productsoutlets.id) AS product_outlet_id,
-        GROUP_CONCAT(DISTINCT productsoutlets.productsId) AS product_id,
-        GROUP_CONCAT(DISTINCT productsoutlets.outletsId) AS outlet_id,
-        categories.createdAt AS created_at
-      FROM 
-        categories
-      LEFT JOIN 
-        productscategories ON categories.id = productscategories.categoriesId
-      LEFT JOIN 
-        productsoutlets ON productscategories.productsId = productsoutlets.productsId
-      LEFT JOIN 
-        outlets ON productsoutlets.outletsId = outlets.id
-      WHERE 
-        categories.deletedAt IS NULL
-      GROUP BY 
-        categories.id, categories.name, categories.createdAt;
+    categories.id AS id_kategori,
+    categories.name AS nama_kategori,
+    COUNT(productscategories.productsId) AS jumlah_product,
+
+    -- Mendapatkan detailOutlet sebagai JSON array
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id', outlets.id,
+            'nama', outlets.nama,
+            'position', outlets.position
+        )
+    ) AS detailOutlet,
+
+    -- Mendapatkan detailProduct sebagai JSON array
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id', products.id,
+            'nama', products.name
+        )
+    ) AS detailProduct,
+
+    -- Mendapatkan productOutlet sebagai JSON array dengan detail relasi
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'productOutletId', productsoutlets.id,
+            'productId', products.id,
+            'productName', products.name,
+            'outletId', outlets.id,
+            'outletName', outlets.nama
+        )
+    ) AS productOutlet,
+
+    categories.createdAt AS created_at
+FROM 
+    categories
+LEFT JOIN 
+    productscategories ON categories.id = productscategories.categoriesId
+LEFT JOIN 
+    products ON productscategories.productsId = products.id
+LEFT JOIN 
+    productsoutlets ON products.id = productsoutlets.productsId
+LEFT JOIN 
+    outlets ON productsoutlets.outletsId = outlets.id
+WHERE 
+    categories.deletedAt IS NULL
+GROUP BY 
+    categories.id, categories.name, categories.createdAt;
     `;
 
     // Jalankan query untuk mendapatkan data kategori
