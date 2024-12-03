@@ -140,6 +140,8 @@ exports.readPenjualan = async (req, res) => {
 exports.getCardPenjualan = async (req, res) => {
   try {
     const { outletId } = req.params; // Pastikan outletsId dikirim sebagai parameter
+    const { start_date, end_date } = req.query;
+    
     const query = `
       SELECT 
     -- Total Penjualan (Total Sales)
@@ -360,12 +362,14 @@ exports.getCardPenjualan = async (req, res) => {
             FROM detailtransaksis
             JOIN products ON detailtransaksis.productsId = products.id
             WHERE detailtransaksis.transaksisId IN (
-                SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                SELECT id FROM transaksis WHERE outletsId = :outletId 
+                AND deletedAt IS NULL
+                AND transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY
             )
             GROUP BY detailtransaksis.productsId
             ORDER BY SUM(detailtransaksis.stok) DESC
             LIMIT 1
-        ) > 0 
+        ) > 0
         THEN CONCAT(
             CASE 
                 WHEN (
@@ -373,7 +377,9 @@ exports.getCardPenjualan = async (req, res) => {
                     FROM detailtransaksis
                     JOIN products ON detailtransaksis.productsId = products.id
                     WHERE detailtransaksis.transaksisId IN (
-                        SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                        SELECT id FROM transaksis WHERE outletsId = :outletId 
+                        AND deletedAt IS NULL
+                        AND transaksis.createdAt >= CURDATE()
                     )
                     GROUP BY detailtransaksis.productsId
                     ORDER BY SUM(detailtransaksis.stok) DESC
@@ -383,7 +389,9 @@ exports.getCardPenjualan = async (req, res) => {
                     FROM detailtransaksis
                     JOIN products ON detailtransaksis.productsId = products.id
                     WHERE detailtransaksis.transaksisId IN (
-                        SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                        SELECT id FROM transaksis WHERE outletsId = :outletId 
+                        AND deletedAt IS NULL
+                        AND transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY
                     )
                     GROUP BY detailtransaksis.productsId
                     ORDER BY SUM(detailtransaksis.stok) DESC
@@ -399,18 +407,21 @@ exports.getCardPenjualan = async (req, res) => {
                             FROM detailtransaksis
                             JOIN products ON detailtransaksis.productsId = products.id
                             WHERE detailtransaksis.transaksisId IN (
-                                SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                                SELECT id FROM transaksis WHERE outletsId = :outletId 
+                                AND deletedAt IS NULL
+                                AND transaksis.createdAt >= CURDATE()
                             )
                             GROUP BY detailtransaksis.productsId
                             ORDER BY SUM(detailtransaksis.stok) DESC
                             LIMIT 1
-                        )
-                        - (
+                        ) - (
                             SELECT SUM(detailtransaksis.stok)
                             FROM detailtransaksis
                             JOIN products ON detailtransaksis.productsId = products.id
                             WHERE detailtransaksis.transaksisId IN (
-                                SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                                SELECT id FROM transaksis WHERE outletsId = :outletId 
+                                AND deletedAt IS NULL
+                                AND transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY
                             )
                             GROUP BY detailtransaksis.productsId
                             ORDER BY SUM(detailtransaksis.stok) DESC
@@ -421,7 +432,9 @@ exports.getCardPenjualan = async (req, res) => {
                         FROM detailtransaksis
                         JOIN products ON detailtransaksis.productsId = products.id
                         WHERE detailtransaksis.transaksisId IN (
-                            SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                            SELECT id FROM transaksis WHERE outletsId = :outletId 
+                            AND deletedAt IS NULL
+                            AND transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY
                         )
                         GROUP BY detailtransaksis.productsId
                         ORDER BY SUM(detailtransaksis.stok) DESC
@@ -431,8 +444,9 @@ exports.getCardPenjualan = async (req, res) => {
                 ), 0), -- Maximum percentage capped at 100
             '%'
         )
-        ELSE NULL 
+        ELSE NULL
     END AS Banding_Persentase_Produk_Terlaris_Kemarin
+
 
 FROM transaksis
 JOIN detailtransaksis ON transaksis.id = detailtransaksis.transaksisId

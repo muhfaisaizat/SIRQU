@@ -54,6 +54,22 @@ router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), readPenjualan);
  *         description: The ID of the outlet to retrieve the penjualan data for
  *         schema:
  *           type: integer
+ *       - in: query
+ *         name: start_date
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *           description: Filter transaksi mulai dari tanggal ini (YYYY-MM-DD)
+ *           example: "2024-12-2"
+ *       - in: query
+ *         name: end_date
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *           description: Filter transaksi sampai dengan tanggal ini (YYYY-MM-DD)
+ *           example: "2024-12-4"
  *     responses:
  *       200:
  *         description: The penjualan card data for the specified outlet

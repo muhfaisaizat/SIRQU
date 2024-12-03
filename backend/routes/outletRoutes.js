@@ -35,7 +35,7 @@ const uploadOutlet = require('../middleware/uploadImageOutlet'); // Middleware u
  *                 type: string
  *                 format: binary
  *                 description: Image file for the outlet
- *               syaratKetentuan:
+ *               syarat_ketentuan:
  *                 type: boolean
  *                 description: Terms and conditions status of the outlet
  *                 example: true
