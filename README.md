@@ -21,7 +21,7 @@ Pastikan sudah menginstal:
 2. Instal dependensi: `npm install` atau, jika menggunakan yarn: `yarn install`
 3. Buat database pada mysql dengan nama `sirqu_db_fix`
 4. Migrate database sirqu `npx sequelize-cli db:migrate`
-5. lakukan seeder  seusai urutan berikut ini :
+5. lakukan seeder  sesuai urutan berikut ini :
    - user `npx sequelize-cli db:seed --seed roleSeeder.js`
    - pajak `npx sequelize-cli db:seed --seed pajaksSeeder.js`
    - struk `npx sequelize-cli db:seed --seed strukSeeder.js`
