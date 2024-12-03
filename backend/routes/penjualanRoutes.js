@@ -1,5 +1,5 @@
 const express = require('express');
-const { readPenjualan } = require('../controllers/penjualanController.js');
+const { readPenjualan, getCardPenjualan } = require('../controllers/penjualanController.js');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const router = express.Router();
 
@@ -40,5 +40,49 @@ const router = express.Router();
  *         description: Internal server error
  */
 router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), readPenjualan);
+
+/**
+ * @swagger
+ * /api/penjualan/outlet/{outletId}:
+ *   get:
+ *     summary: Get card penjualan data by Outlet ID
+ *     tags: [Penjualan]
+ *     parameters:
+ *       - name: outletId
+ *         in: path
+ *         required: true
+ *         description: The ID of the outlet to retrieve the penjualan data for
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: The penjualan card data for the specified outlet
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 Total_Penjualan:
+ *                   type: number
+ *                 Produk_Terjual:
+ *                   type: number
+ *                 Pembayaran_Paling_Sering:
+ *                   type: string
+ *                 Product_Terlaris:
+ *                   type: number
+ *                 Banding_Persentase_Total_Penjualan_Kemarin:
+ *                   type: number
+ *                 Banding_Persentase_Produk_Terjual_Kemarin:
+ *                   type: number
+ *                 Banding_Persentase_Pembayaran_Paling_Sering_Kemarin:
+ *                   type: number
+ *                 Banding_Persentase_Produk_Terlaris_Kemarin:
+ *                   type: number
+ *       404:
+ *         description: No data found for the specified outlet ID
+ *       400:
+ *         description: Invalid request
+ */
+router.get('/outlet/:outletId', roleMiddleware(['Admin', 'Manager']), getCardPenjualan);
 
 module.exports = router;

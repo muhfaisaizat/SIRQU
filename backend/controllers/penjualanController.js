@@ -1,4 +1,6 @@
 const sequelize = require('../config/database');
+const { QueryTypes } = require('sequelize');
+
 
 exports.readPenjualan = async (req, res) => {
   try {
@@ -130,5 +132,325 @@ exports.readPenjualan = async (req, res) => {
       message: 'Terjadi kesalahan saat mengambil data penjualan',
       error: error.message,
     });
+  }
+};
+
+// Get Card Penjualan by Outlet ID
+// Get Card Penjualan by Outlet ID
+exports.getCardPenjualan = async (req, res) => {
+  try {
+    const { outletId } = req.params; // Pastikan outletsId dikirim sebagai parameter
+    const query = `
+      SELECT 
+    -- Total Penjualan (Total Sales)
+    SUM(transaksis.total) AS Total_Penjualan,
+
+    -- Produk Terjual (Total Products Sold)
+    SUM(detailtransaksis.stok) AS Produk_Terjual,
+
+    -- Pembayaran Paling Frequent (Most Frequent Payment Type)
+    (SELECT tipeBayar
+     FROM transaksis
+     WHERE deletedAt IS NULL
+     AND outletsId = :outletId
+     GROUP BY tipeBayar
+     ORDER BY COUNT(tipeBayar) DESC
+     LIMIT 1) AS Pembayaran_Paling_Sering,
+
+    -- Product Terlaris (Best-Selling Product)
+    (SELECT products.name
+     FROM detailtransaksis
+     JOIN products ON detailtransaksis.productsId = products.id
+     WHERE detailtransaksis.transaksisId IN (
+         SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+     )
+     GROUP BY detailtransaksis.productsId
+     ORDER BY SUM(detailtransaksis.stok) DESC
+     LIMIT 1) AS Product_Terlaris,
+
+    -- Percentage Growth with +/- (Total Sales)
+    CASE
+        WHEN SUM(CASE 
+            WHEN transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY 
+            AND transaksis.deletedAt IS NULL
+            THEN transaksis.total 
+            ELSE 0 
+        END) > 0 
+        THEN CONCAT(
+            CASE 
+                WHEN SUM(CASE 
+                    WHEN transaksis.createdAt >= CURDATE() 
+                    AND transaksis.deletedAt IS NULL
+                    THEN transaksis.total 
+                    ELSE 0 
+                END) - SUM(CASE 
+                    WHEN transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY 
+                    AND transaksis.deletedAt IS NULL
+                    THEN transaksis.total 
+                    ELSE 0 
+                END) >= 0 THEN '+' 
+                ELSE '-' 
+            END,
+            ROUND(
+                LEAST(
+                    ABS(SUM(CASE 
+                        WHEN transaksis.createdAt >= CURDATE() 
+                        AND transaksis.deletedAt IS NULL
+                        THEN transaksis.total 
+                        ELSE 0 
+                    END) - SUM(CASE 
+                        WHEN transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY 
+                        AND transaksis.deletedAt IS NULL
+                        THEN transaksis.total 
+                        ELSE 0 
+                    END)) 
+                    / SUM(CASE 
+                        WHEN transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY 
+                        AND transaksis.deletedAt IS NULL
+                        THEN transaksis.total 
+                        ELSE 0 
+                    END) * 100,
+                    100
+                ), 0),
+            '%'
+        )
+        ELSE NULL 
+    END AS Banding_Persentase_Total_Penjualan_Kemarin,
+
+    -- Percentage Growth with +/- (Products Sold)
+    CASE
+        WHEN SUM(CASE 
+            WHEN transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY 
+            AND transaksis.deletedAt IS NULL
+            THEN detailtransaksis.stok 
+            ELSE 0 
+        END) > 0 
+        THEN CONCAT(
+            CASE 
+                WHEN SUM(CASE 
+                    WHEN transaksis.createdAt >= CURDATE() 
+                    AND transaksis.deletedAt IS NULL
+                    THEN detailtransaksis.stok 
+                    ELSE 0 
+                END) - SUM(CASE 
+                    WHEN transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY 
+                    AND transaksis.deletedAt IS NULL
+                    THEN detailtransaksis.stok 
+                    ELSE 0 
+                END) >= 0 THEN '+' 
+                ELSE '-' 
+            END,
+            ROUND(
+                LEAST(
+                    ABS(SUM(CASE 
+                        WHEN transaksis.createdAt >= CURDATE() 
+                        AND transaksis.deletedAt IS NULL
+                        THEN detailtransaksis.stok 
+                        ELSE 0 
+                    END) - SUM(CASE 
+                        WHEN transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY 
+                        AND transaksis.deletedAt IS NULL
+                        THEN detailtransaksis.stok 
+                        ELSE 0 
+                    END)) 
+                    / SUM(CASE 
+                        WHEN transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY 
+                        AND transaksis.deletedAt IS NULL
+                        THEN detailtransaksis.stok 
+                        ELSE 0 
+                    END) * 100,
+                    100
+                ), 0),
+            '%'
+        )
+        ELSE NULL 
+    END AS Banding_Persentase_Produk_Terjual_Kemarin,
+    
+    -- Percentage Growth with +/- (Most Frequent Payment Type)
+    CASE
+        WHEN (SELECT COUNT(tipeBayar)
+              FROM transaksis
+              WHERE deletedAt IS NULL
+              AND outletsId = :outletId
+              AND tipeBayar = (SELECT tipeBayar
+                               FROM transaksis
+                               WHERE deletedAt IS NULL
+                               AND outletsId = :outletId
+                               GROUP BY tipeBayar
+                               ORDER BY COUNT(tipeBayar) DESC
+                               LIMIT 1)
+        ) > 0 
+        THEN CONCAT(
+            CASE 
+                WHEN (SELECT COUNT(tipeBayar)
+                      FROM transaksis
+                      WHERE deletedAt IS NULL
+                      AND outletsId = :outletId
+                      AND tipeBayar = (SELECT tipeBayar
+                                       FROM transaksis
+                                       WHERE deletedAt IS NULL
+                                       AND outletsId = :outletId
+                                       GROUP BY tipeBayar
+                                       ORDER BY COUNT(tipeBayar) DESC
+                                       LIMIT 1)
+                ) - (SELECT COUNT(tipeBayar)
+                      FROM transaksis
+                      WHERE deletedAt IS NULL
+                      AND outletsId = :outletId
+                      AND tipeBayar = (SELECT tipeBayar
+                                       FROM transaksis
+                                       WHERE deletedAt IS NULL
+                                       AND outletsId = :outletId
+                                       GROUP BY tipeBayar
+                                       ORDER BY COUNT(tipeBayar) DESC
+                                       LIMIT 1)
+                ) >= 0 THEN '+' 
+                ELSE '-' 
+            END,
+        ROUND(
+            LEAST(
+                ABS(
+                    (SELECT COUNT(tipeBayar)
+                     FROM transaksis
+                     WHERE deletedAt IS NULL
+                     AND outletsId = :outletId
+                     AND tipeBayar = (SELECT tipeBayar
+                                      FROM transaksis
+                                      WHERE deletedAt IS NULL
+                                      AND outletsId = :outletId
+                                      GROUP BY tipeBayar
+                                      ORDER BY COUNT(tipeBayar) DESC
+                                      LIMIT 1)
+                    )
+                    - (SELECT COUNT(tipeBayar)
+                       FROM transaksis
+                       WHERE deletedAt IS NULL
+                       AND outletsId = :outletId
+                       AND tipeBayar = (SELECT tipeBayar
+                                        FROM transaksis
+                                        WHERE deletedAt IS NULL
+                                        AND outletsId = :outletId
+                                        GROUP BY tipeBayar
+                                        ORDER BY COUNT(tipeBayar) DESC
+                                        LIMIT 1)
+                    )
+                ) / (SELECT COUNT(tipeBayar)
+                      FROM transaksis
+                      WHERE deletedAt IS NULL
+                      AND outletsId = :outletId
+                      AND tipeBayar = (SELECT tipeBayar
+                                       FROM transaksis
+                                       WHERE deletedAt IS NULL
+                                       AND outletsId = :outletId
+                                       GROUP BY tipeBayar
+                                       ORDER BY COUNT(tipeBayar) DESC
+                                       LIMIT 1)
+                ) * 100,
+                100
+            ), 0), -- Maximum percentage capped at 100
+        '%'
+    )
+    ELSE NULL 
+    END AS Banding_Persentase_Pembayaran_Paling_Sering_Kemarin,
+
+    -- Percentage Growth with +/- (Best-Selling Product)
+    CASE
+        WHEN (
+            SELECT SUM(detailtransaksis.stok)
+            FROM detailtransaksis
+            JOIN products ON detailtransaksis.productsId = products.id
+            WHERE detailtransaksis.transaksisId IN (
+                SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+            )
+            GROUP BY detailtransaksis.productsId
+            ORDER BY SUM(detailtransaksis.stok) DESC
+            LIMIT 1
+        ) > 0 
+        THEN CONCAT(
+            CASE 
+                WHEN (
+                    SELECT SUM(detailtransaksis.stok)
+                    FROM detailtransaksis
+                    JOIN products ON detailtransaksis.productsId = products.id
+                    WHERE detailtransaksis.transaksisId IN (
+                        SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                    )
+                    GROUP BY detailtransaksis.productsId
+                    ORDER BY SUM(detailtransaksis.stok) DESC
+                    LIMIT 1
+                ) - (
+                    SELECT SUM(detailtransaksis.stok)
+                    FROM detailtransaksis
+                    JOIN products ON detailtransaksis.productsId = products.id
+                    WHERE detailtransaksis.transaksisId IN (
+                        SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                    )
+                    GROUP BY detailtransaksis.productsId
+                    ORDER BY SUM(detailtransaksis.stok) DESC
+                    LIMIT 1
+                ) >= 0 THEN '+' 
+                ELSE '-' 
+            END,
+            ROUND(
+                LEAST(
+                    ABS(
+                        (
+                            SELECT SUM(detailtransaksis.stok)
+                            FROM detailtransaksis
+                            JOIN products ON detailtransaksis.productsId = products.id
+                            WHERE detailtransaksis.transaksisId IN (
+                                SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                            )
+                            GROUP BY detailtransaksis.productsId
+                            ORDER BY SUM(detailtransaksis.stok) DESC
+                            LIMIT 1
+                        )
+                        - (
+                            SELECT SUM(detailtransaksis.stok)
+                            FROM detailtransaksis
+                            JOIN products ON detailtransaksis.productsId = products.id
+                            WHERE detailtransaksis.transaksisId IN (
+                                SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                            )
+                            GROUP BY detailtransaksis.productsId
+                            ORDER BY SUM(detailtransaksis.stok) DESC
+                            LIMIT 1
+                        )
+                    ) / (
+                        SELECT SUM(detailtransaksis.stok)
+                        FROM detailtransaksis
+                        JOIN products ON detailtransaksis.productsId = products.id
+                        WHERE detailtransaksis.transaksisId IN (
+                            SELECT id FROM transaksis WHERE outletsId = :outletId AND deletedAt IS NULL
+                        )
+                        GROUP BY detailtransaksis.productsId
+                        ORDER BY SUM(detailtransaksis.stok) DESC
+                        LIMIT 1
+                    ) * 100,
+                    100
+                ), 0), -- Maximum percentage capped at 100
+            '%'
+        )
+        ELSE NULL 
+    END AS Banding_Persentase_Produk_Terlaris_Kemarin
+
+FROM transaksis
+JOIN detailtransaksis ON transaksis.id = detailtransaksis.transaksisId
+WHERE transaksis.deletedAt IS NULL
+AND transaksis.outletsId = :outletId
+AND transaksis.createdAt >= CURDATE() - INTERVAL 1 DAY;
+
+    `;
+
+    // Jalankan query menggunakan Sequelize atau raw query
+    const result = await sequelize.query(query, {
+      replacements: { outletId },
+      type: QueryTypes.SELECT,
+    });
+
+    return res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    console.error('Error fetching card penjualan:', error);
+    return res.status(500).json({ success: false, message: 'Internal Server Error', error });
   }
 };
