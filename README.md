@@ -20,9 +20,16 @@ Pastikan sudah menginstal:
 1. Buka terminal dan pindah ke direktori backend: `cd backend`
 2. Instal dependensi: `npm install` atau, jika menggunakan yarn: `yarn install`
 3. Buat database pada mysql dengan nama `sirqu_db_fix`
-4. Migrate database sirqu `npx sequelize-cli db:migrate` dan lakukan seeder user `npx sequelize db:seed:all`
-5. Jalankan server backend: `nodemon app` atau `node app`
-6. Buka tab browser kemudian buka url berikut `http://localhost:5000/api-sirqu/`
+4. Migrate database sirqu `npx sequelize-cli db:migrate`
+5. lakukan seeder  seusai urutan berikut ini :
+   - user `npx sequelize-cli db:seed --seed roleSeeder.js`
+   - pajak `npx sequelize-cli db:seed --seed pajaksSeeder.js`
+   - struk `npx sequelize-cli db:seed --seed strukSeeder.js`
+   - detail struk 1 `npx sequelize-cli db:seed --seed detailStrukTekssSeeder.js`
+   - detail struk 2 `npx sequelize-cli db:seed --seed detailStrukMediasSeeder.js`
+   - detail struk 3 `npx sequelize-cli db:seed --seed detailStrukLogosSeeder.js`
+6. Jalankan server backend: `nodemon app` atau `node app`
+7. Buka tab browser kemudian buka url berikut `http://localhost:5000/api-sirqu/`
    
 ### 2. Menyiapkan Frontend
 
