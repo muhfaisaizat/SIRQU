@@ -3,9 +3,11 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
+import { useToast } from '@/hooks/use-toast'
+import { ToastAction } from "@/components/ui/toast"
 
 const PengaturanPajak = () => {
-  
+    const { toast } = useToast()
     const [dataPajak, setDataPajak] = useState(null);
     const [pajak, setPajak] = useState('');
     const [dataBiaya, setDataBiaya] = useState(null);
@@ -138,9 +140,21 @@ const PengaturanPajak = () => {
                         },
                     }
                 );
+                toast({
+                    title: "Sukses!",
+                    description: "Nilai pajak berhasil di simpan.",
+                    action: <ToastAction altText="Try again">Cancel</ToastAction>,
+                  });
                 fetchData();
             } catch (error) {
                 console.error("Error updating nilai pajak:", error);
+                toast({
+                    variant: "destructive",
+                    title: 'Error input nilai',
+                    description: 'Please try again later.',
+                    status: 'error',
+                    action: <ToastAction altText="Try again">Cancel</ToastAction>,
+                });
             }
         }
     };
@@ -159,9 +173,21 @@ const PengaturanPajak = () => {
                         },
                     }
                 );
+                toast({
+                    title: "Sukses!",
+                    description: "Nilai biaya operasional berhasil di simpan.",
+                    action: <ToastAction altText="Try again">Cancel</ToastAction>,
+                  });
                 fetchData();
             } catch (error) {
                 console.error("Error updating nilai pajak:", error);
+                toast({
+                    variant: "destructive",
+                    title: 'Error input nilai',
+                    description: 'Please try again later.',
+                    status: 'error',
+                    action: <ToastAction altText="Try again">Cancel</ToastAction>,
+                });
             }
         }
     };
