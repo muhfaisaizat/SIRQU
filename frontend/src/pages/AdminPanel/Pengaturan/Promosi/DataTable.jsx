@@ -39,6 +39,8 @@ import NoData from "./NoData";
 import EditPromosi from "./EditPromosi";
 import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
+import { useToast } from '@/hooks/use-toast'
+import { ToastAction } from "@/components/ui/toast"
 
 
 
@@ -49,20 +51,37 @@ import { API_URL } from "../../../../helpers/networt";
 // Main component
 const DataTable = ({data, setData, originalData, setOriginalData, fetchData}) => {
     
-
+    const { toast } = useToast();
     
-    const handleDelete = (id) => {
-        setData((prevData) => {
-            const updatedData = prevData.filter((item) => item.id !== id);
-            if (updatedData.length === 0 && pagination.pageIndex > 0) {
-                // Jika data kosong dan berada di halaman selain pertama, kembali ke halaman pertama
-                setPagination((prev) => ({
-                    ...prev,
-                    pageIndex: prev.pageIndex - 1,
-                }));
-            }
-            return updatedData;
+    const handleDelete = async (id) => {
+        const token = localStorage.getItem("token");
+    
+        try {
+          // Send a DELETE request to the API endpoint
+          await axios.delete(`${API_URL}/api/promosi/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          toast({
+            title: "Sukses!",
+            description: "Promosi berhasil dihapus.",
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
         });
+
+        fetchData();
+          
+        } catch (error) {
+          console.error("Error deleting data:", error);
+          const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+          toast({
+            variant: "destructive",
+            title: "Error!",
+            description: errorMessage,
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
+        }
       };
 
     // Define columns
