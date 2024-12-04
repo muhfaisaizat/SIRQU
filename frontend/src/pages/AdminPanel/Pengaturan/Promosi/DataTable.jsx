@@ -37,7 +37,8 @@ import {
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import NoData from "./NoData";
 import EditPromosi from "./EditPromosi";
-
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
 
 
@@ -46,31 +47,10 @@ import EditPromosi from "./EditPromosi";
 
 
 // Main component
-const DataTable = () => {
-    // data
-    const [data, setData] = useState([
-        {
-            id: "0001",
-            name: 'Promo Sale',
-            tipe:'Manual',
-            bonus: 50,
-            outlet: "Outlet 1",
-            date: "23 October 2024 - 30 December 2024",
-        },
-        {
-            id: "0002",
-            name: 'Kemerdekaan',
-            tipe:'Otomatis',
-            bonus: 50,
-            outlet: "Outlet 1, Outlet 2",
-            date: "23 October 2024 - 30 December 2024",
-        },
-       
-        
-    ]);
+const DataTable = ({data, setData, originalData, setOriginalData}) => {
+    
 
-    // status
-    const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
+    
     const handleDelete = (id) => {
         setData((prevData) => {
             const updatedData = prevData.filter((item) => item.id !== id);
@@ -128,13 +108,13 @@ const DataTable = () => {
         {
             accessorKey: "bonus",
             header: "Bonus",
-            cell: ({ row }) => <div className=" font-medium">{row.getValue("bonus")}%</div>,
+            cell: ({ row }) => <div className=" font-medium">{row.getValue("bonus")}</div>,
         },
         {
             accessorKey: "outlet",
             header: "Outlet",
             cell: ({ row }) => (
-                <div className="capitalize font-medium">{row.getValue("outlet")}</div>
+                <div className="capitalize font-medium">{row.getValue("outlet").length > 25 ? `${row.getValue("outlet").slice(0, 25)}...` : row.getValue("outlet")}</div>
             ),
         },
         {
@@ -235,11 +215,49 @@ const DataTable = () => {
     const [filtersoutlet, setFiltersoutlet] = useState({
         outlet: [],
       });
-    const DataOutlet = [
-        { id: "m5gr84i9", name: 'Outlet 1' },
-        { id: "m5gr84i7", name: 'Outlet 2' },
-        { id: "m5gr84is", name: 'Outlet 1, Outlet 2' },
-    ]
+      const [DataOutlet, setDataOutlet] = useState([
+        // { id: "m5gr84i9", name: 'Cabang 1' },
+        // { id: "m5gr84i7", name: 'Cabang 2' },
+        // { id: "m5gr84i8", name: 'Cabang 3' },
+    ]);
+    const formatOutletData = (apiData) => {
+        return {
+            id: apiData.id_outlet.toString(),
+            name: apiData.nama_outlet
+        };
+    };
+
+    const fetchDataOutlet = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/outlets`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            // Log untuk memastikan data yang diterima
+
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatOutletData);
+
+                setDataOutlet(formattedData);
+                // console.log(formattedData)
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchDataOutlet();
+    }, []);
+
     const handleFilterChangeoutlet = (selectedValue) => {
         setColumnFilters([{ id: 'outlet', value: selectedValue }]);
         setFiltersoutlet({ outlet: [selectedValue] });
