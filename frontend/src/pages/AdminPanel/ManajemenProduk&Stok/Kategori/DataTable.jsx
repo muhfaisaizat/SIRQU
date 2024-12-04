@@ -340,6 +340,21 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
         setColumnVisibility((prev) => ({ ...prev, id: false }));
     }, []);
 
+
+
+    const [filtersoutlet, setFiltersoutlet] = useState({
+        outlet: [],
+      });
+
+      const handleFilterChangeoutlet = (selectedValue) => {
+        setColumnFilters([{ id: 'outlet', value: selectedValue }]);
+        setFiltersoutlet({ outlet: [selectedValue] });
+      };
+      const handleClearFiltersoutlet = () => {
+        setFiltersoutlet({ outlet: [] });  
+        setColumnFilters([]);  
+      };
+
     return (
         <div className="w-full grid gap-[16px] mt-[24px]">
             <div className="flex items-center  justify-between">
@@ -350,7 +365,7 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
                         onChange={(event) =>
                             table.getColumn("name")?.setFilterValue(event.target.value)
                         }
-                        className="w-[266px] h-[32px]"
+                        className="w-[266px] h-[36px]"
                     />
                      <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -360,14 +375,18 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-[184px]">
                             {DataOutlet.map((outlet) => (
-                                <DropdownMenuItem key={outlet.id} className="h-[36px] p-[12px]">
+                                <DropdownMenuItem key={outlet.id} className="h-[36px] p-[12px]" onClick={() => handleFilterChangeoutlet(outlet.name)}>
                                     <Checkbox 
-                                    
+                                     checked={filtersoutlet.outlet.includes(outlet.name)}
+                                     onCheckedChange={() => handleFilterChangeoutlet(outlet.name)}
                                     className="capitalize" 
                                     />
                                     <span className="ml-[8px] text-[14px]">{outlet.name}</span>
                                 </DropdownMenuItem>
                             ))}
+                             <DropdownMenuItem onClick={handleClearFiltersoutlet} className="h-[36px] font-medium  p-[12px] flex items-center justify-center text-[14px]">
+                                Hapus Filter
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
