@@ -388,7 +388,45 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productController.getProdu
 
 router.put('/:id/status', roleMiddleware(['Admin', 'Manager']), productController.updateProductStatus);
 
-
+/**
+ * @swagger
+ * /api/products/stock-habis:
+ *   get:
+ *     summary: Get Stock Habis
+ *     description: Retrieve the count of products with limited stock that are almost out of stock.
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: The total count of products with limited stock that are almost out of stock
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Indicates if the operation was successful
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     stock_habis:
+ *                       type: integer
+ *                       description: The count of products with limited stock and stock between 0 to 2
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Indicates if the operation was successful
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ */
+router.get('/stcok-habis', roleMiddleware(['Admin']), productController.getStockHabis);
 
 
 

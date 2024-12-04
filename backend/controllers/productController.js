@@ -456,3 +456,34 @@ ORDER BY
       });
   }
 };
+
+exports.getStockHabis = async (req, res) => {
+  try {
+    // Query manual untuk menghitung jumlah stock habis
+    const stockHabis = await Product.sequelize.query(
+      `
+      SELECT 
+          COUNT(*) AS stock_habis
+      FROM 
+          products p
+      WHERE 
+          p.unlimited_stock = 0
+          AND p.stock BETWEEN 0 AND 2
+          AND p.deletedAt IS NULL;
+      `,
+      { type: Product.sequelize.QueryTypes.SELECT }
+    );
+
+    // Response ke client
+    res.status(200).json({
+      success: true,
+      data: stockHabis[0], // Mengembalikan hasil query
+    });
+  } catch (error) {
+    console.error('Error fetching stock habis:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch stock habis data',
+    });
+  }
+};
