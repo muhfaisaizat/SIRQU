@@ -107,8 +107,8 @@ useEffect(() => {
           <Button onClick={() => setIsOpen(true)} className='text-[14px] h-[36px]'><GoPlus size={16} /> Tambah promosi</Button>
         </div>
       </div>
-      <DataTable data={data} setData={setData} originalData={originalData} setOriginalData={setOriginalData} />
-      <AddPromosi isOpen={isOpen} setIsOpen={setIsOpen} />
+      <DataTable data={data} setData={setData} originalData={originalData} setOriginalData={setOriginalData} fetchData={fetchData}/>
+      <AddPromosi isOpen={isOpen} setIsOpen={setIsOpen} fetchDataPromosi={fetchData}/>
     </div>
   )
 }

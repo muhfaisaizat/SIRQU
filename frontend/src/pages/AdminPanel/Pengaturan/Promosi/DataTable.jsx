@@ -47,7 +47,7 @@ import { API_URL } from "../../../../helpers/networt";
 
 
 // Main component
-const DataTable = ({data, setData, originalData, setOriginalData}) => {
+const DataTable = ({data, setData, originalData, setOriginalData, fetchData}) => {
     
 
     
@@ -146,7 +146,7 @@ const DataTable = ({data, setData, originalData, setOriginalData}) => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-[164px]">
-                            <DropdownMenuItem  onClick={() => setIsOpen(true)}  className="p-3 gap-3 text-[14px] font-medium">Edit Promosi</DropdownMenuItem>
+                            <DropdownMenuItem  onClick={() => handleeditClick(id)}  className="p-3 gap-3 text-[14px] font-medium">Edit Promosi</DropdownMenuItem>
                             <DropdownMenuItem  onClick={() => handleDelete(id)}  className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -156,6 +156,30 @@ const DataTable = ({data, setData, originalData, setOriginalData}) => {
     ]
 
     const [isOpen, setIsOpen] = useState(false);
+    const [dataEditPromosi, setDataEditPromosi]= useState(null);
+
+    const fetchEditData = async (id) => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/promosi/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+           // Log untuk memastikan data yang diterima
+           setDataEditPromosi(response.data.data)
+           
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+    
+    const handleeditClick = (id) => {
+        fetchEditData(id);
+        setIsOpen(true);
+    };
+
     const [sorting, setSorting] = useState([])
     const [columnFilters, setColumnFilters] = useState([])
     const [columnVisibility, setColumnVisibility] = useState({})
@@ -463,7 +487,7 @@ const DataTable = ({data, setData, originalData, setOriginalData}) => {
                     )}
                 </div>
             )} 
-            <EditPromosi isOpen={isOpen} setIsOpen={setIsOpen}/> 
+            <EditPromosi isOpen={isOpen} setIsOpen={setIsOpen} dataEditPromosi={dataEditPromosi} fetchData={fetchData}/> 
         </div>
     )
 }

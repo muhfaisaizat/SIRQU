@@ -42,7 +42,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
 
-const AddPromosi = ({ isOpen, setIsOpen }) => {
+const AddPromosi = ({ isOpen, setIsOpen, fetchDataPromosi }) => {
     const { toast } = useToast();
     const [deskripsi, setdeskripsi] = useState('');
     const [kategori, setKategori] = useState('');
@@ -406,6 +406,9 @@ const AddPromosi = ({ isOpen, setIsOpen }) => {
                 description: "Promosi berhasil ditambahkan.",
                 action: <ToastAction altText="Try again">Cancel</ToastAction>,
             });
+
+
+            fetchDataPromosi();
 
             setDate(null);
             setDatefinis(null);

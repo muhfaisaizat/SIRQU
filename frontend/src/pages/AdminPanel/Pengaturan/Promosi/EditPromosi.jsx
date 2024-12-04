@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -39,26 +39,102 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import axios from 'axios';
+import { API_URL } from "../../../../helpers/networt";
 
-const EditPromosi = ({ isOpen, setIsOpen }) => {
+const EditPromosi = ({ isOpen, setIsOpen, dataEditPromosi, fetchData }) => {
     const { toast } = useToast();
     const [deskripsi, setdeskripsi] = useState('');
+    const [kategori, setKategori] = useState('');
+    const [nilaiKategori, setNilaiKategori] = useState('');
+
+    const handleSelectChangeKategori = (value) => {
+        setKategori(value);
+    };
+
+    const handleChangeNilaiKategori = (event) => {
+        setNilaiKategori(event.target.value);
+    };
+
     const handleInputChangedeskripsi = (event) => {
         setdeskripsi(event.target.value);
     };
-    const DataOutlet = [
-        { id: "m5gr84i9", name: 'Outlet 1' },
-        { id: "m5gr84i7", name: 'Outlet 2' },
-        { id: "m5gr84i8", name: 'Outlet 3' }
-    ];
+    const [DataOutlet, setDataOutlet] = useState([
+        // { id: "m5gr84i9", name: 'Cabang 1' },
+        // { id: "m5gr84i7", name: 'Cabang 2' },
+        // { id: "m5gr84i8", name: 'Cabang 3' },
+    ]);
 
     const [selectedOutlets, setSelectedOutlets] = useState([]);
+    const [selectedCreateOutlets, setSelectedCreateOutlets] = useState([]);
+    const [selectedDeleteOutlets, setSelectedDeleteOutlets] = useState([]);
+
+    const formatOutletData = (apiData) => {
+        return {
+            id: apiData.id_outlet.toString(),
+            name: apiData.nama_outlet
+        };
+    };
+
+    const fetchDataOutlet = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/outlets`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            // Log untuk memastikan data yang diterima
+
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatOutletData);
+
+                setDataOutlet(formattedData);
+                // console.log(formattedData)
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchDataOutlet();
+    }, []);
 
     const handleSelectOutlet = (outlet) => {
         setSelectedOutlets((prevSelected) => {
-            if (prevSelected.some((o) => o.id === outlet.id)) {
-                return prevSelected.filter((o) => o.id !== outlet.id);
+            // Memeriksa apakah outlet sudah terpilih
+            const isSelected = prevSelected.some((o) => o.id === outlet.id);
+            if (isSelected) {
+                const outletToRemove = selectedOutlets.find((o) => o.id === outlet.id);
+                if (outletToRemove.detailId) {
+                    setSelectedDeleteOutlets((prevSelected) => {
+                        const isAlreadyInDeleteOutlets = prevSelected.some((o) => o.outletid === outletToRemove.detailId);
+                        if (!isAlreadyInDeleteOutlets) {
+                            return [...prevSelected, { detailOutletId: outletToRemove.detailId }];
+                        }
+                        return prevSelected;
+                    });
+                    return prevSelected.filter((o) => o.id !== outlet.id);
+                } else {
+                    return prevSelected.filter((o) => o.id !== outlet.id);
+                }
+                // Jika outlet sudah terpilih, hapus dari selectedOutlets
             } else {
+                // Jika outlet belum terpilih, tambahkan ke selectedOutlets
+                setSelectedCreateOutlets((prevSelected) => {
+                    const isAlreadyInCreateOutlets = prevSelected.some((o) => o.outletid === outlet.id);
+                    if (!isAlreadyInCreateOutlets) {
+                        return [...prevSelected, { outletId: outlet.id }];
+                    }
+                    return prevSelected;
+                });
                 return [...prevSelected, outlet];
             }
         });
@@ -66,14 +142,51 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
 
     const handleSelectAll = () => {
         if (selectedOutlets.length === DataOutlet.length) {
-            setSelectedOutlets([]); // Unselect all if all are selected
+            setSelectedOutlets([]);
+            setSelectedCreateOutlets([]);
+
         } else {
-            setSelectedOutlets(DataOutlet); // Select all outlets
+
+            setSelectedDeleteOutlets((prevSelected) => {
+                const newDeleteOutlets = selectedOutlets.reduce((acc, outlet) => {
+                    if (!acc.some((o) => o.outletid === outlet.detailId)) {
+                        acc.push({ detailOutletId: outlet.detailId });
+                    }
+                    return acc;
+                }, [...prevSelected]);
+                return newDeleteOutlets;
+            });
+
+            setSelectedOutlets(DataOutlet);
+
+            setSelectedCreateOutlets((prevSelected) => {
+                const newOutlets = DataOutlet.reduce((acc, outlet) => {
+                    if (!acc.some((o) => o.id === outlet.id)) {
+                        acc.push({ outletId: outlet.id });
+                    }
+                    return acc;
+                }, [...prevSelected]);
+
+                return newOutlets;
+            });
         }
     };
 
     const handleRemoveOutlet = (id) => {
-        setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+        const outletToRemove = selectedOutlets.find((outlet) => outlet.id === id);
+        if (outletToRemove.detailId) {
+            setSelectedDeleteOutlets((prevSelected) => {
+                const isAlreadyInDeleteOutlets = prevSelected.some((o) => o.outletid === outletToRemove.detailId);
+                if (!isAlreadyInDeleteOutlets) {
+                    return [...prevSelected, { detailOutletId: outletToRemove.detailId }];
+                }
+                return prevSelected;
+            });
+            setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+        } else {
+            setSelectedCreateOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.outletId !== id));
+            setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+        }
     };
 
     const [uang, setUang] = useState('');
@@ -94,24 +207,36 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
 
     const [date, setDate] = useState(null);
     const [datefinis, setDatefinis] = useState(null);
+    const [formData, setFormData] = useState({
+        time: '00:00',
+        timefinis: '23:59',
+    });
 
-    const [timestart, setTimestart] = useState("00:00");
-    const handleTimestartChange = (e) => {
-        let value = e.target.value.replace(/[^0-9]/g, '');
-        if (value.length >= 2) {
-            value = value.slice(0, 2) + ":" + value.slice(2, 4);
-        }
-        setTimestart(value);
+    const handleInputtextChange = (e) => {
+        const { id, value } = e.target;
+        setFormData({ ...formData, [id]: value });
     };
-    const [timefinis, setTimefinis] = useState("23:59");
 
-    const handleTimefinisChange = (e) => {
-        let value = e.target.value.replace(/[^0-9]/g, '');
-        if (value.length >= 2) {
-            value = value.slice(0, 2) + ":" + value.slice(2, 4);
+    const timeInputRef = useRef(null);
+    const timeInputRef1 = useRef(null);
+
+    const handleIconClick = () => {
+        // Trigger klik pada input saat ikon diklik
+        if (timeInputRef.current) {
+            timeInputRef.current.showPicker(); // showPicker memunculkan time picker (hanya di browser modern)
         }
-        setTimefinis(value);
     };
+
+    const handleIconClick1 = () => {
+        // Trigger klik pada input saat ikon diklik
+        if (timeInputRef1.current) {
+            timeInputRef1.current.showPicker(); // showPicker memunculkan time picker (hanya di browser modern)
+        }
+    };
+
+
+
+
 
 
     const [isAllChecked, setIsAllChecked] = useState(false);
@@ -123,55 +248,62 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
         jumat: false,
         minggu: false
     });
-    const [hari,sethari]=useState('');
-    const updateHariState = (updatedDays) => {
-        const selectedDays = Object.keys(updatedDays).filter((day) => updatedDays[day]);
-        sethari(selectedDays.join(", ")); // Gabungkan hari yang dipilih dengan tanda koma
-      };
+    const [hari, setHari] = useState('');
+
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
     
-      // Ketika "Setiap hari" dicentang
-      const handleAllCheckedChange = (checked) => {
+    const updateHariState = (updatedDays) => {
+        const selectedDays = Object.keys(updatedDays)
+            .filter((day) => updatedDays[day])
+            .map((day) => capitalizeFirstLetter(day)); // Kapitalisasi nama hari
+        setHari(selectedDays.join(", ")); // Gabungkan hari yang dipilih dengan tanda koma
+    };
+    
+
+    // Ketika "Setiap hari" dicentang
+    const handleAllCheckedChange = (checked) => {
         setIsAllChecked(checked);
         const updatedDays = {
-          senin: checked,
-          selasa: checked,
-          rabu: checked,
-          kamis: checked,
-          jumat: checked,
-          minggu: checked
+            senin: checked,
+            selasa: checked,
+            rabu: checked,
+            kamis: checked,
+            jumat: checked,
+            sabtu: checked,
+            minggu: checked
         };
         setDaysChecked(updatedDays);
         updateHariState(updatedDays); // Update state hari
-      };
-    
-      // Ketika hari spesifik dicentang
-      const handleDayChange = (day, checked) => {
+    };
+
+    // Ketika hari spesifik dicentang
+    const handleDayChange = (day, checked) => {
         const updatedDays = { ...daysChecked, [day]: checked };
         setDaysChecked(updatedDays);
-    
+
         // Jika ada satu hari yang tidak dicentang, maka matikan "Setiap hari"
         if (!checked) {
-          setIsAllChecked(false);
+            setIsAllChecked(false);
         } else {
-          // Jika semua hari dicentang, aktifkan "Setiap hari"
-          const allChecked = Object.values(updatedDays).every((val) => val);
-          setIsAllChecked(allChecked);
+            // Jika semua hari dicentang, aktifkan "Setiap hari"
+            const allChecked = Object.values(updatedDays).every((val) => val);
+            setIsAllChecked(allChecked);
         }
-    
+
         updateHariState(updatedDays); // Update state hari
-      };
-    useEffect(() => {
-        const allChecked = Object.values(daysChecked).every(Boolean);
-        setIsAllChecked(allChecked); // Cek apakah semua checkbox hari dicentang
-    }, [daysChecked]);
+    };
+
+
 
     const [namapromosi, setNamapromosi] = useState('');
     const handleInputChangenamapromosi = (event) => {
         setNamapromosi(event.target.value);
     };
-    const [tipe,setTipe] =useState('')
+    const [tipe, setTipe] = useState('')
 
-    const handleSimpan =()=>{
+    const handleSimpan = async () => {
         if (selectedOutlets.length === 0) {
             toast({
                 variant: "destructive",
@@ -217,6 +349,24 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
             });
             return;
         }
+        if (!kategori) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Kategori harus di pilih.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
+        if (!nilaiKategori) {
+            toast({
+                variant: "destructive",
+                title: "Error!",
+                description: "Nilai kategori harus di isi.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+            return;
+        }
         if (!date) {
             toast({
                 variant: "destructive",
@@ -226,7 +376,7 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
             });
             return;
         }
-        if (!datefinis) {
+        if (!formData.time) {
             toast({
                 variant: "destructive",
                 title: "Error!",
@@ -235,7 +385,7 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
             });
             return;
         }
-        if (!timestart) {
+        if (!formData.timefinis) {
             toast({
                 variant: "destructive",
                 title: "Error!",
@@ -263,14 +413,164 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
             return;
         }
 
-        toast({
-            title: "Sukses!",
-            description: "Promosi berhasil ditambahkan.",
-            action: <ToastAction altText="Try again">Cancel</ToastAction>,
-        });
+        const formattedDate = new Date(date).toISOString().split('T')[0];
+        const formattedDateFinis = new Date(datefinis).toISOString().split('T')[0];
+
+        try {
+            const token = localStorage.getItem("token");
+
+            const response = await axios.put(`${API_URL}/api/promosi/${dataEditPromosi.id_promosi}`, {
+                tanggalMulai: formattedDate,
+                minimalBeli: uang,
+                pilihHari: hari,
+                tanggalBerakhir: formattedDateFinis,
+                kategori: kategori,
+                tipeAktivasi: tipe,
+                jamBerakhir: `${formData.timefinis}`,
+                deskripsi: deskripsi,
+                jamMulai: `${formData.time}`,
+                namaPromosi: namapromosi,
+                nilaiKategori: nilaiKategori,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            const promosiId = response.data.id;
+
+            const promisesdelete = selectedDeleteOutlets.length > 0
+                ? selectedDeleteOutlets.map(outlet =>
+                    axios.delete(`${API_URL}/api/promosi/outlets/${outlet.detailOutletId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    })
+                )
+                : [];
+
+            // Create outlets if any
+            const promises = selectedCreateOutlets.length > 0
+                ? selectedCreateOutlets.map(outlet =>
+                    axios.post(`${API_URL}/api/promosi/outlets`, {
+                        promosisId: promosiId,
+                        outletsId: outlet.outletId,
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    })
+                )
+                : [];
+
+            await Promise.all([...promisesdelete, ...promises]);
+
+            toast({
+                title: "Sukses!",
+                description: "Promosi berhasil diperbarui.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+
+
+            fetchData();
+
+            setDate(null);
+            setDatefinis(null);
+            setUang('');
+            setHari('');
+            setKategori('');
+            setNilaiKategori('');
+            setTipe('');
+            setFormData({
+                time: '00:00',
+                timefinis: '23:59',
+            });
+            setNamapromosi('');
+            setSelectedOutlets([]);
+            setDaysChecked({
+                senin: false,
+                selasa: false,
+                rabu: false,
+                kamis: false,
+                jumat: false,
+                minggu: false
+            });
+            setdeskripsi('');
+            setSelectedCreateOutlets([]);
+            setSelectedDeleteOutlets([]);
+
+        } catch (error) {
+            console.error('Error adding :', error);
+            toast({
+                variant: "destructive",
+                title: 'Error Adding ',
+                description: 'An internal server error occurred. Please try again later.',
+                status: 'error',
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
+
+
 
         setIsOpen(false);
     }
+
+
+    const formatEditOutletData = (data) => {
+        return data.map(outlet => ({
+            id: String(outlet.id),
+            detailId: outlet.id_promosi_outlet,
+            name: outlet.nama,
+        }));
+    };
+
+
+    useEffect(() => {
+        if (dataEditPromosi) {
+            console.log(dataEditPromosi)
+            setUang(String(dataEditPromosi.minimal_beli));
+            setNamapromosi(dataEditPromosi.nama_promosi);
+            setdeskripsi(dataEditPromosi.deskripsi_promosi);
+            setNilaiKategori(String(dataEditPromosi.nilai_kategori));
+            setSelectedOutlets(formatEditOutletData(dataEditPromosi.detailOutlet));
+            setTipe(dataEditPromosi.tipe_aktivasi);
+            setKategori(dataEditPromosi.kategori_promosi);
+            const [startDate, endDate] = dataEditPromosi.durasi.split(" - ");
+            const start = new Date(startDate);
+            const end = new Date(endDate)
+            setDate(start);
+            setDatefinis(end);
+            setFormData({
+                time: dataEditPromosi.jam_mulai,
+                timefinis: dataEditPromosi.jam_berakhir
+            })
+            const hariString = dataEditPromosi.pilihan_hari.join(', ');
+            setHari(hariString);
+            const updatedDays = { ...daysChecked };
+            dataEditPromosi.pilihan_hari.forEach((day) => {
+                updatedDays[day.toLowerCase()] = true;
+            });
+
+            setDaysChecked(updatedDays);
+
+            setSelectedCreateOutlets([]);
+            setSelectedDeleteOutlets([]);
+        }
+    }, [dataEditPromosi]);
+
+    useEffect(() => {
+        const allChecked = Object.values(daysChecked).every(Boolean);
+        setIsAllChecked(allChecked); // Cek apakah semua checkbox hari dicentang
+    }, [daysChecked]);
+
+
+    useEffect(() => {
+        console.log(hari)
+    }, [hari]);
+
+
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="sm:max-w-[820px] my-[20px] p-[24px]">
@@ -360,7 +660,7 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
                         <div className="flex gap-1">
                             <Label htmlFor="deskripsi" className="text-[14px] w-[240px] py-[8px]">Tipe Aktivasi<span className='text-rose-500'>*</span></Label>
                             <div className='w-full grid gap-[12px]'>
-                                <RadioGroup defaultValue="comfortable" className='flex gap-[16px] ' onValueChange={(value) => setTipe(value)}>
+                                <RadioGroup defaultValue="comfortable" className='flex gap-[16px] ' value={tipe} onValueChange={(value) => setTipe(value)}>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="Otomatis" id="r1" />
                                         <Label htmlFor="r1" className='text-[14px]'>Otomatis</Label>
@@ -391,15 +691,14 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
                         <div className="flex gap-1">
                             <Label htmlFor="deskripsi" className="text-[14px] w-[240px] py-[8px]">Kategori<span className='text-rose-500'>*</span></Label>
                             <div className='w-full flex gap-[8px]'>
-                                <Select>
+                                <Select value={kategori} onValueChange={handleSelectChangeKategori}>
                                     <SelectTrigger className="w-[169px] h-[36px] text-[14px]" >
-                                        <SelectValue placeholder="Potongan  (%)" />
+                                        <SelectValue placeholder="Pilih Potongan" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectItem className='text-[14px]' value="Facebook">FB</SelectItem>
-                                            <SelectItem className='text-[14px]' value="Instragram">IG</SelectItem>
-                                            <SelectItem className='text-[14px]' value="Twiter">TW</SelectItem>
+                                            <SelectItem className='text-[14px]' value="%">Potongan  (%)</SelectItem>
+                                            <SelectItem className='text-[14px]' value="Rp">Potongan  (Rp)</SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
@@ -408,7 +707,8 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
                                     placeholder="Nilai potongan (%)"
                                     required
                                     className="h-[36px] text-[14px] border-slate-300 pl-[12px] pr-[40px]"
-
+                                    value={nilaiKategori}
+                                    onChange={handleChangeNilaiKategori}
                                 />
                             </div>
                         </div>
@@ -467,37 +767,55 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
                                 </Popover>
                             </div>
                         </div>
-                        <div className='flex gap-[16px]'>
-                            <div className='grid gap-[6px]'>
-                                <Label htmlFor="deskripsi" className="text-[14px] w-[240px] py-[8px]">Jam Mulai</Label>
-                                <div className="relative w-[378px]">
+                        <div className='flex gap-[16px] w-full'>
+                            <div className='grid gap-[6px] w-full '>
+                                <Label htmlFor="deskripsi" className="text-[14px]  py-[8px]">Jam Mulai</Label>
+                                <div className="relative ">
+                                    <div
+                                        className="absolute inset-y-0 start-0 flex items-center pl-3 cursor-pointer"
+                                        onClick={handleIconClick}
+                                    >
+                                        <Clock size={20} className="text-gray-500" />
+                                    </div>
+
+                                    {/* Input Time */}
                                     <Input
-                                        type="text"
-                                        value={timestart}
-                                        onChange={handleTimestartChange}
-                                        maxLength={5}
+                                        ref={timeInputRef}
+                                        type="time"
+                                        id="time"
+                                        className="h-[36px] text-[14px] pl-[35px] pr-2 w-full "
+
+                                        min="09:00"
+                                        max="18:00"
                                         required
-                                        className="h-[36px] text-[14px] border-slate-300 pr-[12px] pl-[40px] text-center "
+                                        value={formData.time}
+                                        onChange={handleInputtextChange}
                                     />
-                                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[14px] ">
-                                        <Clock size={20} />
-                                    </span>
                                 </div>
                             </div>
-                            <div className='grid gap-[6px]'>
-                                <Label htmlFor="deskripsi" className="text-[14px] w-[240px] py-[8px]">Jam Berakhir</Label>
-                                <div className="relative w-[378px]">
+                            <div className='grid gap-[6px] w-full'>
+                                <Label htmlFor="deskripsi" className="text-[14px]  py-[8px]">Jam Berakhir</Label>
+                                <div className="relative ">
+                                    <div
+                                        className="absolute inset-y-0 start-0 flex items-center pl-3 cursor-pointer"
+                                        onClick={handleIconClick1}
+                                    >
+                                        <Clock size={20} className="text-gray-500" />
+                                    </div>
+
+                                    {/* Input Time */}
                                     <Input
-                                        type="text"
-                                        value={timefinis}
-                                        onChange={handleTimefinisChange}
-                                        maxLength={5}
+                                        ref={timeInputRef1}
+                                        type="time"
+                                        id="timefinis"
+                                        className="h-[36px] text-[14px] pl-[35px] pr-2 w-full "
+
+                                        min="09:00"
+                                        max="18:00"
                                         required
-                                        className="h-[36px] text-[14px] border-slate-300 pr-[12px] pl-[40px] text-center "
+                                        value={formData.timefinis}
+                                        onChange={handleInputtextChange}
                                     />
-                                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[14px]">
-                                        <Clock size={20} />
-                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -512,28 +830,28 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
                                     />
                                     <label
                                         htmlFor="semua"
-                                        className="text-[14px] font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                        className="text-[14px] font-medium leading-none cursor-pointer"
                                     >
                                         Setiap hari
                                     </label>
                                 </div>
 
                                 <div className="flex flex-wrap gap-[12px]">
-                                    {["senin", "selasa", "rabu", "kamis", "jumat", "minggu"].map((day) => (
+                                    {["Senin", "Selasa", "Rabu", "Kamis", "Jumat","Sabtu", "Minggu"].map((day) => (
                                         <div
                                             key={day}
                                             className="flex items-center space-x-[8px] border-2 rounded-[6px] py-[8px] px-[12px]"
                                         >
                                             <Checkbox
                                                 id={day}
-                                                checked={daysChecked[day]}
-                                                onCheckedChange={(checked) => handleDayChange(day, checked)}
+                                                checked={daysChecked[day.toLowerCase()]} // Pastikan menggunakan lowercase
+                                                onCheckedChange={(checked) => handleDayChange(day.toLowerCase(), checked)} // Update dengan nilai lowercase
                                             />
                                             <label
                                                 htmlFor={day}
-                                                className="text-[14px] font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                className="text-[14px] font-medium leading-none cursor-pointer"
                                             >
-                                                {day.charAt(0).toUpperCase() + day.slice(1)}
+                                                {day.charAt(0).toUpperCase() + day.slice(1)} {/* Ubah menjadi huruf kapital pertama */}
                                             </label>
                                         </div>
                                     ))}
@@ -544,7 +862,7 @@ const EditPromosi = ({ isOpen, setIsOpen }) => {
                 </div>
                 <DialogFooter>
                     <DialogClose asChild>
-                    <Button variant="outline" className="text-[14px] h-[36px]">Batal</Button>
+                        <Button variant="outline" className="text-[14px] h-[36px]">Batal</Button>
                     </DialogClose>
                     <Button className="text-[14px] h-[36px]" onClick={handleSimpan} >Simpan</Button>
                 </DialogFooter>

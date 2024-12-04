@@ -126,6 +126,8 @@ LEFT JOIN
     promosisoutlets ON promosis.id = promosisoutlets.promosisId
 LEFT JOIN
     outlets ON promosisoutlets.outletsId = outlets.id
+WHERE 
+promosis.deletedAt IS NULL AND promosisoutlets.deletedAt IS NULL
 GROUP BY 
     promosis.id;
       `;
@@ -156,7 +158,7 @@ exports.getPromosiById = async (req, res) => {
       
       // Query SQL untuk mengambil data promosi berdasarkan ID
       const queryPromosiById = `
-        SELECT 
+       SELECT 
     promosis.id AS id_promosi,
     promosis.namaPromosi AS nama_promosi,
     promosis.deskripsi AS deskripsi_promosi,
@@ -185,6 +187,7 @@ exports.getPromosiById = async (req, res) => {
     JSON_ARRAYAGG(
         JSON_OBJECT(
             'id', outlets.id,
+            'id_promosi_outlet', promosisoutlets.id,
             'nama', outlets.nama,
             'position', outlets.position
         )
@@ -203,7 +206,7 @@ LEFT JOIN
 LEFT JOIN
     outlets ON promosisoutlets.outletsId = outlets.id
 WHERE
-    promosis.id = :id
+    promosis.id = :id AND promosisoutlets.deletedAt IS NULL
 GROUP BY 
     promosis.id;
      `;
