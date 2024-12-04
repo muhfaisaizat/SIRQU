@@ -46,11 +46,11 @@ import ViewTransaksi from "./ViewTransaksi";
 
 
 // Main component
-const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataBayar, handleFilterChange, handleClearFilters, filters}) => {
+const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataBayar, handleFilterChange, handleClearFilters, filters, originalData, setOriginalData}) => {
    
 
     // status
-    const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
+   
     const handleDelete = (id) => {
         setData((prevData) => {
             const updatedData = prevData.filter((item) => item.id !== id);
@@ -95,7 +95,7 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
             accessorKey: "id",
             header: "Id Order",
             cell: ({ row }) => (
-                <div className="capitalize font-medium">#{row.getValue("id")}</div>
+                <div className="capitalize font-medium">#00{row.getValue("id")}</div>
             ),
         },
         {
@@ -109,7 +109,7 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
             accessorKey: "item",
             header: "Item",
             cell: ({ row }) => (
-                <div className="capitalize font-medium">{row.getValue("item")}</div>
+                <div className="capitalize font-medium">{row.getValue("item").length > 40 ? `${row.getValue("item").slice(0, 40)}...` : row.getValue("item")}</div>
             ),
         },
         {
@@ -128,7 +128,7 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
             accessorKey: "date",
             header: "Waktu & Tanggal",
             cell: ({ row }) => (
-                <div className="capitalize font-medium">{row.getValue("date").length > 18 ? `${row.getValue("date").slice(0, 18)}...` : row.getValue("date")}</div>
+                <div className="capitalize font-medium">{row.getValue("date").length > 23 ? `${row.getValue("date").slice(0, 23)}...` : row.getValue("date")}</div>
             ),
         },
         {
@@ -152,8 +152,8 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-[164px]">
-                            <DropdownMenuItem onClick={() => setIsOpen(true)}className="p-3 gap-3 text-[14px] font-medium ">View Transaksi</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDelete(id)} className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleeditClick(id)}className="p-3 gap-3 text-[14px] font-medium ">View Transaksi</DropdownMenuItem>
+                            {/* <DropdownMenuItem onClick={() => handleDelete(id)} className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem> */}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -163,6 +163,15 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
 
 
     const [isOpen, setIsOpen] = useState(false);
+    const [dataEdit, setDataEdit]= useState(null);
+
+    
+    
+    const handleeditClick = (id) => {
+        const selectedData = data.find((item) => item.id === id);
+        setDataEdit(selectedData);
+        setIsOpen(true);
+    };
     const [sorting, setSorting] = useState([])
    
     const [columnVisibility, setColumnVisibility] = useState({})
@@ -379,7 +388,7 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
                     )}
                 </div>
             )} 
-            <ViewTransaksi isOpen={isOpen} setIsOpen={setIsOpen}/> 
+            <ViewTransaksi isOpen={isOpen} setIsOpen={setIsOpen} dataEdit={dataEdit}/> 
         </div>
     )
 }

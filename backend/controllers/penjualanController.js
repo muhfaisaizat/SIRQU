@@ -56,9 +56,10 @@ exports.readPenjualan = async (req, res) => {
 
     // Periksa apakah data transaksi ditemukan
     if (!transaksis || transaksis.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
-        message: 'Data penjualan tidak ditemukan',
+        message: 'Data penjualan belum ada silakan tambah transaksi',
+        data: null
       });
     }
 
