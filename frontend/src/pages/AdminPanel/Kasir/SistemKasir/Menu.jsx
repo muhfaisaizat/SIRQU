@@ -161,7 +161,7 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
                 setDataMenu(formattedData);
                 // setSelectedOutlet(formattedData[0])
                 
-                console.log('format:',formattedData)
+                // console.log('format:',formattedData)
             } else {
                 console.error("Data yang diterima bukan array");
             }

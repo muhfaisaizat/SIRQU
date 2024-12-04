@@ -88,39 +88,65 @@ const Order = ({ DetailOrder, fetchDataDaftarOrder, setDetailOrder, setTransaksi
 
 
 
-    const Tax = [
-        { id: 1, nama: 'Tax 10%', pajak: '10%' }
-    ];
-    const Discont = [
-        // { id: 'hsjsj', nama: 'Promo Sale', diskon: '50%' }
-    ];
+    const [Tax, setTax] = useState([]);
+    const [Discont, setDiscont] = useState([]); // Jika ada diskon tambahan
 
-    // menghitung sub total
-    const totalHarga = DetailOrder.reduce((acc, order) => acc + order.harga * order.count, 0);
-    let pajak = 0;
-    let diskon = 0;
-    if (viewOrder.ketBayar === 'Sudah Bayar') {
-        pajak = taxData;
-        diskon = orderDiskon;
-    } else {
-        // Menghitung pajak
-
-        if (Tax.length > 0) {
-            const taxPercentage = parseFloat(Tax[0].pajak) / 100;
-            pajak = totalHarga * taxPercentage;
+    
+    const fetchDataPajak = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/pajaks`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            if (Array.isArray(response.data.data)) {
+                // Filter hanya pajak dengan status true
+                const activeTaxes = response.data.data.filter((item) => item.status);
+                setTax(activeTaxes);
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
         }
-
-        // Menghitung diskon
-
-        if (Discont.length > 0) {
-            const discountPercentage = parseFloat(Discont[0].diskon) / 100;
-            diskon = totalHarga * discountPercentage;
-        }
-
     };
+    
+    useEffect(() => {
+        fetchDataPajak();
+    }, []);
 
+    useEffect(() => {
+        console.log(DaftarOrder)
+    }, [DaftarOrder]);
+    
+    // Menghitung subtotal
+    const totalHarga = DetailOrder.reduce((acc, order) => acc + order.harga * order.count, 0);
+    
+    // Menghitung pajak
+    let pajak = 0;
+    if (viewOrder.ketBayar === 'Sudah Bayar') {
+        pajak = taxData; // Jika sudah bayar, gunakan data pajak sebelumnya
+    } else {
+        // Menghitung pajak berdasarkan API
+        Tax.forEach((tax) => {
+            if (tax.nilaiPajak && tax.nilaiPajak !== 'null') {
+                const taxPercentage = parseFloat(tax.nilaiPajak.replace('%', '')) / 100;
+                pajak += totalHarga * taxPercentage; // Tambahkan pajak
+            }
+        });
+    }
+    
+    // Menghitung diskon
+    let diskon = 0;
+    if (Discont.length > 0) {
+        const discountPercentage = parseFloat(Discont[0].diskon) / 100;
+        diskon = totalHarga * discountPercentage;
+    }
+    
     // Menghitung total akhir
-    const totalAkhir = totalHarga + pajak - diskon;
+    const totalAkhir = totalHarga + pajak - diskon;    
 
 
 
