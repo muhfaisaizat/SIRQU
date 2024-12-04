@@ -565,9 +565,9 @@ const EditPromosi = ({ isOpen, setIsOpen, dataEditPromosi, fetchData }) => {
     }, [daysChecked]);
 
 
-    useEffect(() => {
-        console.log(hari)
-    }, [hari]);
+    // useEffect(() => {
+    //     console.log(hari)
+    // }, [hari]);
 
 
 

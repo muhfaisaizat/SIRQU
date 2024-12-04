@@ -58,136 +58,9 @@ import { API_URL } from "../../../../helpers/networt";
 
 
 // Main component
-const DataTableDemo = () => {
+const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
 
-    // data
-    const [data, setData] = useState([
-        // {
-        //     id: "m5gr84i9",
-        //     name: 'jairo vernandes',
-        //     jumlah: "12",
-        //     outlet: "Oulet 1, Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-        // {
-        //     id: "3u1reuv4",
-        //     name: 'jairo vernandes',
-        //     jumlah: "12",
-        //     outlet: "Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-        // {
-        //     id: "derv1ws0",
-        //     name: 'jairo vernandes',
-        //     jumlah: "12",
-        //     outlet: "Oulet 1, Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-        // {
-        //     id: "5kma53ae",
-        //     name: 'jairo vernandes',
-        //     jumlah: "89",
-        //     outlet: "Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-        // {
-        //     id: "bhqecj4p",
-        //     name: 'jairo vernandes',
-        //     jumlah: "9",
-        //     outlet: "Oulet 1, Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-        // {
-        //     id: "bhqecj4p234",
-        //     name: 'jairo vernandes',
-        //     jumlah: "12",
-        //     outlet: "Oulet 1, Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-        // {
-        //     id: "bhqecj4p23467",
-        //     name: 'jairo vernandes',
-        //     jumlah: "12",
-        //     outlet: "Oulet 1, Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-        // {
-        //     id: "bhqecj4p23467g",
-        //     name: 'jairo vernandes',
-        //     jumlah: "12",
-        //     outlet: "Oulet 1, Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-        // {
-        //     id: "bhqecj4p23467g7",
-        //     name: 'jairo vernandes',
-        //     jumlah: "12",
-        //     outlet: "Oulet 1, Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-        // {
-        //     id: "bhqecj4p23467g76",
-        //     name: 'jairo vernandes',
-        //     jumlah: "12",
-        //     outlet: "Oulet 1, Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-        // {
-        //     id: "bhqecj4p23467g76",
-        //     name: 'jairo vernandes',
-        //     jumlah: "12",
-        //     outlet: "Oulet 1, Outlet 2",
-        //     date: "23 Oktober 2024",
-        // },
-    ]);
-
-    // status
-    const [originalData, setOriginalData] = useState(data); // Tambahkan state untuk data asli
-
-    const formatData = (apiData) => {
-        return {
-         id: apiData.id_kategori,
-         name: apiData.nama_kategori,
-         jumlah: apiData.jumlah_product,
-         outlet: apiData.nama_outlet,
-         date: new Date(apiData.created_at).toLocaleDateString('id-ID', { 
-           day: 'numeric', 
-           month: 'long', 
-           year: 'numeric' 
-       }),
-        };
-    };
    
-    const fetchData = async () => {
-        const token = localStorage.getItem("token");
-        try {
-            const response = await axios.get(`${API_URL}/api/categories`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-   
-           // Log untuk memastikan data yang diterima
-   
-            // Pastikan response.data adalah array
-            if (Array.isArray(response.data.data)) {
-                const formattedData = response.data.data.map(formatData);
-               
-                setData(formattedData);
-                setOriginalData(formattedData); // Set originalData di sini
-               //  console.log(formattedData)
-            } else {
-                console.error("Data yang diterima bukan array");
-            }
-        } catch (error) {
-            console.error("Error fetching data", error);
-        }
-    };
-    // Ambil data dari API
-    useEffect(() => {
-    
-        fetchData();
-    }, []);
 
     // Define columns
     const columns = [
@@ -232,7 +105,7 @@ const DataTableDemo = () => {
         {
             accessorKey: "outlet",
             header: "Outlet",
-            cell: ({ row }) => <div className="lowercase font-medium">{row.getValue("outlet")}</div>,
+            cell: ({ row }) => <div className="lowercase font-medium">{row.getValue("outlet").length > 500 ? `${row.getValue("outlet").slice(0, 500)}...` : row.getValue("outlet")}</div>,
         },
         {
             accessorKey: "date",
@@ -350,6 +223,10 @@ const DataTableDemo = () => {
             });
         }
     }, [selectedId]);
+
+    useEffect(() => {
+        console.log(selectedOutlets)
+    }, [selectedOutlets]);
 
     const [DataOutlet, setDataOutlet] = useState([
         // { id: "m5gr84i9", name: 'Cabang 1' },
