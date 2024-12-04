@@ -28,7 +28,7 @@ exports.getViewStruk = async (req, res) => {
           `);
 
           const detailLogo = detailStrukLogo.find(item => item.name === 'Logo');
-          const logo = detailLogo ? detailLogo.logo: '';
+          const logo = detailLogo ? `${process.env.API_URL}/images/${detailLogo.logo}` : '';
 
         // Buat variabel untuk status tiap elemen berdasarkan data Struk
         const showLogo = strukData.find(item => item.name === 'Logo' && item.status === 'true');
@@ -48,11 +48,11 @@ exports.getViewStruk = async (req, res) => {
         let sosialMediaContent = '';
         if (showSosialMedia && detailStrukMedia && detailStrukMedia.length > 0) {
             detailStrukMedia.forEach(item => {
-                if (item.kategori === 'IG') {
+                if (item.kategori === 'IG' && item.nameMedia !== 'null') {
                     sosialMediaContent += `<p class="text-[14px] font-medium">Instagram : ${item.nameMedia}</p>`;
-                } else if (item.kategori === 'TW') {
+                } else if (item.kategori === 'TW' && item.nameMedia !== 'null') {
                     sosialMediaContent += `<p class="text-[14px] font-medium">Twitter : ${item.nameMedia}</p>`;
-                } else if (item.kategori === 'FB') {
+                } else if (item.kategori === 'FB' && item.nameMedia !== 'null') {
                     sosialMediaContent += `<p class="text-[14px] font-medium">Facebook : ${item.nameMedia}</p>`;
                 }
             });
@@ -72,12 +72,12 @@ exports.getViewStruk = async (req, res) => {
                 <div class="p-[16px] grid justify-items-center items-center">
                     ${showLogo ? 
                         logo?
-                        `<img src="/images/${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
+                        `<img src="${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
                         :''
                         : ''}
-                    ${showNamaToko ? `<h1 class="text-[20px] font-semibold py-[8px]">${textNamaToko? textNamaToko.text : ''}</h1>` : ''}
-                    ${showAlamat ? `<p class="text-[14px] font-medium">${textAlamat? textAlamat.text : ''}</p>` : ''}
-                    ${showKontak ? `<p class="text-[14px] font-medium">${textKontak? textKontak.text : ''}</p>` : ''}
+                    ${showNamaToko ? `<h1 class="text-[20px] font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
+                    ${showAlamat ? `<p class="text-[14px] font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
+                    ${showKontak ? `<p class="text-[14px] font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
                      <!-- <p class="text-[14px] font-medium">www.kopikita.com</p> -->
                 </div>
 
@@ -149,7 +149,7 @@ exports.getViewStruk = async (req, res) => {
                        ${sosialMediaContent}
                     </div>
                   ` : ''}
-                ${showCatatan ? `<p class="text-[14px] font-medium text-center w-[250px]">${textCatatan? textCatatan.text : ''}</p>` : ''}
+                ${showCatatan ? `<p class="text-[14px] font-medium text-center w-[250px]">${textCatatan?.text && textCatatan.text !== 'null'? textCatatan.text : ''}</p>` : ''}
                     <p class="text-[10px] font-medium text-slate-500 mt-[24px]">Powered by Sirqu POS</p>
                 </div>
 
@@ -337,7 +337,7 @@ exports.getTransaksiStruk = async (req, res) => {
           `);
 
           const detailLogo = detailStrukLogo.find(item => item.name === 'Logo');
-          const logo = detailLogo ? detailLogo.logo: '';
+          const logo = detailLogo ? `${process.env.API_URL}/images/${detailLogo.logo}` : '';
 
         // Buat variabel untuk status tiap elemen berdasarkan data Struk
         const showLogo = strukData.find(item => item.name === 'Logo' && item.status === 'true');
@@ -357,11 +357,11 @@ exports.getTransaksiStruk = async (req, res) => {
         let sosialMediaContent = '';
         if (showSosialMedia && detailStrukMedia && detailStrukMedia.length > 0) {
             detailStrukMedia.forEach(item => {
-                if (item.kategori === 'IG') {
+                if (item.kategori === 'IG' && item.nameMedia !== 'null') {
                     sosialMediaContent += `<p class="text-[14px] font-medium">Instagram : ${item.nameMedia}</p>`;
-                } else if (item.kategori === 'TW') {
+                } else if (item.kategori === 'TW' && item.nameMedia !== 'null') {
                     sosialMediaContent += `<p class="text-[14px] font-medium">Twitter : ${item.nameMedia}</p>`;
-                } else if (item.kategori === 'FB') {
+                } else if (item.kategori === 'FB' && item.nameMedia !== 'null') {
                     sosialMediaContent += `<p class="text-[14px] font-medium">Facebook : ${item.nameMedia}</p>`;
                 }
             });
@@ -381,12 +381,12 @@ exports.getTransaksiStruk = async (req, res) => {
                 <div class="p-[16px] grid justify-items-center items-center">
                     ${showLogo ? 
                         logo?
-                        `<img src="/images/${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
+                        `<img src="${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
                         :''
                         : ''}
-                    ${showNamaToko ? `<h1 class="text-[20px] font-semibold py-[8px]">${textNamaToko? textNamaToko.text : ''}</h1>` : ''}
-                    ${showAlamat ? `<p class="text-[14px] font-medium">${textAlamat? textAlamat.text : ''}</p>` : ''}
-                    ${showKontak ? `<p class="text-[14px] font-medium">${textKontak? textKontak.text : ''}</p>` : ''}
+                        ${showNamaToko ? `<h1 class="text-[20px] font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
+                        ${showAlamat ? `<p class="text-[14px] font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
+                        ${showKontak ? `<p class="text-[14px] font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
                      <!-- <p class="text-[14px] font-medium">www.kopikita.com</p> -->
                 </div>
 
@@ -432,7 +432,7 @@ exports.getTransaksiStruk = async (req, res) => {
                        ${sosialMediaContent}
                     </div>
                   ` : ''}
-                ${showCatatan ? `<p class="text-[14px] font-medium text-center w-[250px]">${textCatatan? textCatatan.text : ''}</p>` : ''}
+                ${showCatatan ? `<p class="text-[14px] font-medium text-center w-[250px]">${textCatatan?.text && textCatatan.text !== 'null'? textCatatan.text : ''}</p>` : ''}
                     <p class="text-[10px] font-medium text-slate-500 mt-[24px]">Powered by Sirqu POS</p>
                 </div>
 
