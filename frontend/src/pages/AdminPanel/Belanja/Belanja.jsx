@@ -23,6 +23,9 @@ import axios from 'axios';
 import { API_URL } from "../../../helpers/networt";
 
 const Belanja = () => {
+
+    const [dataSum, setDataSum] = useState([]);
+
   // data
   const [data, setData] = useState([
     // {
@@ -174,6 +177,22 @@ const fetchDataKategori = async () => {
     }
 };
 
+const fetchDataCard = async () => {
+    const token = localStorage.getItem("token");
+    try {
+        const response = await axios.get(`${API_URL}/api/belanja/outlet/${idOutlet}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        setDataSum(response.data)
+
+    } catch (error) {
+        console.error("Error fetching data", error);
+    }
+};
+
 // Ambil data dari API
 useEffect(() => {
     fetchDataOutlet();
@@ -184,6 +203,7 @@ useEffect(() => {
 useEffect(() => {
     if (idOutlet) {
         fetchDataKategori();
+        fetchDataCard();
     }
 }, [idOutlet]);
 
@@ -283,11 +303,11 @@ return (
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <AddBelanja idOutlet={idOutlet} fetchDataBelanja={fetchData} fetchDataKategori={fetchDataKategori}/>
+                <AddBelanja idOutlet={idOutlet} fetchDataBelanja={fetchData} fetchDataKategori={fetchDataKategori} fetchDataCard={fetchDataCard}/>
             </div>
         </div>
-        <DataCard/>
-        <DataTableHistory data={data} setData={setData} columnFilters={columnFilters} setColumnFilters={setColumnFilters} filters={filters} DataBayar={DataBayar} handleFilterChange={handleFilterChange} handleClearFilters={handleClearFilters} originalData={originalData} setOriginalData={setOriginalData} idOutlet={idOutlet} fetchDataBelanja={fetchData} fetchDataKategori={fetchDataKategori}/>
+        {Object.values(dataSum).every(value => value === null) ? null : <DataCard dataSum={dataSum} />}
+        <DataTableHistory data={data} fetchDataCard={fetchDataCard} columnFilters={columnFilters} setColumnFilters={setColumnFilters} filters={filters} DataBayar={DataBayar} handleFilterChange={handleFilterChange} handleClearFilters={handleClearFilters} originalData={originalData} setOriginalData={setOriginalData} idOutlet={idOutlet} fetchDataBelanja={fetchData} fetchDataKategori={fetchDataKategori}/>
     </div>
     </ScrollArea>
 );

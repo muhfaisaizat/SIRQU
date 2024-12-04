@@ -42,7 +42,7 @@ import { API_URL } from "../../../helpers/networt";
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from "@/components/ui/toast"
 
-const EditBelanja = ({ isOpen, setIsOpen, idOutlet, fetchDataBelanja, formDataBelanja, fetchDataKategori }) => {
+const EditBelanja = ({ isOpen, setIsOpen, idOutlet, fetchDataBelanja, formDataBelanja, fetchDataKategori, fetchDataCard }) => {
     const { toast } = useToast();
     const [formData, setFormData] = useState({
         nama_projec: '',
@@ -336,6 +336,7 @@ const EditBelanja = ({ isOpen, setIsOpen, idOutlet, fetchDataBelanja, formDataBe
            
 
             fetchDataBelanja();
+            fetchDataCard();
         } catch (error) {
             console.error('Error adding :', error);
             toast({

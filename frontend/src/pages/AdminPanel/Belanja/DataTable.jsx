@@ -49,7 +49,7 @@ import { ToastAction } from "@/components/ui/toast"
 
 
 // Main component
-const DataTableHistory = ({data, setData, fetchDataKategori, columnFilters, setColumnFilters, DataBayar, handleFilterChange, handleClearFilters, filters, originalData, setOriginalData, idOutlet, fetchDataBelanja}) => {
+const DataTableHistory = ({data, fetchDataCard, fetchDataKategori, columnFilters, setColumnFilters, DataBayar, handleFilterChange, handleClearFilters, filters, originalData, setOriginalData, idOutlet, fetchDataBelanja}) => {
     const { toast } = useToast();
 
 
@@ -446,7 +446,7 @@ const DataTableHistory = ({data, setData, fetchDataKategori, columnFilters, setC
                 </div>
             )} 
             <View isOpen={isOpen} setIsOpen={setIsOpen} formDataBelanja={formData} setSelectedId={setSelectedId}/> 
-            <EditBelanja isOpen={isOpenEdit} setIsOpen={setIsOpenEdit} idOutlet={idOutlet} formDataBelanja={formData} fetchDataBelanja={fetchDataBelanja} fetchDataKategori={fetchDataKategori}/> 
+            <EditBelanja isOpen={isOpenEdit} setIsOpen={setIsOpenEdit} idOutlet={idOutlet} formDataBelanja={formData} fetchDataBelanja={fetchDataBelanja} fetchDataKategori={fetchDataKategori} fetchDataCard={fetchDataCard}/> 
         </div>
     )
 }
