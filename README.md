@@ -42,5 +42,4 @@ Untuk login menggunakan dummy account admin:\
 `Email : admin@gmail.com`
 `Password : Admin123`
 
-Untuk tampilan buat Toko Utama setelah login ganti URL:\
-`http://localhost:5173/admin-panel/wellcome`
+
