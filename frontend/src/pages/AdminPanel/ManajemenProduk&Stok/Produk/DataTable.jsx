@@ -1116,6 +1116,33 @@ const DataTableDemo = ({ data, setData, originalData, setOriginalData, fetchData
         setIsDialogOpen(false);
     }
 
+    const [filters, setFilters] = useState({
+        kategori: [],
+      });
+
+    const handleFilterChange = (selectedValue) => {
+        setColumnFilters([{ id: 'kategori', value: selectedValue }]);
+        setFilters({ kategori: [selectedValue] });
+      };
+      const handleClearFilters = () => {
+        setFilters({ kategori: [] });  
+        setColumnFilters([]);  
+      };
+
+      const [filtersoutlet, setFiltersoutlet] = useState({
+        outlet: [],
+      });
+
+      const handleFilterChangeoutlet = (selectedValue) => {
+        setColumnFilters([{ id: 'outlet', value: selectedValue }]);
+        setFiltersoutlet({ outlet: [selectedValue] });
+      };
+      const handleClearFiltersoutlet = () => {
+        setFiltersoutlet({ outlet: [] });  
+        setColumnFilters([]);  
+      };
+
+
     return (
         <div className="w-full grid gap-[16px] mt-[24px]">
             <div className="flex items-center  justify-between">
@@ -1136,14 +1163,18 @@ const DataTableDemo = ({ data, setData, originalData, setOriginalData, fetchData
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-[184px]">
                             {DataKategori.map((kategori) => (
-                                <DropdownMenuItem key={kategori.id} className="h-[36px] p-[12px]">
+                                <DropdownMenuItem key={kategori.id} className="h-[36px] p-[12px]" onClick={() => handleFilterChange(kategori.name)}>
                                     <Checkbox
-
+                                        checked={filters.kategori.includes(kategori.name)}
+                                        onCheckedChange={() => handleFilterChange(kategori.name)}
                                         className="capitalize"
                                     />
                                     <span className="ml-[8px] text-[14px]">{kategori.name}</span>
                                 </DropdownMenuItem>
                             ))}
+                              <DropdownMenuItem onClick={handleClearFilters} className="h-[36px] font-medium  p-[12px] flex items-center justify-center text-[14px]">
+                                Hapus Filter
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <DropdownMenu>
@@ -1154,14 +1185,18 @@ const DataTableDemo = ({ data, setData, originalData, setOriginalData, fetchData
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-[184px]">
                             {DataOutlet.map((outlet) => (
-                                <DropdownMenuItem key={outlet.id} className="h-[36px] p-[12px]">
+                                <DropdownMenuItem key={outlet.id} className="h-[36px] p-[12px]" onClick={() => handleFilterChangeoutlet(outlet.name)}>
                                     <Checkbox
-
+                                        checked={filtersoutlet.outlet.includes(outlet.name)}
+                                        onCheckedChange={() => handleFilterChangeoutlet(outlet.name)}
                                         className="capitalize"
                                     />
                                     <span className="ml-[8px] text-[14px]">{outlet.name}</span>
                                 </DropdownMenuItem>
                             ))}
+                             <DropdownMenuItem onClick={handleClearFiltersoutlet} className="h-[36px] font-medium  p-[12px] flex items-center justify-center text-[14px]">
+                                Hapus Filter
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
