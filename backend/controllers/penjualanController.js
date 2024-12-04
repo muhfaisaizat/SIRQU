@@ -43,6 +43,9 @@ exports.readPenjualan = async (req, res) => {
     // Tambahkan filter berdasarkan tanggal jika ada
     if (start_date && end_date) {
       queryTransaksi += ` AND DATE(transaksis.createdAt) BETWEEN '${start_date}' AND '${end_date}'`;
+    } else if (!start_date && !end_date) {
+      // Jika start_date dan end_date null, tidak ada filter tanggal (tampilkan semua data)
+      queryTransaksi += ``; // Tidak menambahkan filter
     } else {
       // Jika hanya ingin filter berdasarkan hari ini
       queryTransaksi += ` AND DATE(transaksis.createdAt) = DATE(NOW())`;
