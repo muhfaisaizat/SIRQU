@@ -283,10 +283,10 @@ const Penjualan = () => {
     const handleThisWeek = () => {
         const today = new Date();
         const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 }); // Asumsi minggu mulai dari Senin
-        setDate({ from: today, to: startOfThisWeek });
+        setDate({ from: startOfThisWeek, to: today });
         const formattedDatetoday = today.toISOString().split('T')[0];
         const formattedstartOfThisWeek = startOfThisWeek.toISOString().split('T')[0];
-        fetchDataByDate(selectedOutlet.id, formattedDatetoday, formattedstartOfThisWeek);
+        fetchDataByDate(selectedOutlet.id, formattedstartOfThisWeek, formattedDatetoday);
     };
 
     const handleThisMonth = () => {
