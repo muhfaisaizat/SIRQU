@@ -27,9 +27,9 @@ exports.getCategories = async (req, res) => {
     FROM 
         categories
     LEFT JOIN 
-        categoriesoutlets ON categories.id = categoriesoutlets.categoriesId
+        categoriesoutlets ON categories.id = categoriesoutlets.categoriesId AND categoriesoutlets.deletedAt IS NULL
     LEFT JOIN 
-        outlets ON categoriesoutlets.outletsId = outlets.id
+        outlets ON categoriesoutlets.outletsId = outlets.id AND outlets.deletedAt IS NULL
 ),
 UniqueProducts AS (
     SELECT DISTINCT 
@@ -39,9 +39,9 @@ UniqueProducts AS (
     FROM 
         categories
     LEFT JOIN 
-        productscategories ON categories.id = productscategories.categoriesId
+        productscategories ON categories.id = productscategories.categoriesId AND productscategories.deletedAt IS NULL
     LEFT JOIN 
-        products ON productscategories.productsId = products.id
+        products ON productscategories.productsId = products.id AND products.deletedAt IS NULL
 ),
 UniqueProductOutlets AS (
     SELECT DISTINCT 
@@ -54,13 +54,13 @@ UniqueProductOutlets AS (
     FROM 
         categories
     LEFT JOIN 
-        productscategories ON categories.id = productscategories.categoriesId
+        productscategories ON categories.id = productscategories.categoriesId AND productscategories.deletedAt IS NULL
     LEFT JOIN 
-        products ON productscategories.productsId = products.id
+        products ON productscategories.productsId = products.id AND products.deletedAt IS NULL
     LEFT JOIN 
-        productsoutlets ON products.id = productsoutlets.productsId
+        productsoutlets ON products.id = productsoutlets.productsId AND productsoutlets.deletedAt IS NULL
     LEFT JOIN 
-        outlets ON productsoutlets.outletsId = outlets.id
+        outlets ON productsoutlets.outletsId = outlets.id AND outlets.deletedAt IS NULL
 )
 SELECT 
     categories.id AS id_kategori,
@@ -112,13 +112,13 @@ SELECT
 FROM 
     categories
 LEFT JOIN 
-    productscategories ON categories.id = productscategories.categoriesId
+    productscategories ON categories.id = productscategories.categoriesId AND productscategories.deletedAt IS NULL
 LEFT JOIN 
-    products ON productscategories.productsId = products.id
+    products ON productscategories.productsId = products.id AND products.deletedAt IS NULL
 LEFT JOIN 
-    productsoutlets ON products.id = productsoutlets.productsId
+    productsoutlets ON products.id = productsoutlets.productsId AND productsoutlets.deletedAt IS NULL
 LEFT JOIN 
-    outlets ON productsoutlets.outletsId = outlets.id
+    outlets ON productsoutlets.outletsId = outlets.id AND outlets.deletedAt IS NULL
 WHERE 
     categories.deletedAt IS NULL
 GROUP BY 
