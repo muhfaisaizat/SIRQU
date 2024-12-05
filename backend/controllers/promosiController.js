@@ -77,9 +77,11 @@ exports.createPromosi = async (req, res) => {
 
 // Mendapatkan semua promosi
 exports.getAllPromosi = async (req, res) => {
+  const { status } = req.query; 
+
     try {
       // Query SQL untuk mengambil data promosi
-      const queryPromosi = `
+      let queryPromosi = `
         SELECT 
     promosis.id AS id_promosi,
     promosis.namaPromosi AS nama_promosi,
@@ -126,11 +128,20 @@ LEFT JOIN
     promosisoutlets ON promosis.id = promosisoutlets.promosisId
 LEFT JOIN
     outlets ON promosisoutlets.outletsId = outlets.id
-WHERE 
-promosis.deletedAt IS NULL AND promosisoutlets.deletedAt IS NULL
-GROUP BY 
-    promosis.id;
       `;
+
+      if (status === 'default') {
+        queryPromosi += `WHERE promosis.deletedAt IS NULL AND promosisoutlets.deletedAt IS NULL GROUP BY promosis.id;`;
+      }
+      if (status === 'delete') {
+        queryPromosi += `WHERE promosis.deletedAt IS NOT NULL AND promosisoutlets.deletedAt IS NULL GROUP BY promosis.id;`;
+      }
+      if (status === 'aktif') {
+        queryPromosi += `WHERE promosis.status = 'Promosi Aktif' AND promosisoutlets.deletedAt IS NULL GROUP BY promosis.id;`;
+      }
+      if (status === 'expired') {
+        queryPromosi += `WHERE promosis.status = 'Promosi Tidak Aktif' AND promosisoutlets.deletedAt IS NULL GROUP BY promosis.id;`;
+      }
   
       // Jalankan query untuk mendapatkan data promosi
       const [promosi] = await sequelize.query(queryPromosi);

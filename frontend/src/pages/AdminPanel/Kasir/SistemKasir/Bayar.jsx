@@ -104,7 +104,7 @@ const Bayar = ({ Transaksi, setTransaksi, fetchDataDaftarOrder, setDaftarOrder, 
     const fetchDataDiskon = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await axios.get(`${API_URL}/api/promosi`, {
+            const response = await axios.get(`${API_URL}/api/promosi?status=default`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

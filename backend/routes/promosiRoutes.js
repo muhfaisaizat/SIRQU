@@ -93,6 +93,14 @@ router.post('/', upload.none(), roleMiddleware(['Admin', 'Manager']), createProm
  *   get:
  *     summary: Get all promosi
  *     tags: [Promosi]
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [aktif, expired, delete, default]
+ *         description: Pilihan status promosi
  *     responses:
  *       200:
  *         description: A list of promosis
@@ -148,7 +156,7 @@ router.post('/', upload.none(), roleMiddleware(['Admin', 'Manager']), createProm
  *                     format: date-time
  *                     description: The timestamp when the promotion was deleted (if applicable)
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), getAllPromosi);
+router.get('/', roleMiddleware(['Admin', 'Manager']),  getAllPromosi);
 
 /**
  * @swagger

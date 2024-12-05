@@ -2,6 +2,59 @@ const express = require('express');
 const router = express.Router();
 const promosiOutletController = require('../controllers/promosiOutletController');
 const roleMiddleware = require('../middleware/roleMiddleware')
+/**
+ * @swagger
+ * /api/promosi/outlets:
+ *   get:
+ *     summary: Get all Promosi-Outlet relationships
+ *     tags: [Promosi]
+ *     responses:
+ *       200:
+ *         description: A list of Promosi-Outlet relationships
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       promosiOutletId:
+ *                         type: integer
+ *                         example: 1
+ *                       promosiId:
+ *                         type: integer
+ *                         example: 2
+ *                       promosiName:
+ *                         type: string
+ *                         example: "Diskon Akhir Tahun"
+ *                       outletId:
+ *                         type: integer
+ *                         example: 5
+ *                       outletName:
+ *                         type: string
+ *                         example: "Outlet Jakarta"
+ *       400:
+ *         description: Error fetching relationships
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Error fetching Promosi-Outlet relationships."
+ */
+router.get('/outlets', roleMiddleware(['Admin', 'Manager']),  promosiOutletController.getPromosiOutlet);
+
 
 /**
  * @swagger
@@ -37,27 +90,9 @@ const roleMiddleware = require('../middleware/roleMiddleware')
  *       400:
  *         description: Bad request or invalid data
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), promosiOutletController.createPromosiOutlet);
+router.post('/outlets', roleMiddleware(['Admin', 'Manager']), promosiOutletController.createPromosiOutlet);
 
-/**
- * @swagger
- * /api/promosi/outlets:
- *   get:
- *     summary: Get all Promosi-Outlet relationships
- *     tags: [Promosi]
- *     responses:
- *       200:
- *         description: A list of Promosi-Outlet relationships
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/ProductOutlet'
- *       400:
- *         description: Error fetching relationships
- */
-router.get('/', roleMiddleware(['Admin', 'Manager']), promosiOutletController.getPromosiOutlet);
+
 
 /**
  * @swagger
@@ -84,7 +119,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), promosiOutletController.ge
  *       400:
  *         description: Error fetching the relationship
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController.getPromosiOutletById);
+router.get('/outlets/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController.getPromosiOutletById);
 
 /**
  * @swagger
@@ -127,7 +162,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController
  *       400:
  *         description: Error updating the relationship
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController.updatePromosiOutlet);
+router.put('/outlets/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController.updatePromosiOutlet);
 
 /**
  * @swagger
@@ -150,6 +185,6 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController
  *       400:
  *         description: Bad Request
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController.deletePromosiOutlet);
+router.delete('/outlets/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController.deletePromosiOutlet);
 
 module.exports = router;
