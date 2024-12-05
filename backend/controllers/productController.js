@@ -433,7 +433,8 @@ WHERE
     AND po.deletedAt IS NULL 
     AND pc.deletedAt IS NULL
     AND pi.deletedAt IS NULL
-    AND (p.stock > 0 OR p.unlimited_stock = TRUE) 
+    AND (p.stock > 0 OR p.unlimited_stock = TRUE)
+    AND p.status = 'Produk Aktif' 
 GROUP BY
     p.id, c.id, o.id 
 ORDER BY 

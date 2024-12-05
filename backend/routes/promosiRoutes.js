@@ -99,7 +99,7 @@ router.post('/', upload.none(), roleMiddleware(['Admin', 'Manager']), createProm
  *         required: true
  *         schema:
  *           type: string
- *           enum: [aktif, expired, delete, default]
+ *           enum: [all, aktif, expired, delete, default]
  *         description: Pilihan status promosi
  *     responses:
  *       200:

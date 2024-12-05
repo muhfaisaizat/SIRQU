@@ -142,6 +142,9 @@ LEFT JOIN
       if (status === 'expired') {
         queryPromosi += `WHERE promosis.status = 'Promosi Tidak Aktif' AND promosisoutlets.deletedAt IS NULL GROUP BY promosis.id;`;
       }
+      if (status === 'all') {
+        queryPromosi += `GROUP BY promosis.id;`;
+      }
   
       // Jalankan query untuk mendapatkan data promosi
       const [promosi] = await sequelize.query(queryPromosi);
