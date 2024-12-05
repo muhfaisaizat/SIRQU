@@ -58,7 +58,7 @@ import { API_URL } from "../../../../helpers/networt";
 
 
 // Main component
-const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
+const DataTableDemo = ({data, setData, originalData, setOriginalData, fetchData}) => {
 
    
 
@@ -140,7 +140,7 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
                         <DropdownMenuContent align="end" className="w-[164px]">
                             <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium" onClick={() => handleEditClick(id)}>Edit Kategori</DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500">Delete</DropdownMenuItem>
+                            <DropdownMenuItem className="p-3 gap-3 text-[14px] font-medium text-rose-500 focus:text-rose-500" onClick={() => handleDeleteKategori(id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -195,6 +195,8 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
     const [selectedId, setSelectedId] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedOutlets, setSelectedOutlets] = useState([]);
+    const [selectedCreateOutlets, setSelectedCreateOutlets] = useState([]);
+    const [selectedDeleteOutlets, setSelectedDeleteOutlets] = useState([]);
     const [formData, setFormData] = useState({
         nama: '',
     });
@@ -203,10 +205,44 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
     const handleEditClick = (id) => {
         const selectedData = data.find(item => item.id === id);
         if (selectedData) {
-            const outlets = selectedData.outlet.split(", ").map((name, index) => ({ id: `outlet-${index}`, name }));
+            const outlets = selectedData.detailOutlet.map((item) => ({
+                id: String(item.id),
+                detailId: item.categoryOutletId,
+                name: String(item.nama),
+            }));
             setSelectedOutlets(outlets);
             setSelectedId(id);
             setIsDialogOpen(true);
+        }
+    };
+
+    const handleDeleteKategori = async (id) => {
+        const token = localStorage.getItem("token");
+    
+        try {
+          // Send a DELETE request to the API endpoint
+          await axios.delete(`${API_URL}/api/categories/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          toast({
+            title: "Sukses!",
+            description: "Kategori berhasil dihapus.",
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
+        
+        fetchData();
+
+        } catch (error) {
+          console.error("Error deleting data:", error);
+          const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+          toast({
+            variant: "destructive",
+            title: "Error!",
+            description: errorMessage,
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
         }
     };
 
@@ -278,10 +314,29 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
             // Memeriksa apakah outlet sudah terpilih
             const isSelected = prevSelected.some((o) => o.id === outlet.id);
             if (isSelected) {
+                const outletToRemove = selectedOutlets.find((o) => o.id === outlet.id);
+                if (outletToRemove.detailId) {
+                    setSelectedDeleteOutlets((prevSelected) => {
+                        const isAlreadyInDeleteOutlets = prevSelected.some((o) => o.outletid === outletToRemove.detailId);
+                        if (!isAlreadyInDeleteOutlets) {
+                            return [...prevSelected, { detailOutletId: outletToRemove.detailId }];
+                        }
+                        return prevSelected;
+                    });
+                    return prevSelected.filter((o) => o.id !== outlet.id);
+                } else {
+                    return prevSelected.filter((o) => o.id !== outlet.id);
+                }
                 // Jika outlet sudah terpilih, hapus dari selectedOutlets
-                return prevSelected.filter((o) => o.id !== outlet.id);
             } else {
                 // Jika outlet belum terpilih, tambahkan ke selectedOutlets
+                setSelectedCreateOutlets((prevSelected) => {
+                    const isAlreadyInCreateOutlets = prevSelected.some((o) => o.outletid === outlet.id);
+                    if (!isAlreadyInCreateOutlets) {
+                        return [...prevSelected, { outletId: outlet.id }];
+                    }
+                    return prevSelected;
+                });
                 return [...prevSelected, outlet];
             }
         });
@@ -290,17 +345,59 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
     const handleSelectAll = () => {
         if (selectedOutlets.length === DataOutlet.length) {
             setSelectedOutlets([]);
+            setSelectedCreateOutlets([]);
+
         } else {
-            // Jika tidak semua outlet dipilih, pilih semua outlet
+
+            setSelectedDeleteOutlets((prevSelected) => {
+                const newDeleteOutlets = selectedOutlets.reduce((acc, outlet) => {
+                    if (!acc.some((o) => o.outletid === outlet.detailId)) {
+                        acc.push({ detailOutletId: outlet.detailId });
+                    }
+                    return acc;
+                }, [...prevSelected]);
+                return newDeleteOutlets;
+            });
+
             setSelectedOutlets(DataOutlet);
+
+            setSelectedCreateOutlets((prevSelected) => {
+                const newOutlets = DataOutlet.reduce((acc, outlet) => {
+                    if (!acc.some((o) => o.id === outlet.id)) {
+                        acc.push({ outletId: outlet.id });
+                    }
+                    return acc;
+                }, [...prevSelected]);
+
+                return newOutlets;
+            });
         }
     };
 
     const handleRemoveOutlet = (id) => {
-        setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+        const outletToRemove = selectedOutlets.find((outlet) => outlet.id === id);
+        if (outletToRemove.detailId) {
+            setSelectedDeleteOutlets((prevSelected) => {
+                const isAlreadyInDeleteOutlets = prevSelected.some((o) => o.outletid === outletToRemove.detailId);
+                if (!isAlreadyInDeleteOutlets) {
+                    return [...prevSelected, { detailOutletId: outletToRemove.detailId }];
+                }
+                return prevSelected;
+            });
+            setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+        } else {
+            setSelectedCreateOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.outletId !== id));
+            setSelectedOutlets((prevSelected) => prevSelected.filter((outlet) => outlet.id !== id));
+        }
     };
 
-    const handleSubmit = (e) => {
+    // useEffect(() => {
+    //     console.log(selectedOutlets)
+    //     console.log(selectedCreateOutlets)
+    //     console.log(selectedDeleteOutlets)
+    // }, [selectedOutlets, selectedCreateOutlets, selectedDeleteOutlets]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const { nama } = formData;
 
@@ -324,15 +421,73 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData}) => {
             return;
         }
 
-        // Logika penyimpanan data di sini
-        // Misalnya: simpanData(formData);
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.put(`${API_URL}/api/categories/${selectedId}`, {
+                name: nama
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+        
+            const kategoriId = response.data.id;
+        
+            // Delete outlets if any
+            const promisesdelete = selectedDeleteOutlets.length > 0
+                ? selectedDeleteOutlets.map(outlet =>
+                    axios.delete(`${API_URL}/api/categories/outlets/${outlet.detailOutletId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    })
+                )
+                : [];
+        
+            // Create outlets if any
+            const promises = selectedCreateOutlets.length > 0
+                ? selectedCreateOutlets.map(outlet =>
+                    axios.post(`${API_URL}/api/categories/outlets`, {
+                        categoriesId: kategoriId,
+                        outletsId: outlet.outletId
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    })
+                )
+                : [];
+        
+        
+            // Execute all promises
+            await Promise.all([...promisesdelete, ...promises]);
+        
+            toast({
+                title: "Sukses!",
+                description: "Kategori berhasil diperbarui.",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        
+            fetchData();
+        
+        } catch (error) {
+            console.error('Error adding :', error);
+            const errorMessage =
+                error.response?.data?.message || error.message || "Unknown error occurred";
+        
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: errorMessage,
+                status: "error",
+                action: <ToastAction altText="Try again">Cancel</ToastAction>,
+            });
+        }
 
-        toast({
-            title: "Sukses!",
-            description: "Pengguna berhasil ditambahkan.",
-            action: <ToastAction altText="Try again">Cancel</ToastAction>,
-        });
-
+        
+        setSelectedCreateOutlets([]);
+        setSelectedDeleteOutlets([]);
         setIsDialogOpen(false);
     };
 

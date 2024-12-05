@@ -170,7 +170,7 @@ useEffect(() => {
         
       </div>
 
-      <DataTableDemo data={data} setData={setData} originalData={originalData} setOriginalData={setOriginalData}/>
+      <DataTableDemo data={data} setData={setData} originalData={originalData} setOriginalData={setOriginalData} fetchData={fetchData}/>
     </div>
   )
 }
