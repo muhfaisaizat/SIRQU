@@ -18,37 +18,97 @@ exports.getCategories = async (req, res) => {
   try {
     // Query SQL untuk mengambil data kategori dengan jumlah produk
     const queryCategories = `
-      SELECT 
+      WITH UniqueOutlets AS (
+    SELECT DISTINCT 
+        categories.id AS category_id,
+        outlets.id AS id,
+        outlets.nama AS nama,
+        outlets.position AS position
+    FROM 
+        categories
+    LEFT JOIN 
+        productscategories ON categories.id = productscategories.categoriesId
+    LEFT JOIN 
+        products ON productscategories.productsId = products.id
+    LEFT JOIN 
+        productsoutlets ON products.id = productsoutlets.productsId
+    LEFT JOIN 
+        outlets ON productsoutlets.outletsId = outlets.id
+),
+UniqueProducts AS (
+    SELECT DISTINCT 
+        categories.id AS category_id,
+        products.id AS id,
+        products.name AS nama
+    FROM 
+        categories
+    LEFT JOIN 
+        productscategories ON categories.id = productscategories.categoriesId
+    LEFT JOIN 
+        products ON productscategories.productsId = products.id
+),
+UniqueProductOutlets AS (
+    SELECT DISTINCT 
+        categories.id AS category_id,
+        productsoutlets.id AS productOutletId,
+        products.id AS productId,
+        products.name AS productName,
+        outlets.id AS outletId,
+        outlets.nama AS outletName
+    FROM 
+        categories
+    LEFT JOIN 
+        productscategories ON categories.id = productscategories.categoriesId
+    LEFT JOIN 
+        products ON productscategories.productsId = products.id
+    LEFT JOIN 
+        productsoutlets ON products.id = productsoutlets.productsId
+    LEFT JOIN 
+        outlets ON productsoutlets.outletsId = outlets.id
+)
+SELECT 
     categories.id AS id_kategori,
     categories.name AS nama_kategori,
-    COUNT(productscategories.productsId) AS jumlah_product,
+    COUNT(DISTINCT productscategories.productsId) AS jumlah_product,
 
-    -- Mendapatkan detailOutlet sebagai JSON array
-    JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'id', outlets.id,
-            'nama', outlets.nama,
-            'position', outlets.position
+    -- Menggabungkan outlet unik ke dalam JSON array
+    (SELECT 
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', uo.id,
+                'nama', uo.nama,
+                'position', uo.position
+            )
         )
+     FROM UniqueOutlets uo
+     WHERE uo.category_id = categories.id
     ) AS detailOutlet,
 
-    -- Mendapatkan detailProduct sebagai JSON array
-    JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'id', products.id,
-            'nama', products.name
+    -- Menggabungkan produk unik ke dalam JSON array
+    (SELECT 
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', up.id,
+                'nama', up.nama
+            )
         )
+     FROM UniqueProducts up
+     WHERE up.category_id = categories.id
     ) AS detailProduct,
 
-    -- Mendapatkan productOutlet sebagai JSON array dengan detail relasi
-    JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'productOutletId', productsoutlets.id,
-            'productId', products.id,
-            'productName', products.name,
-            'outletId', outlets.id,
-            'outletName', outlets.nama
+    -- Menggabungkan relasi produk-outlet unik ke dalam JSON array
+    (SELECT 
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'productOutletId', upo.productOutletId,
+                'productId', upo.productId,
+                'productName', upo.productName,
+                'outletId', upo.outletId,
+                'outletName', upo.outletName
+            )
         )
+     FROM UniqueProductOutlets upo
+     WHERE upo.category_id = categories.id
     ) AS productOutlet,
 
     categories.createdAt AS created_at
