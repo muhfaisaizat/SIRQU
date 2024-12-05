@@ -262,19 +262,29 @@ exports.readTransaksibyid = async (req, res) => {
     for (const transaksi of transaksis) {
       // Query untuk mengambil detail transaksi
       const queryDetailTransaksi = `
-        SELECT 
-          dt.id,
-          dt.transaksisId AS transaksi_id,
-          dt.productsId AS product_id,
-          p.name AS product_name,
-          p.price AS product_price,
-          dt.stok 
-        FROM 
-          detailtransaksis AS dt
-        JOIN 
-          products AS p ON dt.productsId = p.id
-        WHERE 
-          dt.transaksisId = ${transaksi.transaksi_id}
+         SELECT 
+    dt.id,
+    dt.transaksisId AS transaksi_id,
+    dt.productsId AS product_id,
+    p.name AS product_name,
+    p.price AS product_price,
+    dt.stok,
+    MAX(productimages.image) AS foto   
+FROM 
+    detailtransaksis AS dt
+JOIN 
+    products AS p ON dt.productsId = p.id
+JOIN
+    productimages ON dt.productsId = productimages.productsId
+WHERE 
+    dt.transaksisId = ${transaksi.transaksi_id}
+GROUP BY 
+    dt.id, 
+    dt.transaksisId, 
+    dt.productsId, 
+    p.name, 
+    p.price, 
+    dt.stok;
       `;
       const [detailTransaksis] = await sequelize.query(queryDetailTransaksi);
 
@@ -381,19 +391,29 @@ exports.readTransaksiDate = async (req, res) => {
     for (const transaksi of transaksis) {
       // Query untuk mengambil detail transaksi
       const queryDetailTransaksi = `
-        SELECT 
-          dt.id,
-          dt.transaksisId AS transaksi_id,
-          dt.productsId AS product_id,
-          p.name AS product_name,
-          p.price AS product_price,
-          dt.stok 
-        FROM 
-          detailtransaksis AS dt
-        JOIN 
-          products AS p ON dt.productsId = p.id
-        WHERE 
-          dt.transaksisId = ${transaksi.transaksi_id}
+       SELECT 
+    dt.id,
+    dt.transaksisId AS transaksi_id,
+    dt.productsId AS product_id,
+    p.name AS product_name,
+    p.price AS product_price,
+    dt.stok,
+    MAX(productimages.image) AS foto   
+FROM 
+    detailtransaksis AS dt
+JOIN 
+    products AS p ON dt.productsId = p.id
+JOIN
+    productimages ON dt.productsId = productimages.productsId
+WHERE 
+    dt.transaksisId = ${transaksi.transaksi_id}
+GROUP BY 
+    dt.id, 
+    dt.transaksisId, 
+    dt.productsId, 
+    p.name, 
+    p.price, 
+    dt.stok;
       `;
       const [detailTransaksis] = await sequelize.query(queryDetailTransaksi);
 

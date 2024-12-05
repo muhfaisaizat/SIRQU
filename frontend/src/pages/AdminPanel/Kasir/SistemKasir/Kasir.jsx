@@ -162,7 +162,7 @@ const Kasir = () => {
         detailTransaksi: detailTransaksi.map((item) => ({
           id: item.id,
           id_produk: item.product_id,
-          foto: 'https://github.com/shadcn.png',
+          foto: item.foto,
           count: item.stok,
           name: item.product_name,
           harga: item.product_price,
