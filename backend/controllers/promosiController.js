@@ -144,7 +144,7 @@ LEFT JOIN
         queryPromosi += `WHERE promosis.status = 'Promosi Tidak Aktif' AND promosisoutlets.deletedAt IS NULL GROUP BY promosis.id;`;
       }
       if (status === 'all') {
-        queryPromosi += `GROUP BY promosis.id;`;
+        queryPromosi += `WHERE promosisoutlets.deletedAt IS NULL GROUP BY promosis.id;`;
       }
   
       // Jalankan query untuk mendapatkan data promosi
