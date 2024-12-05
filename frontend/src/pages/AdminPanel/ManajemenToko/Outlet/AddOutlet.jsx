@@ -200,8 +200,16 @@ const AddOutlet = ({ onAddOutlet, fetchData }) => {
                 },
             });
 
+            const responsekategori = await axios.get(`${API_URL}/api/categories`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
             const products = response.data.data; 
+            const kategori = responsekategori.data.data; 
             const productIds = products.map(product => product.product_id); 
+            const kategoriIds = kategori.map(k => k.id_kategori); 
 
             for (const productId of productIds) {
             const create = await axios.post( `${API_URL}/api/products/outlets`,
@@ -218,7 +226,22 @@ const AddOutlet = ({ onAddOutlet, fetchData }) => {
             );
             }
 
-            console.log(productIds);
+            for (const kategoriId of kategoriIds) {
+            const create = await axios.post( `${API_URL}/api/categories/outlets`,
+            {
+                categoriesId: kategoriId,
+                outletsId: idoutlet
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+            );
+            }
+
+            // console.log(productIds);
             setidoutlet(null);
             setcontenstep(2);
   
