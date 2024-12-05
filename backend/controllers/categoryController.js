@@ -17,23 +17,19 @@ exports.createCategory = async (req, res) => {
 exports.getCategories = async (req, res) => {
   try {
     // Query SQL untuk mengambil data kategori dengan jumlah produk
-    const queryCategories = `
-      WITH UniqueOutlets AS (
+    const queryCategories = `WITH UniqueOutlets AS (
     SELECT DISTINCT 
         categories.id AS category_id,
         outlets.id AS id,
         outlets.nama AS nama,
-        outlets.position AS position
+        outlets.position AS position,
+        categoriesoutlets.id AS categoryOutletId
     FROM 
         categories
     LEFT JOIN 
-        productscategories ON categories.id = productscategories.categoriesId
+        categoriesoutlets ON categories.id = categoriesoutlets.categoriesId
     LEFT JOIN 
-        products ON productscategories.productsId = products.id
-    LEFT JOIN 
-        productsoutlets ON products.id = productsoutlets.productsId
-    LEFT JOIN 
-        outlets ON productsoutlets.outletsId = outlets.id
+        outlets ON categoriesoutlets.outletsId = outlets.id
 ),
 UniqueProducts AS (
     SELECT DISTINCT 
@@ -77,7 +73,8 @@ SELECT
             JSON_OBJECT(
                 'id', uo.id,
                 'nama', uo.nama,
-                'position', uo.position
+                'position', uo.position,
+                'categoryOutletId', uo.categoryOutletId
             )
         )
      FROM UniqueOutlets uo
