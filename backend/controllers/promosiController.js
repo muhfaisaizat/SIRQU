@@ -111,6 +111,7 @@ exports.getAllPromosi = async (req, res) => {
     JSON_ARRAYAGG(
         JSON_OBJECT(
             'id', outlets.id,
+            'id_promosi_outlet', promosisoutlets.id,
             'nama', outlets.nama,
             'position', outlets.position
         )
