@@ -53,6 +53,14 @@ router.get('/stock-habis', roleMiddleware(['Admin', 'Manager']),  productControl
  *   get:
  *     summary: Get menu details with product, category, and outlet information
  *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [aktif, default]
+ *         description: Pilihan status menu
  *     responses:
  *       200:
  *         description: List of products with categories and outlets

@@ -203,7 +203,7 @@ const DataTable = () => {
     const fetchData = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await axios.get(`${API_URL}/api/products/menu`, {
+            const response = await axios.get(`${API_URL}/api/products/menu?status=default`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

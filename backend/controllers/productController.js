@@ -234,7 +234,7 @@ exports.getProducts = async (req, res) => {
       LEFT JOIN 
           outlets o ON po.outletsId = o.id
       WHERE 
-          p.deletedAt IS NULL AND po.deletedAt IS NULL AND pc.deletedAt IS NULL
+          p.deletedAt IS NULL AND o.deletedAt IS NULL AND po.deletedAt IS NULL AND pc.deletedAt IS NULL
       GROUP BY 
           p.id, p.name, p.description, p.price, p.stock, p.unlimited_stock, p.status, p.createdAt
       ORDER BY 
@@ -276,7 +276,7 @@ exports.getProducts = async (req, res) => {
           LEFT JOIN 
               outlets o ON po.outletsId = o.id
           WHERE 
-              po.deletedAt IS NULL AND po.productsId = :productsId;
+              po.deletedAt IS NULL AND o.deletedAt IS NULL AND po.productsId = :productsId;
           `,
           {
             type: sequelize.QueryTypes.SELECT,
@@ -400,8 +400,9 @@ exports.updateProductStatus = async (req, res) => {
 
 
 exports.getProductMenu = async (req, res) => {
+  const { status } = req.query; 
   try {
-    const products = await Product.sequelize.query (`
+    let queryProducts = `
         SELECT 
     p.id AS product_id,
     p.name AS product_name,
@@ -428,7 +429,22 @@ LEFT JOIN
     outlets o ON po.outletsId = o.id
 LEFT JOIN 
     productimages pi ON p.id = pi.productsId  
-WHERE 
+      `;
+
+    if (status === 'default') {
+      queryProducts += `WHERE 
+    p.deletedAt IS NULL 
+    AND po.deletedAt IS NULL 
+    AND pc.deletedAt IS NULL
+    AND pi.deletedAt IS NULL
+    AND (p.stock > 0 OR p.unlimited_stock = TRUE) 
+GROUP BY
+    p.id, c.id, o.id 
+ORDER BY 
+    p.id, c.name, o.nama;`;
+    }
+    if (status === 'aktif') {
+      queryProducts += `WHERE 
     p.deletedAt IS NULL 
     AND po.deletedAt IS NULL 
     AND pc.deletedAt IS NULL
@@ -438,10 +454,10 @@ WHERE
 GROUP BY
     p.id, c.id, o.id 
 ORDER BY 
-    p.id, c.name, o.nama;
-      `,
-      { type: Product.sequelize.QueryTypes.SELECT }
-    );
+    p.id, c.name, o.nama;`;
+    }
+
+    const [products] = await sequelize.query(queryProducts);
 
 
       // Response ke client

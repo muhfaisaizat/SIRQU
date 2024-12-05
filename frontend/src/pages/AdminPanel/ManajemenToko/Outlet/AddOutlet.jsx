@@ -32,6 +32,7 @@ import { API_URL } from "../../../../helpers/networt";
 
 const AddOutlet = ({ onAddOutlet, fetchData }) => {
     const { toast } = useToast();
+    const [idoutlet, setidoutlet] = useState(null);
     const [nama, setNama] = useState('');
     const [alamat, setAlamat] = useState('');
     const [imageFile, setImageFile] = useState(null); // Simpan file asli
@@ -133,6 +134,7 @@ const AddOutlet = ({ onAddOutlet, fetchData }) => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+            setidoutlet(response.data.outlet.id);
             setCurrentStep(1);
            
         } catch (error) {
@@ -152,11 +154,79 @@ const AddOutlet = ({ onAddOutlet, fetchData }) => {
 
     };
 
-    const dataKordinator = [
-        { id: '1', nama: 'Dafa' },
-        { id: '2', nama: 'Fajar' },
-        { id: '3', nama: 'Aizat' },
-    ];
+    const [dataKordinator,setdataKordinator] = useState([
+        // { id: '1', nama: 'Dafa' },
+        // { id: '2', nama: 'Fajar' },
+        // { id: '3', nama: 'Aizat' },
+    ]);
+
+
+    const fetchDataKategori = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/users`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+  
+           // Log untuk memastikan data yang diterima
+  
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data)) {
+                const filteredData = response.data.filter(user => user.role === "Manager");
+                setdataKordinator(filteredData);
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+    // Ambil data dari API
+    useEffect(() => {
+    
+        fetchDataKategori();
+    }, []);
+
+
+
+    const handleImpor = async () =>{
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/products`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const products = response.data.data; 
+            const productIds = products.map(product => product.product_id); 
+
+            for (const productId of productIds) {
+            const create = await axios.post( `${API_URL}/api/products/outlets`,
+            {
+                productsId: productId,
+                outletsId: idoutlet, 
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+            );
+            }
+
+            console.log(productIds);
+            setidoutlet(null);
+            setcontenstep(2);
+  
+            
+        } catch (error) {
+            console.error("Error import data", error);
+        }
+    }
 
     return (
         <Dialog>
@@ -179,7 +249,6 @@ const AddOutlet = ({ onAddOutlet, fetchData }) => {
                         </DialogClose>
                     </div>
                     <div className="grid gap-[16px]">
-
 
                         <div className='flex gap-[16px] pt-[16px] pb-[32px]'>
                             <div className='w-[200px] border-t-4 border-black py-[4px] text-[14px] font-semibold'>Detail cabang</div>
@@ -283,7 +352,7 @@ const AddOutlet = ({ onAddOutlet, fetchData }) => {
                                             <SelectGroup>
                                                 {dataKordinator.map((koordinator) => (
                                                     <SelectItem className="text-[14px]" key={koordinator.id} value={koordinator.id}>
-                                                        {koordinator.nama}
+                                                        {koordinator.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectGroup>
@@ -309,7 +378,7 @@ const AddOutlet = ({ onAddOutlet, fetchData }) => {
                                     <LoginCurve size="24" variant="Bulk" />
                                     <h1 className='text-[16px] font-semibold'>Import data produk</h1>
                                     <p className='text-[14px] font-normal text-slate-500'>Impor data produk dari cabang utama</p>
-                                    <Button onClick={() => setcontenstep(2)}>Import</Button>
+                                    <Button onClick={handleImpor}>Import</Button>
                                 </div>
                                 <DialogFooter>
                                     <DialogClose asChild>
