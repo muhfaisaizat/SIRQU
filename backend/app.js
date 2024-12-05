@@ -15,7 +15,7 @@ const detailPajak = require('./routes/detailPajak');
 const detailDiskonRoutes = require('./routes/detailDiskonRoutes');
 const kasirRoutes = require('./routes/kasirRoutes');
 const outletRoutes = require('./routes/outletRoutes');
-const productImageRoutes = require('./routes/productImageRoutes')
+const productImageRoutes = require('./routes/productImageRoutes');
 // const receiptRoutes = require('./routes/receiptRoutes');
 const belanjaRoutes = require('./routes/belanjaRoutes');
 const categoriesBelanjaRoutes = require('./routes/categoryBelanjaRoutes');
@@ -27,6 +27,7 @@ const detailStrukLogoRoutes = require('./routes/detailStrukLogoRoutes');
 const struksRoutes = require('./routes/struksRoutes');
 const pajaksRoutes = require('./routes/pajaksRoutes');
 const penjualanRoutes = require('./routes/penjualanRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 const path = require('path'); 
@@ -77,6 +78,8 @@ app.use('/api/setting-struk',  detailStrukLogoRoutes );
 app.use('/api/setting-struk',  struksRoutes );
 app.use('/api/pajaks',  pajaksRoutes );
 app.use('/api/penjualan', penjualanRoutes);
+app.use('/api/promosi/outlets', promosiOutletRoutes);
+app.use('/api', dashboardRoutes);
 
 // Swagger Documentation
 swaggerDocs(app);

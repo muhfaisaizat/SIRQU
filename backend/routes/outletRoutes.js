@@ -49,7 +49,6 @@ const uploadOutlet = require('../middleware/uploadImageOutlet'); // Middleware u
  */
 router.post('/', roleMiddleware(['Admin', 'Manager']), uploadOutlet, outletController.createOutlet);
 
-
 /**
  * @swagger
  * /api/outlets:
@@ -300,8 +299,6 @@ router.put('/:id/koordinator', roleMiddleware(['Admin', 'Manager']), outletContr
  */
 router.post('/product-outlets',  outletController.createProductOutletsForAllProducts);
 
-
-
 /**
  * @swagger
  * /api/outlets/syarat-ketentuan/{id}:
@@ -354,8 +351,6 @@ router.post('/product-outlets',  outletController.createProductOutletsForAllProd
  *         description: Internal server error
  */
 router.put('/syarat-ketentuan/:id', roleMiddleware(['Admin', 'Manager']), outletController.updateSyaratKetentuan);
-
-
 
 
 module.exports = router;
