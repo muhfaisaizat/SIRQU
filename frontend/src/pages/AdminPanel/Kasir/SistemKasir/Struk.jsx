@@ -1,4 +1,4 @@
-import React , {useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TickCircle, Printer } from 'iconsax-react';
 import { Button } from '@/components/ui/button';
@@ -7,10 +7,11 @@ import { API_URL } from "../../../../helpers/networt";
 import dayjs from "dayjs";
 
 const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
-   
+
 
 
     const [htmlContent, setHtmlContent] = useState('');
+    const iframeRef = useRef(null);
     const fetchHtml = async () => {
         try {
             const response = await axios.get(`${API_URL}/api/transaksi/view-struk/${idDaftarOrder}`);
@@ -25,7 +26,15 @@ const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
         fetchHtml();
     }, []);
 
-   
+
+    const adjustIframeHeight = () => {
+        const iframe = iframeRef.current;
+        if (iframe && iframe.contentWindow) {
+            iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+        }
+    };
+
+
 
     const handlePrint = () => {
         if (htmlContent) {
@@ -36,7 +45,7 @@ const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
             iframe.style.height = '0';
             iframe.style.border = 'none';
             document.body.appendChild(iframe);
-    
+
             const iframeDoc = iframe.contentWindow.document;
             iframeDoc.open();
             iframeDoc.write('<html><head>');
@@ -57,7 +66,7 @@ const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
             iframeDoc.write('</div>');
             iframeDoc.write('</body></html>');
             iframeDoc.close();
-    
+
             // Menunggu konten iframe selesai dimuat
             iframe.onload = () => {
                 // Setelah iframe selesai dimuat, panggil print
@@ -69,12 +78,12 @@ const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
             console.log("HTML content kosong");
         }
     };
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
 
     return (
         <DialogContent className="sm:max-w-[638px] my-[20px] grid gap-[16px]">
@@ -96,10 +105,20 @@ const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
                     <Printer size={20} /> Cetak Struk
                 </Button>
             </DialogHeader>
-            <div className='flex flex-col items-center justify-center'>
-            <div
-                        dangerouslySetInnerHTML={{ __html: htmlContent }}
+            <div className='flex flex-col items-center justify-center bg-gray-100 py-[20px]'>
+                <div style={{ width: '100%' }}>
+                    <iframe
+                        ref={iframeRef}
+                        srcDoc={htmlContent}
+                        title="HTML Content Preview"
+                        style={{
+                            width: '100%',
+                            border: 'none',
+                            overflow: 'hidden',
+                        }}
+                        onLoad={adjustIframeHeight} // Menyesuaikan tinggi saat konten dimuat
                     />
+                </div>
             </div>
         </DialogContent>
     );
