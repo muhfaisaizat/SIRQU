@@ -23,56 +23,22 @@ import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
 
 
-const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, isDialogOpen, setIsDialogOpen, setIdOutlet, setnamaToko, setIsDialogOpenbukatoko, setuangModal, setWaktuBuka, fetchDataDaftarOrder }) => {
-    const [DataOutlet, setDataOutlet] = useState([
-        // { id: "m5gr84i9", name: 'Outlet 1' },
-        // { id: "m5gr84i7", name: 'Outlet 2' },
-        // { id: "m5gr84i8", name: 'Outlet 3' }
-    ]);
-
-    const [selectedOutlet, setSelectedOutlet] = useState(null);
-
-    const formatOutletData = (apiData) => {
-        return {
-            id: apiData.id_outlet.toString(),
-            name: apiData.nama_outlet
-        };
-    };
-
-
-    const fetchDataOutlet = async () => {
-        const token = localStorage.getItem("token");
-        try {
-            const response = await axios.get(`${API_URL}/api/outlets`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+const Menu = ({ 
+    setDetailOrder,
+  DaftarOrder,
+  handleSelectChange,
+  
+  setIsDialogOpen,
+  
+  DataOutlet, 
+  setDataOutlet,
+  selectedOutlet, 
+  setSelectedOutlet,
+  handleSelectOutlet
+ }) => {
     
-           // Log untuk memastikan data yang diterima
-    
-            // Pastikan response.data adalah array
-            if (Array.isArray(response.data.data)) {
-                const formattedData = response.data.data.map(formatOutletData);
-               
-                setDataOutlet(formattedData);
-                setSelectedOutlet(formattedData[0] || null);  // Fallback to null if data is empty
-            setnamaToko(formattedData[0]?.name || ''); // Fallback to empty string if no data
-            setIdOutlet(formattedData[0]?.id || ''); 
-                // console.log(formattedData)
-                // setOriginalData(formattedData); // Set originalData di sini
-            } else {
-                console.error("Data yang diterima bukan array");
-            }
-        } catch (error) {
-            console.error("Error fetching data", error);
-        }
-    };
 
-
-    useEffect(() => {
-        fetchDataOutlet();
-    }, []);
+   
 
     const [DataKategori, setDataKategori] = useState([
         // { id: "m5gr84i9", name: 'Makanan Ringan' },
@@ -183,67 +149,7 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
     //     setIdOutlet(selectedOutlet.id);
     // }, [selectedOutlet]);
 
-    const handleSelectOutlet = async (outlet) => {
-        const token = localStorage.getItem("token");
-        const idOutletKasir = localStorage.getItem("idOutletKasir");
-        try {
-            const response = await axios.get(`${API_URL}/api/kasir/${outlet.id}`, {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              });
-
-              if (response.data.data.length === 0) {
-                localStorage.setItem("idOutletKasir", outlet.id);
-                setIsDialogOpenbukatoko(true);
-                setSelectedOutlet(outlet);
-                setnamaToko(outlet.name);
-                setIdOutlet(outlet.id);
-                setuangModal('')
-                fetchDataDaftarOrder();
-                return; 
-              }
-
-            const waktuTutup = response.data.data[0].waktuTutup;
-            const id = response.data.data[0].outletsId;
-            const idKasir = response.data.data[0].id;
-            const waktuBuka = response.data.data[0].waktuBuka;
-            const modal = response.data.data[0].uangModal;
-            // console.log(response.data.data[0])
-            // console.log(idKasir)
-            // console.log(outlet.id)
-            // console.log(id)
-            // console.log(waktuTutup)
-            // console.log(typeof id, typeof outlet.id);
-            // console.log("Kondisi:", waktuTutup === null && id === Number(outlet.id)); 
-
-            if (waktuTutup === null && id === Number(outlet.id)) {
-                setIsDialogOpenbukatoko(false); 
-                localStorage.setItem("idOutletKasir", outlet.id);
-                localStorage.setItem("id_kasir", idKasir);
-                setWaktuBuka(waktuBuka);
-                setuangModal(modal);
-                setSelectedOutlet(outlet);
-                setnamaToko(outlet.name);
-                setIdOutlet(outlet.id);
-                fetchDataDaftarOrder();
-            } else {
-                localStorage.setItem("idOutletKasir", outlet.id);
-                setIsDialogOpenbukatoko(true);
-                setSelectedOutlet(outlet);
-                setnamaToko(outlet.name);
-                setIdOutlet(outlet.id);
-                setuangModal('')
-                fetchDataDaftarOrder();
-            }
-
-        } catch (error) {
-            console.error("Error fetching data", error);
-        }
-        
-        
-        
-    };
+    
 
 
     const [activeButton, setActiveButton] = useState('Semua');
@@ -299,7 +205,9 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
         });
     };
 
-    return (
+    return {
+        handleSelectOutlet
+    }, (
         <div>
             <div className='py-[16px] grid gap-[16px]'>
                 <div className='flex px-[24px] justify-between w-full'>

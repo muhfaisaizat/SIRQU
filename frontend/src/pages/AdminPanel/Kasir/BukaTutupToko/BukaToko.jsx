@@ -10,6 +10,8 @@ import { API_URL } from "../../../../helpers/networt";
 const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, idOutlet, namaToko, fetchDataDaftarOrder }) => {
     const iduser = localStorage.getItem("id");
     const nama = localStorage.getItem("name");
+    const dataOutletLocal = localStorage.getItem("dataOutletLocal");
+    const data = JSON.parse(dataOutletLocal);
     const [contenstep, setcontenstep] = useState(0);
     const { toast } = useToast();
     const handelcontent = () => {
@@ -20,9 +22,13 @@ const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, idOutlet, namaToko, fe
 
     // Fungsi untuk memformat angka menjadi format ribuan
     const formatNumber = (number) => {
-        if (!number) return '';
+        if (!number) return ''; // Cek jika number falsy (null, undefined, 0, dll)
+        
+        // Pastikan number adalah string
+        const numberStr = String(number);
+    
         // Menggunakan regex untuk format ribuan
-        return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        return numberStr.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     };
 
     // Fungsi untuk menangani perubahan input dan membatasi hanya angka
@@ -49,7 +55,7 @@ const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, idOutlet, namaToko, fe
         const token = localStorage.getItem("token");
         try {
             const response = await axios.post(`${API_URL}/api/kasir`, {
-                outletsId: idOutlet,
+                outletsId: data.id,
                 usersId: iduser,
                 uangModal: uang  
             }, {
@@ -102,7 +108,7 @@ const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, idOutlet, namaToko, fe
                     <div className="border p-[17px] rounded-[8px] grid gap-[12px] justify-items-center">
                         <Shop size={40} variant="Bold" />
                         <h2 className="text-[18px] font-semibold">Silahkan buka toko anda terlebih dahulu</h2>
-                        <p className="text-[14px] text-slate-500">Anda {nama} akan melakukan buka pada kasir {namaToko}</p>
+                        <p className="text-[14px] text-slate-500">Anda {nama} akan melakukan buka pada kasir {data.name}</p>
                         <Button onClick={handelcontent} className="text-[14px] h-[36px]">Buka Toko</Button>
                     </div>
                 </div>

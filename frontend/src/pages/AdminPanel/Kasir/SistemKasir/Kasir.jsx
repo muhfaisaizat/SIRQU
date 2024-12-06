@@ -9,6 +9,8 @@ import { API_URL } from "../../../../helpers/networt";
 import dayjs from "dayjs";
 
 const Kasir = () => {
+  const dataOutletLocal = localStorage.getItem("dataOutletLocal");
+  const idOutletKasir = localStorage.getItem("idOutletKasir");
   const [DetailOrder, setDetailOrder] = useState([]);
   const [Transaksi, setTransaksi] = useState([]);
   const [DaftarOrder, setDaftarOrder] = useState([]);
@@ -32,11 +34,138 @@ const Kasir = () => {
   const [namaToko, setnamaToko] = useState('');
   const [idOutlet, setIdOutlet] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [DataOutlet, setDataOutlet] = useState([
+    // { id: "m5gr84i9", name: 'Outlet 1' },
+    // { id: "m5gr84i7", name: 'Outlet 2' },
+    // { id: "m5gr84i8", name: 'Outlet 3' }
+]);
+const [selectedOutlet, setSelectedOutlet] = useState(null);
+  
+
+const formatOutletData = (apiData) => {
+    return {
+        id: apiData.id_outlet.toString(),
+        name: apiData.nama_outlet
+    };
+};
+
+
+const fetchDataOutlet = async () => {
+    const token = localStorage.getItem("token");
+    // const dataOutletLocal = localStorage.getItem("dataOutletLocal");
+    try {
+        const response = await axios.get(`${API_URL}/api/outlets`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+       // Log untuk memastikan data yang diterima
+
+        // Pastikan response.data adalah array
+        if (Array.isArray(response.data.data)) {
+            const formattedData = response.data.data.map(formatOutletData);
+           
+            setDataOutlet(formattedData);
+            if (dataOutletLocal) {
+              setSelectedOutlet(JSON.parse(dataOutletLocal) || null);
+          } else {
+              setSelectedOutlet(formattedData[0] || null);
+          }
+        setnamaToko(formattedData[0]?.name || ''); // Fallback to empty string if no data
+        setIdOutlet(formattedData[0]?.id || ''); 
+            // console.log(formattedData)
+            // setOriginalData(formattedData); // Set originalData di sini
+        } else {
+            console.error("Data yang diterima bukan array");
+        }
+    } catch (error) {
+        console.error("Error fetching data", error);
+    }
+};
+
+
+useEffect(() => {
+  if (dataOutletLocal) {
+    setSelectedOutlet(dataOutletLocal)
+    fetchDataOutlet();
+  } else {
+    fetchDataOutlet();
+  }
+}, [dataOutletLocal]);
+
+
+
+
+
+const handleSelectOutlet = async (outlet) => {
+  const token = localStorage.getItem("token");
+  const idOutletKasir = localStorage.getItem("idOutletKasir");
+  localStorage.setItem('activeLink', outlet.name); 
+  window.dispatchEvent(new Event('storage'));
+  try {
+      const response = await axios.get(`${API_URL}/api/kasir/${outlet.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.data.length === 0) {
+          localStorage.setItem("idOutletKasir", outlet.id);
+          setIsDialogOpen(true);
+          setSelectedOutlet(outlet);
+          setnamaToko(outlet.name);
+          setIdOutlet(outlet.id);
+          setUang('')
+          fetchDataDaftarOrder();
+          return; 
+        }
+
+      const waktuTutup = response.data.data[0].waktuTutup;
+      const id = response.data.data[0].outletsId;
+      const idKasir = response.data.data[0].id;
+      const waktuBuka = response.data.data[0].waktuBuka;
+      const modal = response.data.data[0].uangModal;
+      // console.log(response.data.data[0])
+      // console.log(idKasir)
+      // console.log(outlet.id)
+      // console.log(id)
+      // console.log(waktuTutup)
+      // console.log(typeof id, typeof outlet.id);
+      // console.log("Kondisi:", waktuTutup === null && id === Number(outlet.id)); 
+
+      if (waktuTutup === null && id === Number(outlet.id)) {
+          setIsDialogOpen(false); 
+          localStorage.setItem("idOutletKasir", outlet.id);
+          localStorage.setItem("id_kasir", idKasir);
+          setWaktuBuka(waktuBuka);
+          setUang(modal);
+          localStorage.setItem('dataOutletLocal', JSON.stringify(outlet));
+          setnamaToko(outlet.name);
+          setIdOutlet(outlet.id);
+          fetchDataDaftarOrder();
+      } else {
+          localStorage.setItem("idOutletKasir", outlet.id);
+          setIsDialogOpen(true);
+          localStorage.setItem('dataOutletLocal', JSON.stringify(outlet));
+          setnamaToko(outlet.name);
+          setIdOutlet(outlet.id);
+          setUang('')
+          fetchDataDaftarOrder();
+      }
+
+  } catch (error) {
+      console.error("Error fetching data", error);
+  }
+  
+  
+  
+};
 
 
   const fetchDataKasir = async () => {
     const token = localStorage.getItem("token");
-    const idOutletKasir = localStorage.getItem("idOutletKasir");
+    
     try {
       const response = await axios.get(`${API_URL}/api/kasir/${idOutletKasir}`, {
         headers: {
@@ -46,11 +175,14 @@ const Kasir = () => {
 
       // console.log(response.data)
     if (response.data.data.length === 0) {
+      localStorage.setItem("id_kasir", 0);
       setIsDialogOpen(true); 
       return; 
     }
     const waktuTutup = response.data.data[0].waktuTutup;
-    const id = response.data.data[0].outletsId;
+    const idOutlet = response.data.data[0].outletsId;
+    const idKasir = response.data.data[0].id;
+    const outlet_name = response.data.data[0].outlet_name;
     const waktuBuka = response.data.data[0].waktuBuka;
     const modal = response.data.data[0].uangModal;
     // console.log(response.data.data[0])
@@ -60,13 +192,17 @@ const Kasir = () => {
     // console.log(typeof id, typeof idOutletKasir);
     // console.log("Kondisi:", waktuTutup === null && id === idOutletKasir); 
 
-    if (waktuTutup === null && id === Number(idOutletKasir)) {
+    if (waktuTutup === null && idOutlet === Number(idOutletKasir)) {
       setIsDialogOpen(false); 
-      // localStorage.setItem("id_kasir", id);
+      localStorage.setItem("id_kasir", idKasir);
+      localStorage.setItem("idOutletKasir", idOutlet);
+      setIdOutlet(idOutlet)
       setWaktuBuka(waktuBuka);
-      setUang(modal)
+      setUang(modal);
+      setnamaToko(outlet_name);
     } else {
       setIsDialogOpen(true); 
+      
     }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -116,11 +252,18 @@ const Kasir = () => {
       console.error("Error fetching data", error);
     }
   };
-  // Ambil data dari API
+ 
+
   useEffect(() => {
-    fetchDataKasir();
-    fetchDataDaftarOrder();
-  }, []);
+    // fetchDataKasir();
+    fetchDataKasir().then(() => {
+      fetchDataDaftarOrder();  // Panggil setelah fetchDataKasir selesai
+  });
+  }, [dataOutletLocal]);
+
+  // useEffect(() => {
+  //   fetchDataDaftarOrder();
+  // }, [idOutletKasir]);
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -243,22 +386,24 @@ const Kasir = () => {
 
 
 
-  return (
+  return {
+    fetchDataKasir,
+    fetchDataDaftarOrder
+  }, (
     <div className='w-full h-full flex bg-slate-100'>
       <ScrollArea className='w-[72.8%] h-[100%]'>
         <Menu 
         setDetailOrder={setDetailOrder} 
         DaftarOrder={DaftarOrder} 
         handleSelectChange={handleSelectChange} 
-        setViewOrder={setViewOrder} 
-        isDialogOpen={isDialogOpentutup} 
+
         setIsDialogOpen={setIsDialogOpentutup} 
-        setIdOutlet={setIdOutlet} 
-        setnamaToko={setnamaToko} 
-        setIsDialogOpenbukatoko={setIsDialogOpen} 
-        setuangModal={setUang}
-        setWaktuBuka={setWaktuBuka} 
-        fetchDataDaftarOrder={fetchDataDaftarOrder}
+        
+        DataOutlet={DataOutlet}
+        setDataOutlet={setDataOutlet}
+        selectedOutlet={selectedOutlet}
+        setSelectedOutlet={setSelectedOutlet}
+        handleSelectOutlet={handleSelectOutlet}
         />
       </ScrollArea>
       <div className='w-[27.2%] h-[100%] bg-white border-l'>
