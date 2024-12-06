@@ -36,8 +36,9 @@ const Kasir = () => {
 
   const fetchDataKasir = async () => {
     const token = localStorage.getItem("token");
+    const idOutletKasir = localStorage.getItem("idOutletKasir");
     try {
-      const response = await axios.get(`${API_URL}/api/kasir/${idOutlet}`, {
+      const response = await axios.get(`${API_URL}/api/kasir/${idOutletKasir}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -49,11 +50,17 @@ const Kasir = () => {
       return; 
     }
     const waktuTutup = response.data.data[0].waktuTutup;
-    const id = response.data.data[0].id;
+    const id = response.data.data[0].outletsId;
     const waktuBuka = response.data.data[0].waktuBuka;
     const modal = response.data.data[0].uangModal;
+    // console.log(response.data.data[0])
+    // console.log(idOutletKasir)
+    // console.log(id)
+    // console.log(waktuTutup)
+    // console.log(typeof id, typeof idOutletKasir);
+    // console.log("Kondisi:", waktuTutup === null && id === idOutletKasir); 
 
-    if (waktuTutup === null) {
+    if (waktuTutup === null && id === Number(idOutletKasir)) {
       setIsDialogOpen(false); 
       // localStorage.setItem("id_kasir", id);
       setWaktuBuka(waktuBuka);
@@ -99,6 +106,7 @@ const Kasir = () => {
 
       // Cek jika `data` adalah array, dan lakukan map pada `response.data.data`
       if (Array.isArray(response.data.data)) {
+        // console.log(response.data.data)
         const formattedData = response.data.data.map(formatDaftarOrderData);
         setDaftarOrder(formattedData);
       } else {
@@ -248,7 +256,10 @@ const Kasir = () => {
         setIdOutlet={setIdOutlet} 
         setnamaToko={setnamaToko} 
         setIsDialogOpenbukatoko={setIsDialogOpen} 
-        setuangModal={setUang} />
+        setuangModal={setUang}
+        setWaktuBuka={setWaktuBuka} 
+        fetchDataDaftarOrder={fetchDataDaftarOrder}
+        />
       </ScrollArea>
       <div className='w-[27.2%] h-[100%] bg-white border-l'>
         <Order

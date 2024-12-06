@@ -60,7 +60,8 @@ const BukaToko = ({ setIsDialogOpen, Buka, uang, setUang, idOutlet, namaToko, fe
 
 
             localStorage.setItem("id_kasir", response.data.data.id);
-            // console.log(response.data.data.id)
+            localStorage.setItem("idOutletKasir", response.data.data.outletsId);
+            console.log(response.data.data)
 
             toast({
                 title: "Sukses!",

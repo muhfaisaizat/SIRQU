@@ -23,7 +23,7 @@ import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
 
 
-const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, isDialogOpen, setIsDialogOpen, setIdOutlet, setnamaToko, setIsDialogOpenbukatoko, setuangModal }) => {
+const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, isDialogOpen, setIsDialogOpen, setIdOutlet, setnamaToko, setIsDialogOpenbukatoko, setuangModal, setWaktuBuka, fetchDataDaftarOrder }) => {
     const [DataOutlet, setDataOutlet] = useState([
         // { id: "m5gr84i9", name: 'Outlet 1' },
         // { id: "m5gr84i7", name: 'Outlet 2' },
@@ -183,12 +183,66 @@ const Menu = ({ setDetailOrder, DaftarOrder, handleSelectChange, setViewOrder, i
     //     setIdOutlet(selectedOutlet.id);
     // }, [selectedOutlet]);
 
-    const handleSelectOutlet = (outlet) => {
-        setIsDialogOpenbukatoko(true);
-        setSelectedOutlet(outlet);
-        setnamaToko(outlet.name);
-        setIdOutlet(outlet.id);
-        setuangModal('')
+    const handleSelectOutlet = async (outlet) => {
+        const token = localStorage.getItem("token");
+        const idOutletKasir = localStorage.getItem("idOutletKasir");
+        try {
+            const response = await axios.get(`${API_URL}/api/kasir/${outlet.id}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+
+              if (response.data.data.length === 0) {
+                localStorage.setItem("idOutletKasir", outlet.id);
+                setIsDialogOpenbukatoko(true);
+                setSelectedOutlet(outlet);
+                setnamaToko(outlet.name);
+                setIdOutlet(outlet.id);
+                setuangModal('')
+                fetchDataDaftarOrder();
+                return; 
+              }
+
+            const waktuTutup = response.data.data[0].waktuTutup;
+            const id = response.data.data[0].outletsId;
+            const idKasir = response.data.data[0].id;
+            const waktuBuka = response.data.data[0].waktuBuka;
+            const modal = response.data.data[0].uangModal;
+            // console.log(response.data.data[0])
+            // console.log(idKasir)
+            // console.log(outlet.id)
+            // console.log(id)
+            // console.log(waktuTutup)
+            // console.log(typeof id, typeof outlet.id);
+            // console.log("Kondisi:", waktuTutup === null && id === Number(outlet.id)); 
+
+            if (waktuTutup === null && id === Number(outlet.id)) {
+                setIsDialogOpenbukatoko(false); 
+                localStorage.setItem("idOutletKasir", outlet.id);
+                localStorage.setItem("id_kasir", idKasir);
+                setWaktuBuka(waktuBuka);
+                setuangModal(modal);
+                setSelectedOutlet(outlet);
+                setnamaToko(outlet.name);
+                setIdOutlet(outlet.id);
+                fetchDataDaftarOrder();
+            } else {
+                localStorage.setItem("idOutletKasir", outlet.id);
+                setIsDialogOpenbukatoko(true);
+                setSelectedOutlet(outlet);
+                setnamaToko(outlet.name);
+                setIdOutlet(outlet.id);
+                setuangModal('')
+                fetchDataDaftarOrder();
+            }
+
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+        
+        
+        
     };
 
 
