@@ -131,7 +131,6 @@ const MainPanel = () => {
                 const formattedData = response.data.data.map(formatOutletData);
                
                 setDataOutlet(formattedData);
-                console.log(formattedData)
                 // setOriginalData(formattedData); // Set originalData di sini
             } else {
                 console.error("Data yang diterima bukan array");
