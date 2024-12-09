@@ -4,7 +4,8 @@ import { Celo } from 'iconsax-react';
 import { Routes, Route } from 'react-router-dom';
 import Register from './Register';
 import ForgotPassword from './ForgotPassword';
-import bg from '../../assets/Frame.png'
+import bg from '../../assets/Frame.png';
+import LoginToken from './LoginToken';
 
 
 const Authentication = () => {
@@ -31,6 +32,7 @@ const Authentication = () => {
                 <Routes>
                     <Route path="*" element={<Login />} />
                     <Route path="login" element={<Login />} />
+                    <Route path="login-token" element={<LoginToken />} />
                     <Route path="register" element={<Register />} />
                     <Route path="forgot-password" element={<ForgotPassword />} />
                 </Routes>
