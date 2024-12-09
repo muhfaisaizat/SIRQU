@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getDashboardData } = require('../controllers/dashboardController');
+const { getDashboardData, getSalesGraphData } = require('../controllers/dashboardController');
 const roleMiddleware = require('../middleware/roleMiddleware');
 
 /**
@@ -56,5 +56,48 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *         description: Server error
  */
 router.get('/dashboard/:outletsId', roleMiddleware(['Admin', 'Manager']), getDashboardData);
+
+/**
+ * @swagger
+ * /api/dashboard/sales-graph/{outletsId}:
+ *   get:
+ *     summary: Get monthly sales data for a specific outlet
+ *     tags: [Dashboard]
+ *     parameters:
+ *       - in: path
+ *         name: outletsId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the outlet
+ *     responses:
+ *       200:
+ *         description: Monthly sales data for the outlet
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Status of the request
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       bulan:
+ *                         type: integer
+ *                         description: Month of the year (1-12)
+ *                       totalPendapatan:
+ *                         type: number
+ *                         format: float
+ *                         description: Total revenue for the month
+ *       404:
+ *         description: Outlet not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/dashboard/sales-graph/:outletsId', roleMiddleware(['Admin', 'Manager']), getSalesGraphData);
 
 module.exports = router;
