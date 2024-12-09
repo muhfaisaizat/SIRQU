@@ -117,9 +117,9 @@ const Order = ({ DetailOrder, fetchDataDaftarOrder, setDetailOrder, setTransaksi
         fetchDataPajak();
     }, []);
 
-    useEffect(() => {
-        console.log(DaftarOrder)
-    }, [DaftarOrder]);
+    // useEffect(() => {
+    //     console.log(DaftarOrder)
+    // }, [DaftarOrder]);
     
     // Menghitung subtotal
     const totalHarga = DetailOrder.reduce((acc, order) => acc + order.harga * order.count, 0);

@@ -52,6 +52,7 @@ const Login = () => {
             if (tokoUtamaOutlet) {
                 localStorage.setItem("syarat_ketentuan", tokoUtamaOutlet.syarat_ketentuan);
                 localStorage.setItem("idTokoUtama", tokoUtamaOutlet.id_outlet);
+                localStorage.setItem("idOutletKasir", tokoUtamaOutlet.id_outlet);
             
             } else {
                 localStorage.setItem("syarat_ketentuan", null);

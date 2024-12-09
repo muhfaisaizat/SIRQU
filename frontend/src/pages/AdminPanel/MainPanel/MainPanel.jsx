@@ -17,16 +17,21 @@ import Promosi from '../Pengaturan/Promosi/Promosi';
 import Penjualan from '../Penjualan/Penjualan';
 import Logout from './Logout';
 import Belanja from '../Belanja/Belanja';
+import axios from 'axios';
+import { API_URL } from "../../../helpers/networt";
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const MainPanel = () => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [isOpen2, setIsOpen2] = useState(false);
     const [isOpen3, setIsOpen3] = useState(false);
+    const [isOpen4, setIsOpen4] = useState(false);
     const [activeLink, setActiveLink] = useState('');
     const location = useLocation();
     const [showAddToko, setShowAddToko] = useState(false);
     const syarat_ketentuan = localStorage.getItem("syarat_ketentuan");
+    const savedLink = localStorage.getItem('activeLink');
 
     const handleRedirect = () => {
         if (syarat_ketentuan === "0") {
@@ -42,6 +47,21 @@ const MainPanel = () => {
         }
       };
 
+      useEffect(() => {
+        const handleStorageChange = () => {
+            const newLink = localStorage.getItem('activeLink');
+            console.log('storage event triggered. activeLink:', newLink); // Cek nilai di sini
+            setActiveLink(newLink || 'dashboard');
+        };
+    
+        window.addEventListener('storage', handleStorageChange);
+    
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
+
+
     useEffect(() => {
         const savedLink = localStorage.getItem('activeLink');
         if (savedLink) {
@@ -50,6 +70,7 @@ const MainPanel = () => {
             setActiveLink('dashboard');
         }
     }, []);
+    
 
     useEffect(() => {
         if (location.pathname === '/admin-panel/wellcome') {
@@ -71,6 +92,10 @@ const MainPanel = () => {
         setIsOpen3(!isOpen3);
     };
 
+    const toggleDropdown4 = () => {
+        setIsOpen4(!isOpen4);
+    };
+
     const handleLinkClick = (linkName) => {
         setActiveLink(linkName);
         localStorage.setItem('activeLink', linkName); 
@@ -79,6 +104,53 @@ const MainPanel = () => {
     const handlemenu = (name) => {
         setActiveLink(name);
         localStorage.setItem('activeLink', name); 
+    };
+
+    const [DataOutlet, setDataOutlet] = useState([]);
+
+    const formatOutletData = (apiData) => {
+        return {
+            id: apiData.id_outlet.toString(),
+            name: apiData.nama_outlet
+        };
+    };
+
+    const fetchDataOutlet = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/outlets`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+           // Log untuk memastikan data yang diterima
+    
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatOutletData);
+               
+                setDataOutlet(formattedData);
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchDataOutlet();
+    }, []);
+
+
+
+    const handleLinkClickKasir = (outlet) => {
+        localStorage.setItem('idOutletKasir', Number(outlet.id));  
+        localStorage.setItem('dataOutletLocal', JSON.stringify(outlet));
+        window.dispatchEvent(new CustomEvent('kasir', { detail: outlet }));
     };
 
     return (
@@ -95,7 +167,7 @@ const MainPanel = () => {
 
             <div className='flex w-[100%] h-screen pt-[60px]'>
                 {/* Sidebar */}
-                <div className='w-[18.33%] p-[12px]'>
+                <ScrollArea className='w-[18.33%] h-[100%] p-[12px]'>
                     <div>
                         <ul>
                             <li  className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'dashboard' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('dashboard'); navigate('/admin-panel/dashboard'); }}>
@@ -104,11 +176,47 @@ const MainPanel = () => {
                                     <span className="font-medium text-[14px]">Dashboard</span>
                                 </Link>
                             </li>
-                            <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'kasir' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('kasir'); navigate('/admin-panel/sistem-kasir'); }}>
-                                <Link className='flex gap-3 justify-center'>
-                                    <ShoppingCart size={16} />
-                                    <span className="font-medium text-[14px]">Sistem Kasir</span>
+                            <li>
+                                <Link
+                                    className={`flex justify-between ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px]`}
+                                    onClick={toggleDropdown4}
+                                >
+                                    <div className='flex gap-3'>
+                                        <ShoppingCart size={16} />
+                                        <span className="font-medium text-[14px]">Sistem Kasir</span>
+                                    </div>
+                                    {isOpen4 ? (
+                                        <ArrowUp2 size={16} className='mt-1' />
+                                    ) : (
+                                        <ArrowDown2 size={16} className='mt-1' />
+                                    )}
                                 </Link>
+                                {isOpen4 && (
+                                    <>
+                                    {DataOutlet.length > 0 ? (
+                                        <ul>
+                                          {DataOutlet.map((outlet) => (
+                                            <li key={outlet.id} className="pl-[25px]">
+                                              <Link
+                                                className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${
+                                                  activeLink === outlet.name ? 'bg-black hover:bg-slate-950 text-white' : ''
+                                                }`}
+                                                
+                                                onClick={() => {
+                                                    handleLinkClick(outlet.name);
+                                                    handleLinkClickKasir(outlet); 
+                                                    
+                                                }}
+                                                to="/admin-panel/sistem-kasir"
+                                              >
+                                                <span className="font-medium text-[14px]">{outlet.name}</span>
+                                              </Link>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      ) : null}
+                                      </>
+                                )}
                             </li>
                             <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'uang' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('uang'); navigate('/admin-panel/penjualan'); }}>
                                 <Link className='flex gap-3 justify-center'>
@@ -255,7 +363,7 @@ const MainPanel = () => {
                             </li>
                         </ul>
                     </div>
-                </div>
+                </ScrollArea>
 
                 {/* Main Panel */}
                 <div className='flex-1 w-[81.67%]  bg-white border-l border-gray-200 '>
@@ -266,7 +374,7 @@ const MainPanel = () => {
                         <Route path="belanja" element={<Belanja />} />
                         <Route path="pajak&struk" element={<PajakStruk />} />
                         <Route path="promosi" element={<Promosi />} />
-                        <Route path="sistem-kasir" element={<Kasir />} />
+                        <Route path="sistem-kasir" element={<Kasir/>} />
                         <Route path="sistem-kasir/daftar-order" element={<DaftarOrder />} />
                         <Route path="kategori" element={<Kategori />} />
                         <Route path="produk" element={<Produk />} />

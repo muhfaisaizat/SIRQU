@@ -437,7 +437,6 @@ LEFT JOIN
     AND po.deletedAt IS NULL 
     AND pc.deletedAt IS NULL
     AND pi.deletedAt IS NULL
-    AND (p.stock > 0 OR p.unlimited_stock = TRUE) 
 GROUP BY
     p.id, c.id, o.id 
 ORDER BY 
