@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, login, forgotPassword, resetPassword } = require('../controllers/authController');
+const { register, login, forgotPassword, resetPassword, loginToken } = require('../controllers/authController');
 const router = express.Router();
 
 /**
@@ -71,6 +71,104 @@ router.post('/register', register);
  *         description: Failed to login
  */
 router.post('/login', login);
+
+/**
+ * @swagger
+ * /api/auth/login-token:
+ *   post:
+ *     summary: Login menggunakan tokenLogin
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - tokenLogin
+ *             properties:
+ *               tokenLogin:
+ *                 type: string
+ *                 example: "your-valid-token"
+ *     responses:
+ *       200:
+ *         description: Login berhasil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Login berhasil."
+ *                 token:
+ *                   type: string
+ *                   example: "JWT_TOKEN"
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     email:
+ *                       type: string
+ *                       example: "user@example.com"
+ *                     name:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     role:
+ *                       type: string
+ *                       example: "admin"
+ *                     status:
+ *                       type: string
+ *                       example: "active"
+ *                     image:
+ *                       type: string
+ *                       example: "path/to/image.jpg"
+ *                     tokenLogin:
+ *                       type: string
+ *                       example: "someGeneratedToken"
+ *                     tokenLoginExpires:
+ *                       type: string
+ *                       example: "2024-12-11 18:00:00"
+ *                     createdAt:
+ *                       type: string
+ *                       example: "2024-01-01T00:00:00Z"
+ *       400:
+ *         description: Token telah kadaluwarsa. Harap generate token baru.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Token telah kadaluwarsa. Harap generate token baru."
+ *       404:
+ *         description: Token tidak ditemukan atau sudah tidak berlaku.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Token tidak ditemukan atau sudah tidak berlaku."
+ *       500:
+ *         description: Terjadi kesalahan internal server.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error."
+ *                 error:
+ *                   type: string
+ *                   example: "Error message"
+ */
+router.post('/login-token', loginToken);
 
 /**
  * @swagger

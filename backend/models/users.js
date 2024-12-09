@@ -54,6 +54,14 @@ User.init({
     ResetTokenExpires: { // Field untuk menyimpan waktu kedaluwarsa token
         type: DataTypes.DATE,
         allowNull: true
+    },
+    tokenLogin: { // Field untuk menyimpan token reset password
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    tokenLoginExpires: { // Field untuk menyimpan waktu kedaluwarsa token
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
     sequelize,

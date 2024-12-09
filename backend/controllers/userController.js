@@ -46,7 +46,7 @@ exports.createUser = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const [results] = await sequelize.query(`
-      SELECT id, image, name, email, password, role, status, createdAt, updatedAt, deletedAt
+      SELECT id, image, name, email, password, role, status, tokenLogin, tokenLoginExpires, createdAt, updatedAt, deletedAt
       FROM users
       WHERE deletedAt IS NULL;
     `);
@@ -72,7 +72,7 @@ exports.getUserById = async (req, res) => {
   try {
     // Query untuk mendapatkan user berdasarkan id
     const [results, metadata] = await sequelize.query(`
-      SELECT id, image, name, email, password, role, status, createdAt, updatedAt, deletedAt
+      SELECT id, image, name, email, password, role, status, tokenLogin, tokenLoginExpires, createdAt, updatedAt, deletedAt
       FROM users
       WHERE id = :id AND deletedAt IS NULL;
     `, {
@@ -197,3 +197,48 @@ exports.updateUserStatus = async (req, res) => {
       });
     }
   };
+
+
+exports.generateTokenLogin = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const randomString = () => Math.random().toString(36).substring(2, 6); // 4 karakter acak
+        const newToken = `${randomString()}-${randomString()}-${randomString()}-${randomString()}`;
+
+        // Hitung waktu 48 jam ke depan
+        const datetime48jam = moment().tz("Asia/Jakarta").add(48, 'hours').format('YYYY-MM-DD HH:mm:ss');
+        console.log(newToken);
+        console.log(datetime48jam);
+
+        // Update user dengan token baru dan waktu kadaluarsa token
+        const [updated] = await User.update(
+            { tokenLogin: newToken, tokenLoginExpires: datetime48jam },
+            { where: { id: userId } }
+        );
+
+        if (updated) {
+            // Dapatkan informasi user setelah update
+            const updatedUser = await User.findOne({
+                where: { id: userId },
+                attributes: ['id', 'name', 'tokenLogin', 'tokenLoginExpires']
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: `User token generated successfully`,
+                data: updatedUser
+            });
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while generating user token",
+            error: error.message
+        });
+    }
+};

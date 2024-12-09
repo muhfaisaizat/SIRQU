@@ -47,6 +47,14 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: true // Menambahkan kolom untuk tanggal kedaluwarsa token
       },
+      tokenLogin: {
+        type: Sequelize.TEXT,
+        allowNull: true // Menambahkan kolom untuk token reset password
+      },
+      tokenLoginExpires: {
+        type: Sequelize.DATE,
+        allowNull: true // Menambahkan kolom untuk tanggal kedaluwarsa token
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

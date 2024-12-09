@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUser,getAllUsers, getUserById, updateUser, deleteUser, updateUserStatus } = require('../controllers/userController');
+const { createUser,getAllUsers, getUserById, updateUser, deleteUser, updateUserStatus, generateTokenLogin } = require('../controllers/userController');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const router = express.Router();
 const upload = require('../middleware/uploadImage'); // Middleware upload
@@ -199,5 +199,47 @@ router.delete('/:id', roleMiddleware(['Admin', 'Manager']), deleteUser);
  *         description: Internal server error
  */
 router.put('/:id/status', roleMiddleware(['Admin', 'Manager']), updateUserStatus);
+
+/**
+ * @swagger
+ * /api/users/{id}/generate-token:
+ *   put:
+ *     summary: Generate a new login token for a user
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user to generate the token for
+ *     responses:
+ *       200:
+ *         description: User token generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     tokenLogin:
+ *                       type: string
+ *                     tokenLoginExpires:
+ *                       type: string
+ *                       format: date-time
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put('/:id/generate-token', roleMiddleware(['Admin', 'Manager']), generateTokenLogin);
 
 module.exports = router;

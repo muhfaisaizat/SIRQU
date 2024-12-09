@@ -7,6 +7,7 @@ const { Op } = require("sequelize");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
+const moment = require('moment-timezone');
 
 // Extend dayjs dengan plugin utc dan timezone
 dayjs.extend(utc);
@@ -110,6 +111,61 @@ exports.login = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+// Fungsi login token
+exports.loginToken = async (req, res) => {
+  const { tokenLogin } = req.body;
+
+  try {
+    // Cari pengguna berdasarkan tokenLogin
+    const user = await User.findOne({
+      where: { tokenLogin },
+      attributes: ['id','image', 'name', 'email', 'password', 'role','status','ResetPasswordToken','ResetTokenExpires','tokenLogin', 'tokenLoginExpires','createdAt'],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Token tidak ditemukan atau sudah tidak berlaku.",
+      });
+    }
+
+    const currentTime = moment().tz("Asia/Jakarta").format('YYYY-MM-DD HH:mm:ss');
+
+    // Jika tokenLoginExpires sudah kadaluwarsa
+    if (moment(user.tokenLoginExpires).isBefore(currentTime)) {
+      // Set tokenLogin dan tokenLoginExpires menjadi null jika sudah kadaluarsa
+      await User.update(
+        { tokenLogin: null, tokenLoginExpires: null },
+        { where: { id: user.id } }
+      );
+
+      return res.status(400).json({
+        message: "Token telah kadaluwarsa. Harap generate token baru.",
+      });
+    }
+
+    // Buat token JWT baru untuk login
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "1d" } // JWT token valid untuk 1 hari
+    );
+
+    return res.status(200).json({
+      message: "Login berhasil.",
+      token,
+      user,
+    });
+  } catch (error) {
+    console.error("Error during token login:", error);
+    return res.status(500).json({
+      message: "Internal server error.",
+      error: error.message,
+    });
+  }
+};
+
 // Fungsi Forgot Password
 exports.forgotPassword = async (req, res) => {
   console.log("Forgot password request received:", req.body);
