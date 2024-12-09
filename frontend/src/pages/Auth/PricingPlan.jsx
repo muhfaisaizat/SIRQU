@@ -153,7 +153,7 @@ const PricingPlan = () => {
                                 </div>
                             ))}
                         </div>
-                        <ScrollBar orientation="horizontal" />
+                        <ScrollBar orientation="horizontal" className='p-0 h-0'/>
                     </ScrollArea>
                 </TabsContent>
                 <TabsContent value="pertahun">
@@ -197,7 +197,7 @@ const PricingPlan = () => {
                                 </div>
                             ))}
                         </div>
-                        <ScrollBar orientation="horizontal" />
+                        <ScrollBar orientation="horizontal" className='p-0 h-0'/>
                     </ScrollArea>
                 </TabsContent>
             </Tabs>
