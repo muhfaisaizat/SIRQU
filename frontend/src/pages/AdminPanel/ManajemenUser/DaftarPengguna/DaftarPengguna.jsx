@@ -31,7 +31,8 @@ const DaftarPengguna = () => {
               month: 'long', 
               year: 'numeric' 
           }), // Format tanggal menjadi format Indonesia
-          image: apiData.image
+          image: apiData.image,
+          tokenLogin: apiData.tokenLogin,
       };
   };
 
