@@ -301,8 +301,10 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
         password: '',
         confirmPassword: '',
         role: '',
-        id:''
+        id:'',
+        token:''
     });
+    const [ tokenuser , setTokenUser] = useState('');
 
     const [image, setImage] = useState( null);
     const [hovered, setHovered] = useState(false);
@@ -453,13 +455,20 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
                 status: selectedData.status,
                 date: selectedData.date,
                 id: selectedData.id,
-                image: selectedData.image
+                image: selectedData.image,
+                token: selectedData.tokenLogin
             });
+            if (selectedData.tokenLogin === null) {
+                setTokenUser('');
+            } else {
+                setTokenUser(selectedData.tokenLogin);
+            }
             if (selectedData.image === null) {
                 setImage(null);
               } else {
                 setImage(`${API_URL}/images/${selectedData.image}`);
               }
+
         }
     }, [selectedId]);
 
@@ -523,19 +532,34 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
       };
 
 
-      const [ tokenuser , setTokenUser] = useState('');
+      
       const [inputType, setInputType] = useState('password'); 
-      const [isButtonDisabled, setIsButtonDisabled] = useState(true); 
-      const [timeLeft, setTimeLeft] = useState(0)
-      const [buttonText, setButtonText] = useState('Generate');
 
       // Fungsi untuk membuat token acak dengan format 'xxxx-xxxx-xxxx-xxxx'
-      const generateToken = () => {
-          const randomString = () => Math.random().toString(36).substring(2, 6); // 4 karakter acak
-          const newToken = `${randomString()}-${randomString()}-${randomString()}-${randomString()}`;
-          setTokenUser(newToken);
-          const currentTime = new Date().getTime();
-        localStorage.setItem('tokenGeneratedTime', currentTime);
+      const generateToken = async () => {
+         const token = localStorage.getItem("token");
+          try {
+            
+            const response = await axios.put(`${API_URL}/api/users/${formData.id}/generate-token`,
+                {},
+                {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            setTokenUser(response.data.data.tokenLogin);
+            fetchData();
+          } catch (error) {
+            console.error("Error generate token:", error);
+            const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+            toast({
+              variant: "destructive",
+              title: "Error!",
+              description: errorMessage,
+              action: <ToastAction altText="Try again">Cancel</ToastAction>,
+          });
+          }
       };
 
       const handleFocus = () => {
@@ -547,47 +571,6 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
         setInputType('password'); // Sembunyikan token ketika input kehilangan fokus
     };
 
-    const formatTimeLeft = (timeInMillis) => {
-        const hours = Math.floor(timeInMillis / (1000 * 60 * 60));
-        const minutes = Math.floor((timeInMillis % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeInMillis % (1000 * 60)) / 1000);
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    };
-
-      // Menghitung sisa waktu hingga 48 jam
-      const checkButtonStatus = () => {
-        const tokenGeneratedTime = localStorage.getItem('tokenGeneratedTime');
-        if (tokenGeneratedTime) {
-            const currentTime = new Date().getTime();
-            const timeDifference = currentTime - tokenGeneratedTime; // Selisih waktu dalam milidetik
-            // const remainingTime = 48 * 60 * 60 * 1000 - timeDifference; // 48 jam dalam milidetik
-            const remainingTime = 1 * 1 * 10 * 1000 - timeDifference; // 48 jam dalam milidetik
-
-            if (remainingTime > 0) {
-                setIsButtonDisabled(true); // Tombol tetap disabled
-                setButtonText('Generate');
-                setTimeLeft(remainingTime); // Update sisa waktu
-            } else {
-                setIsButtonDisabled(false); // Tombol bisa digunakan lagi
-                setButtonText('Regenerate');
-                setTimeLeft(0); // Reset sisa waktu
-            }
-        } else {
-            setIsButtonDisabled(false); // Tombol bisa digunakan jika belum ada waktu yang disimpan
-            setButtonText('Generate');
-        }
-    };
-
-    // Update sisa waktu setiap detik
-    useEffect(() => {
-        checkButtonStatus();
-        const interval = setInterval(() => {
-            checkButtonStatus(); // Cek status tombol setiap detik
-        }, 1000);
-
-        // Bersihkan interval setelah komponen di-unmount
-        return () => clearInterval(interval);
-    }, []);
 
 
     const copyToClipboard = () => {
@@ -957,14 +940,15 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
                                 required
                                 className="h-[36px] text-[14px] rounded-lg border-slate-300"
                                 value={tokenuser}
+                                readOnly 
                             />
-                             <Button  onClick={generateToken} disabled={isButtonDisabled} variant='outline' className='text-[14px] h-[36px] border-slate-300' >{buttonText}<Refresh size={14} className="ml-2" /></Button>
+                             <Button  onClick={generateToken} disabled={!!tokenuser} variant='outline' className='text-[14px] h-[36px] border-slate-300' > {tokenuser ? "Regenerate" : "Generate"}<Refresh size={14} className="ml-2" /></Button>
                             </div>
                             
                         </div>
-                        {isButtonDisabled && (
+                        {tokenuser && (
                         <div className="grid gap-1 bg-amber-50 py-[8px] px-[12px] rounded-[8px]">
-                            <p className="text-[14px] text-amber-500 font-medium">ID token berhasil dibuat, harap menunggu {formatTimeLeft(timeLeft)} jam untuk regenerate id token</p>
+                            <p className="text-[14px] text-amber-500 font-medium">ID token berhasil dibuat, harap menunggu 48 jam untuk regenerate id token</p>
                         </div>
                         )}
                     </div>
