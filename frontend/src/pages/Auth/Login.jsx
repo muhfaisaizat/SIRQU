@@ -177,7 +177,7 @@ const Login = () => {
                     <Button type="submit" className="w-full h-[40px]  text-[14px] font-medium" onClick={() => navigate('/auth/register')}>
                     Daftar Akun Baru
                     </Button>
-                    <Button variant="outline"  className="w-full h-[40px]  text-[14px] font-medium" >
+                    <Button onClick={() => navigate('/pricing')} variant="outline"  className="w-full h-[40px]  text-[14px] font-medium" >
                     Mulai Berlangganan Sirqu
                     </Button>
                     <div className="text-center text-[14px] font-medium text-slate-500">
