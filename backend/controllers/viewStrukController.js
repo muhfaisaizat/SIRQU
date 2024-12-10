@@ -2,6 +2,8 @@ const Struk = require('../models/struks');
 const sequelize = require('../config/database');
 const path = require('path'); 
 const dayjs = require('dayjs');
+const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 exports.getViewStruk = async (req, res) => {
     try {
@@ -248,9 +250,9 @@ exports.getViewStrukMobile = async (req, res) => {
                         `<img src="${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
                         :''
                         : ''}
-                    ${showNamaToko ? `<h1 class="text-[20px] font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
-                    ${showAlamat ? `<p class="text-[14px] font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
-                    ${showKontak ? `<p class="text-[14px] font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
+                    ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
+                    ${showAlamat ? `<p class="text-[14px] text-center font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
+                    ${showKontak ? `<p class="text-[14px] text-center font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
                      <!-- <p class="text-[14px] font-medium">www.kopikita.com</p> -->
                 </div>
 
@@ -542,13 +544,22 @@ exports.getTransaksiStruk = async (req, res) => {
 
         // HTML content
         const htmlContent = `
-          <html>
+          <html lang="en">
             <head>
+             <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Document</title>
                 <script src="https://cdn.tailwindcss.com"></script>
                 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+                <style>
+                 body {
+            width: 390px;
+            max-width: 390px; /* Batas maksimum untuk ukuran mobile */
+        }
+                </style>
             </head>
-            <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-                <div class="flex flex-col items-center justify-center bg-white p-[32px]">
+            <body>
+                <div class=" bg-white p-[32px]">
                 
                 <!-- Shop Details Section -->
                 <div class="p-[16px] grid justify-items-center items-center">
@@ -557,14 +568,14 @@ exports.getTransaksiStruk = async (req, res) => {
                         `<img src="${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
                         :''
                         : ''}
-                        ${showNamaToko ? `<h1 class="text-[20px] font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
-                        ${showAlamat ? `<p class="text-[14px] font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
-                        ${showKontak ? `<p class="text-[14px] font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
+                        ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
+                        ${showAlamat ? `<p class="text-[14px] text-center font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
+                        ${showKontak ? `<p class="text-[14px] text-center font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
                      <!-- <p class="text-[14px] font-medium">www.kopikita.com</p> -->
                 </div>
 
                 <!-- Order Info Section -->
-                <div class="py-[16px] border-t w-[390px]">
+                <div class="py-[16px] border-t ">
                     <p class="text-[14px] font-medium">No. Order : #00${transaksiIds}</p>
                     <p class="text-[14px] font-medium">Waktu : ${transaksiDateTime}</p>
                     <p class="text-[14px] font-medium">Kasir : ${transaksiNamaKasir}</p>
@@ -572,12 +583,12 @@ exports.getTransaksiStruk = async (req, res) => {
                 </div>
 
                 <!-- Item List Section -->
-                <div class="py-[16px] border-t w-[390px] text-[14px] font-medium grid gap-[8px]">
+                <div class="py-[16px] border-t  text-[14px] font-medium grid gap-[8px]">
                     ${detailTransaksiHTML}
                 </div>
 
                 <!-- Total Calculation Section -->
-                <div class="py-[16px] border-t-2 border-dashed w-[390px] text-[14px] font-medium grid gap-[8px]">
+                <div class="py-[16px] border-t-2 border-dashed  text-[14px] font-medium grid gap-[8px]">
                     <div class="flex justify-between">
                     <p>Sub Total</p>
                     <p>${transaksiSubTotal}</p>
@@ -599,7 +610,7 @@ exports.getTransaksiStruk = async (req, res) => {
                 </div>
 
                 <!-- Footer Section -->
-                <div class="p-[16px] grid justify-items-center items-center border-t w-[390px]">
+                <div class="p-[16px] grid justify-items-center items-center border-t ">
                 ${showSosialMedia ? `
                     <div class="pb-[24px]">
                        ${sosialMediaContent}
@@ -615,8 +626,53 @@ exports.getTransaksiStruk = async (req, res) => {
       `;
 
         // Send the HTML content as response
-        res.setHeader('Content-Type', 'text/html');
-        res.status(200).send(htmlContent);
+        const browser = await puppeteer.launch({
+          headless: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
+      
+      const page = await browser.newPage();
+      
+      // Memuat konten HTML ke halaman
+      await page.setContent(htmlContent, { waitUntil: "domcontentloaded" });
+      
+      // Mengambil ukuran halaman berdasarkan konten HTML
+      const { width, height } = await page.evaluate(() => {
+          const body = document.body;
+          const html = document.documentElement;
+          return {
+              width: Math.max(390, 390),
+              height: Math.max(body.scrollHeight, html.scrollHeight),
+          };
+      });
+      
+      // Setel viewport agar sesuai dengan ukuran halaman
+      await page.setViewport({ width, height });
+      
+      // Mengambil screenshot dengan ukuran penuh
+      const screenshotBuffer = await page.screenshot({
+          type: "jpeg",
+          quality: 100, // Kualitas tinggi
+          fullPage: true, // Tangkap seluruh halaman
+      });
+      
+      await browser.close();
+      
+      // Menyimpan file gambar
+      const jpgPath = path.join(__dirname, "../receipt.jpg");
+      await fs.promises.writeFile(jpgPath, screenshotBuffer);
+      
+      console.log(`JPG saved to ${jpgPath}`);
+      
+      // Kirim file gambar sebagai respons untuk diunduh
+      res.status(200).download(jpgPath, "sirqu-receipt.jpg", (err) => {
+          if (err) {
+              console.error("Error while sending file:", err);
+              res.status(500).send("Failed to download the file");
+          } else {
+              console.log("File sent successfully");
+          }
+      });
 
     } catch (error) {
         console.error("Error rendering HTML:", error);
@@ -834,9 +890,9 @@ exports.getTransaksiStrukMobile = async (req, res) => {
                         `<img src="${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
                         :''
                         : ''}
-                        ${showNamaToko ? `<h1 class="text-[20px] font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
-                        ${showAlamat ? `<p class="text-[14px] font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
-                        ${showKontak ? `<p class="text-[14px] font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
+                        ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
+                        ${showAlamat ? `<p class="text-[14px] text-center font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
+                        ${showKontak ? `<p class="text-[14px] text-center font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
                      <!-- <p class="text-[14px] font-medium">www.kopikita.com</p> -->
                 </div>
 
