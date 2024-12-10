@@ -884,15 +884,15 @@ exports.getTransaksiStrukMobile = async (req, res) => {
                 <div class=" bg-white p-[32px]">
                 
                 <!-- Shop Details Section -->
-                <div class="p-[16px] grid justify-items-center items-center">
+                <div class="p-[16px] flex-col flex justify-items-center items-center">
                     ${showLogo ? 
                         logo?
                         `<img src="${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
                         :''
                         : ''}
-                    ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px] w-[290px] break-words">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
-                    ${showAlamat ? `<p class="text-[14px] text-center font-medium w-[290px] break-words">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
-                    ${showKontak ? `<p class="text-[14px] text-center font-medium w-[290px] break-words">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
+                    ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px]  break-words">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
+                    ${showAlamat ? `<p class="text-[14px] text-center font-medium  break-words">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
+                    ${showKontak ? `<p class="text-[14px] text-center font-medium  break-words">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
                      <!-- <p class="text-[14px] font-medium">www.kopikita.com</p> -->
                 </div>
 
@@ -932,7 +932,7 @@ exports.getTransaksiStrukMobile = async (req, res) => {
                 </div>
 
                 <!-- Footer Section -->
-                <div class="p-[16px] grid justify-items-center items-center border-t ">
+                <div class="p-[16px] flex-col flex justify-items-center items-center border-t ">
                 ${showSosialMedia ? `
                     <div class="pb-[24px]">
                        ${sosialMediaContent}
