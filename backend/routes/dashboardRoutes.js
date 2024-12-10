@@ -1,7 +1,11 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { getDashboardData, getSalesGraphData, getTopSellingProducts } = require('../controllers/dashboardController');
-const roleMiddleware = require('../middleware/roleMiddleware');
+const {
+  getDashboardData,
+  getSalesGraphData,
+  getTopSellingProducts,
+} = require("../controllers/dashboardController");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
 /**
  * @swagger
@@ -41,12 +45,15 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *                       type: number
  *                       format: float
  *                       description: Total revenue of the outlet
- *                     jumlahOrder:
+ *                     totalTransaksi:
  *                       type: integer
  *                       description: Total number of orders
  *                     jumlahProduk:
  *                       type: integer
  *                       description: Total number of products
+ *                     produkBaru:
+ *                       type: integer
+ *                       description: Number of new products added in the selected period
  *                     pengingatStok:
  *                       type: integer
  *                       description: Number of products with low stock
@@ -55,7 +62,11 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *       500:
  *         description: Server error
  */
-router.get('/dashboard/:outletsId', roleMiddleware(['Admin', 'Manager']), getDashboardData);
+router.get(
+  "/dashboard/:outletsId",
+  roleMiddleware(["Admin", "Manager"]),
+  getDashboardData
+);
 
 /**
  * @swagger
@@ -98,8 +109,11 @@ router.get('/dashboard/:outletsId', roleMiddleware(['Admin', 'Manager']), getDas
  *       500:
  *         description: Server error
  */
-router.get('/dashboard/sales-graph/:outletsId', roleMiddleware(['Admin', 'Manager']), getSalesGraphData);
-
+router.get(
+  "/dashboard/sales-graph/:outletsId",
+  roleMiddleware(["Admin", "Manager"]),
+  getSalesGraphData
+);
 /**
  * @swagger
  * /api/dashboard/top-selling-products/{outletsId}:
@@ -138,6 +152,9 @@ router.get('/dashboard/sales-graph/:outletsId', roleMiddleware(['Admin', 'Manage
  *                       productName:
  *                         type: string
  *                         description: Name of the product
+ *                       productImage:
+ *                         type: string
+ *                         description: URL of the product image
  *                       totalSold:
  *                         type: integer
  *                         description: Total quantity of the product sold
@@ -146,7 +163,10 @@ router.get('/dashboard/sales-graph/:outletsId', roleMiddleware(['Admin', 'Manage
  *       500:
  *         description: Server error
  */
-router.get('/dashboard/top-selling-products/:outletsId', roleMiddleware(['Admin', 'Manager']), getTopSellingProducts);
-
+router.get(
+  "/dashboard/top-selling-products/:outletsId",
+  roleMiddleware(["Admin", "Manager"]),
+  getTopSellingProducts
+);
 
 module.exports = router;

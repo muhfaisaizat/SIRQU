@@ -24,6 +24,10 @@ class Products extends Model {
       foreignKey: 'productsId',
       otherKey: 'outletsId',
     });
+
+    Products.hasMany(models.productsOutlets, {
+      foreignKey: 'productsId',
+    });
   }
 }
 

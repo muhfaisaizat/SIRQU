@@ -21,8 +21,10 @@ const getDashboardData = async (req, res) => {
     }
 
     // Periode waktu berdasarkan query
-    let filterDate;
-    const today = Sequelize.literal("CURRENT_DATE");
+    let filterDate = {};
+    let produkBaruFilter = {};
+    const todayStart = Sequelize.literal("DATE(NOW())"); // Awal hari (00:00:00)
+    const todayEnd = Sequelize.literal("DATE_ADD(DATE(NOW()), INTERVAL 1 DAY)"); // Akhir hari (23:59:59)
     const weekStart = Sequelize.literal(
       "DATE_SUB(CURRENT_DATE, INTERVAL WEEKDAY(CURRENT_DATE) DAY)"
     );
@@ -33,44 +35,73 @@ const getDashboardData = async (req, res) => {
       'DATE_FORMAT(CURRENT_DATE, "%Y-01-01")'
     );
 
+    let totalDays = 1;
     switch (periode) {
       case "hari-ini":
-        filterDate = { createdAt: { [Op.eq]: today } };
+        filterDate = {
+          createdAt: { [Op.between]: [todayStart, todayEnd] },
+        };
+        produkBaruFilter = { createdAt: { [Op.between]: [todayStart, todayEnd] } };
+        totalDays = 1;
         break;
       case "minggu-ini":
         filterDate = { createdAt: { [Op.gte]: weekStart } };
+        produkBaruFilter = { createdAt: { [Op.gte]: weekStart, [Op.lt]: todayEnd } };
+        totalDays = 7;
         break;
       case "bulan-ini":
         filterDate = { createdAt: { [Op.gte]: monthStart } };
+        produkBaruFilter = { createdAt: { [Op.gte]: monthStart, [Op.lt]: todayEnd } };
+        totalDays = new Date().getDate();
         break;
       case "tahun-ini":
         filterDate = { createdAt: { [Op.gte]: yearStart } };
+        produkBaruFilter = { createdAt: { [Op.gte]: yearStart, [Op.lt]: todayEnd } };
+        totalDays = Math.ceil(
+          (new Date() - new Date(new Date().getFullYear(), 0, 1)) /
+          (1000 * 60 * 60 * 24)
+        );
         break;
       default:
-        filterDate = {}; // Tanpa filter jika periode tidak valid
+        filterDate = {}; 
+        produkBaruFilter = {};
     }
 
     // Data berdasarkan periode
     const totalPendapatan = await Kasir.sum("totalBersih", {
       where: { outletsId, ...filterDate },
     });
-    const jumlahOrder = await Kasir.sum("itemTerjual", {
+    const totalTransaksi = await Kasir.sum("itemTerjual", {
       where: { outletsId, ...filterDate },
     });
     const jumlahProduk = await ProductOutlet.count({ where: { outletsId } });
-    const pengingatStok = await Product.count({
-      where: { stock: { [Op.lt]: 10 } },
+    const produkBaru = await ProductOutlet.count({
+      where: {
+        ...produkBaruFilter,
+        outletsId,
+      },
     });
+    const pengingatStok = await Product.count({
+      where: { stock: { [Op.lt]: 3 } },
+    });
+
+    // Hitung rata-rata per hari
+    const rataRataPendapatan = totalPendapatan / totalDays;
+    const rataRataTransaksi = totalTransaksi / totalDays;
 
     res.status(200).json({
       success: true,
       data: {
         totalPendapatan: totalPendapatan || 0,
-        jumlahOrder: jumlahOrder || 0,
+        rataRataPendapatan,
+        totalTransaksi: totalTransaksi || 0,
+        rataRataTransaksi,
         jumlahProduk,
+        produkBaru,
         pengingatStok,
       },
     });
+
   } catch (error) {
     console.error(error);
     res
@@ -216,6 +247,12 @@ const getTopSellingProducts = async (req, res) => {
         },
       },
       attributes: ["id", "name"],
+      include: [
+        {
+          model: require("../models/productImage"), // Pastikan model productimages diimpor
+          attributes: ["image"], // Ambil kolom gambar
+        },
+      ],
     });
 
     // Gabungkan nama produk dengan data penjualan
@@ -223,6 +260,7 @@ const getTopSellingProducts = async (req, res) => {
       const product = products.find((p) => p.id === item.productsId);
       return {
         productName: product ? product.name : "Unknown Product",
+        productImage: product?.productImages?.[0]?.image || null,
         totalSold: item.totalSold,
       };
     });
