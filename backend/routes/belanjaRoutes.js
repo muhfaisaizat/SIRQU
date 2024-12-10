@@ -35,6 +35,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *               waktu:
  *                 type: string
  *                 format: time
+ *                 example: 08:00
  *                 description: Time of the activity
  *               tanggal:
  *                 type: string
