@@ -238,7 +238,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), Controller.getStr
  *                   type: string
  *                   example: Terjadi kesalahan saat mengambil data struk
  */
-router.get('/view-struk', ControllerViewStruk.getViewStruk);
+router.get('/view-struk', ControllerViewStruk.getViewStrukMobile);
 
 
 module.exports = router;
