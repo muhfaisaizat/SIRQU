@@ -283,7 +283,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), readTransaksib
  *                   type: string
  *                   example: Terjadi kesalahan saat mengambil data struk
  */
-router.get('/view-struk/:id', transaksiStruk.getTransaksiStruk);
+router.get('/view-struk/:id', transaksiStruk.getTransaksiStrukMobile);
 
 
 
