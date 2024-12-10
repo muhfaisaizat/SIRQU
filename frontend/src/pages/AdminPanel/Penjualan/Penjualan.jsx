@@ -77,6 +77,7 @@ const Penjualan = () => {
     //    console.log(selectedOutlet)
     // }, [selectedOutlet]);
 
+    const [dataSum, setDataSum] = useState([]);
 
     // data
     const [data, setData] = useState([
@@ -235,10 +236,29 @@ const Penjualan = () => {
         }
     };
 
+    const fetchDataCard = async (id, startDate, endDate) => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/penjualan/outlet/${id}?start_date=${startDate}&end_date=${endDate}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            setDataSum(response.data)
+    
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
 
     useEffect(() => {
         if (selectedOutlet) {
             fetchData(selectedOutlet.id);
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            fetchDataCard(selectedOutlet.id, formattedDate, formattedDate)
         }
     }, [selectedOutlet]);
 
@@ -263,6 +283,7 @@ const Penjualan = () => {
         const formattedDateto = to ? to.toISOString().split('T')[0] : '';
         setDate({ from: from, to: to });
         fetchDataByDate(selectedOutlet.id, formattedDate, formattedDateto);
+        fetchDataCard(selectedOutlet.id, formattedDate, formattedDateto);
         // handleDateFilterChange(from, to);
     };
 
@@ -271,6 +292,7 @@ const Penjualan = () => {
         setDate({ from: today, to: today });
         const formattedDate = today.toISOString().split('T')[0];
         fetchDataByDate(selectedOutlet.id, formattedDate, formattedDate);
+        fetchDataCard(selectedOutlet.id, formattedDate, formattedDate);
     };
 
     const handleYesterday = () => {
@@ -278,6 +300,7 @@ const Penjualan = () => {
         setDate({ from: yesterday, to: yesterday });
         const formattedDate = yesterday.toISOString().split('T')[0];
         fetchDataByDate(selectedOutlet.id, formattedDate, formattedDate);
+        fetchDataCard(selectedOutlet.id, formattedDate, formattedDate);
     };
 
     const handleThisWeek = () => {
@@ -287,6 +310,7 @@ const Penjualan = () => {
         const formattedDatetoday = today.toISOString().split('T')[0];
         const formattedstartOfThisWeek = startOfThisWeek.toISOString().split('T')[0];
         fetchDataByDate(selectedOutlet.id, formattedstartOfThisWeek, formattedDatetoday);
+        fetchDataCard(selectedOutlet.id, formattedstartOfThisWeek, formattedDatetoday);
     };
 
     const handleThisMonth = () => {
@@ -296,6 +320,7 @@ const Penjualan = () => {
         const formattedDatetoday = today.toISOString().split('T')[0];
         const formattedstartOfThisWeek = startOfThisMonth.toISOString().split('T')[0];
         fetchDataByDate(selectedOutlet.id, formattedstartOfThisWeek, formattedDatetoday);
+        fetchDataCard(selectedOutlet.id, formattedstartOfThisWeek, formattedDatetoday);
     };
 
     const handleReset = () => {
@@ -304,6 +329,9 @@ const Penjualan = () => {
             from: null,
             to: null,
         });
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        fetchDataCard(selectedOutlet.id, formattedDate, formattedDate)
     };
 
     const DataBayar = [
@@ -337,6 +365,10 @@ const Penjualan = () => {
             return newFilters; // Mengembalikan array filter yang baru
         });
     };
+
+
+
+    
 
 
 
@@ -410,7 +442,7 @@ const Penjualan = () => {
                         </DropdownMenu>
                     </div>
                 </div>
-                <DataCard />
+                <DataCard dataSum={dataSum}/>
                 <DataTableHistory data={data} setData={setData} columnFilters={columnFilters} setColumnFilters={setColumnFilters} filters={filters} DataBayar={DataBayar} handleFilterChange={handleFilterChange} handleClearFilters={handleClearFilters} originalData={originalData} setOriginalData={setOriginalData} />
             </div>
         </ScrollArea>
