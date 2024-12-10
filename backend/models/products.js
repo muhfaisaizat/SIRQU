@@ -17,6 +17,13 @@ class Products extends Model {
       foreignKey: 'productsId',
       otherKey: 'outletsId',
     });
+
+    // Relasi dengan tabel ProductOutlet
+    Products.belongsToMany(models.productsOutlets, {
+      through: models.productsOutlets,
+      foreignKey: 'productsId',
+      otherKey: 'outletsId',
+    });
   }
 }
 

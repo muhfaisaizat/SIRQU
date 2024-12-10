@@ -4,6 +4,8 @@ const Transaksi = require("../models/transaksis");
 const Kasir = require("../models/kasirs");
 const ProductOutlet = require("../models/productsOutlets");
 const Product = require("../models/products");
+const CategoriesOutlet = require("../models/categoriesOutlets");
+const DetailTransaksi = require("../models/detailTransaksis");
 
 const getDashboardData = async (req, res) => {
   try {
@@ -160,4 +162,83 @@ const getSalesGraphData = async (req, res) => {
   }
 };
 
-module.exports = { getDashboardData, getSalesGraphData };
+const getTopSellingProducts = async (req, res) => {
+  try {
+    const { outletsId } = req.params;
+    const { categoriesId } = req.query;
+
+    // Validasi outlet
+    const outlet = await Outlet.findByPk(outletsId);
+    if (!outlet) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Outlet tidak ditemukan" });
+    }
+
+    // Validasi kategori
+    const category = await CategoriesOutlet.findOne({
+      where: {
+        outletsId,
+        categoriesId,
+      },
+    });
+    if (!category) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Kategori tidak ditemukan di outlet ini" });
+    }
+
+    // Ambil data produk terlaris berdasarkan transaksi dan stok yang terjual
+    const topSellingProducts = await DetailTransaksi.findAll({
+      attributes: [
+        "productsId",
+        [Sequelize.fn("SUM", Sequelize.col("stok")), "totalSold"],
+      ],
+      where: {
+        transaksisId: {
+          [Op.in]: Sequelize.literal(
+            `(SELECT id FROM transaksis WHERE outletsId = ${outletsId})`
+          ),
+        },
+      },
+      group: ["productsId"],
+      order: [[Sequelize.fn("SUM", Sequelize.col("stok")), "DESC"]],
+      limit: 10,
+      raw: true,
+    });
+
+    // Ambil nama produk dari tabel products
+    const productIds = topSellingProducts.map((item) => item.productsId);
+    const products = await Product.findAll({
+      where: {
+        id: {
+          [Op.in]: productIds,
+        },
+      },
+      attributes: ["id", "name"],
+    });
+
+    // Gabungkan nama produk dengan data penjualan
+    const result = topSellingProducts.map((item) => {
+      const product = products.find((p) => p.id === item.productsId);
+      return {
+        productName: product ? product.name : "Unknown Product",
+        totalSold: item.totalSold,
+      };
+    });
+
+    // Response
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan pada server",
+    });
+  }
+};
+
+module.exports = { getDashboardData, getSalesGraphData, getTopSellingProducts };
