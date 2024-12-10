@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button";
 import { Shop } from 'iconsax-react';
 import {
@@ -15,6 +15,8 @@ import Card from './Card';
 import Garfik from './Garfik';
 import DataPenjualan from './DataPenjualan';
 import { ScrollArea } from "@/components/ui/scroll-area"
+import axios from 'axios';
+import { API_URL } from "../../../helpers/networt";
 
 const Dashboard = ({ handlemenu }) => {
   const DataKategori = [
@@ -23,12 +25,47 @@ const Dashboard = ({ handlemenu }) => {
     { id: "m5gr84i7", name: 'Kategori 2' },
     { id: "m5gr84i8", name: 'Kategori 3' },
   ];
-  const DataOutlet = [
-    { id: "m5gr84i9", name: 'Cabang 1' },
-    { id: "m5gr84i7", name: 'Cabang 2' },
-    { id: "m5gr84i8", name: 'Cabang 3' }
-  ];
+  const [DataOutlet, setDataOutlet] = useState([
+    // { id: "m5gr84i9", name: 'Cabang 1' },
+    // { id: "m5gr84i7", name: 'Cabang 2' },
+    // { id: "m5gr84i8", name: 'Cabang 3' },
+]);
   const [selectedOutlet, setSelectedOutlet] = useState(DataOutlet[0]);
+  const formatOutletData = (apiData) => {
+    return {
+        id: apiData.id_outlet.toString(),
+        name: apiData.nama_outlet
+    };
+};
+const fetchDataOutlet = async () => {
+    const token = localStorage.getItem("token");
+    try {
+        const response = await axios.get(`${API_URL}/api/outlets`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        // Log untuk memastikan data yang diterima
+
+        // Pastikan response.data adalah array
+        if (Array.isArray(response.data.data)) {
+            const formattedData = response.data.data.map(formatOutletData);
+
+            setDataOutlet(formattedData);
+            setSelectedOutlet(formattedData[0])
+            // console.log(formattedData)
+            // setOriginalData(formattedData); // Set originalData di sini
+        } else {
+            console.error("Data yang diterima bukan array");
+        }
+    } catch (error) {
+        console.error("Error fetching data", error);
+    }
+};
+useEffect(() => {
+    fetchDataOutlet();
+}, []);
   const handleSelectOutlet = (outlet) => {
     setSelectedOutlet(outlet);
   };
@@ -96,7 +133,7 @@ const Dashboard = ({ handlemenu }) => {
         <div className='grid gap-[26px]'>
           <Card handlemenu={handlemenu} />
           <div className='flex gap-[16px]'>
-            <Garfik />
+            <Garfik selectedOutlet={selectedOutlet}/>
             <DataPenjualan DataKategori={DataKategori} />
           </div>
         </div>

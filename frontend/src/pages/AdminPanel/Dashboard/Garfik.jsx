@@ -1,15 +1,10 @@
-import React from 'react'
+import React,{useEffect, useState} from 'react'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'; // Pastikan path ini benar
+import axios from 'axios';
+import { API_URL } from "../../../helpers/networt";
 
-const chartData = [
-    { month: 'January', penjualan: 1860000 },
-    { month: 'February', penjualan: 3050000 },
-    { month: 'March', penjualan: 2370000 },
-    { month: 'April', penjualan: 730000 },
-    { month: 'May', penjualan: 2090000 },
-    { month: 'June', penjualan: 2140000 },
-];
+
 
 
 const chartConfig = {
@@ -19,7 +14,53 @@ const chartConfig = {
     },
 };
 
-const Garfik = () => {
+const Garfik = ({selectedOutlet}) => {
+
+    const [chartData,setChartData] = useState([
+        // { month: 'January', penjualan: 1860000 },
+        // { month: 'February', penjualan: 3050000 },
+        // { month: 'March', penjualan: 2370000 },
+        // { month: 'April', penjualan: 730000 },
+        // { month: 'May', penjualan: 2090000 },
+        // { month: 'June', penjualan: 2140000 },
+    ]);
+
+    const formatChartData = (apiData) => {
+        return {
+            month: apiData.bulan,
+            penjualan: apiData.totalPendapatan
+        };
+    };
+    const fetchChartData = async (id) => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(`${API_URL}/api/dashboard/sales-graph/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            // Log untuk memastikan data yang diterima
+    
+            // Pastikan response.data adalah array
+            if (Array.isArray(response.data.data)) {
+                const formattedData = response.data.data.map(formatChartData);
+    
+                setChartData(formattedData);
+                // console.log(formattedData)
+                // setOriginalData(formattedData); // Set originalData di sini
+            } else {
+                console.error("Data yang diterima bukan array");
+            }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+    useEffect(() => {
+        if (selectedOutlet) {
+            fetchChartData(selectedOutlet.id);
+        }
+    }, [selectedOutlet]);
     return (
         <div className='border-2 rounded-[8px] h-[352px] w-[67%] p-[24px] grid gap-[24px]'>
             <h1 className='text-[16px] font-semibold'>Grafik Penjualan</h1>
