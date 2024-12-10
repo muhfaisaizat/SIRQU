@@ -45,13 +45,13 @@ const Priview = ({isAnyChecked}) => {
                     <DialogHeader>
                         <DialogTitle></DialogTitle>
                     </DialogHeader>
-                    <div style={{ width: '100%' }}>
+                    <div style={{ width: '390px' }}>
                         <iframe
                             ref={iframeRef}
                             srcDoc={htmlContent}
                             title="HTML Content Preview"
                             style={{
-                                width: '100%',
+                                width: '390px',
                                 border: 'none',
                                 overflow: 'hidden',
                             }}

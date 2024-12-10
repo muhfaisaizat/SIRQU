@@ -7,26 +7,30 @@ import { API_URL } from "../../../../helpers/networt";
 import dayjs from "dayjs";
 
 const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
-
-
-
     const [htmlContent, setHtmlContent] = useState('');
+    const [loading, setLoading] = useState(true); // State untuk loading
     const iframeRef = useRef(null);
+
+    // Fungsi untuk mengambil HTML dari API
     const fetchHtml = async () => {
         try {
             const response = await axios.get(`${API_URL}/api/transaksi/view-struk/${idDaftarOrder}`);
             if (response.data) {
                 setHtmlContent(response.data); // Menyimpan HTML dalam state
+                setLoading(false); // Set loading ke false setelah data diterima
             }
         } catch (error) {
             console.error('Error fetching HTML:', error);
+            setLoading(false); // Jika ada error, set loading ke false
         }
     };
+
+    // Memanggil fetchHtml saat komponen pertama kali dimuat
     useEffect(() => {
         fetchHtml();
-    }, []);
+    }, [idDaftarOrder]);
 
-
+    // Fungsi untuk menyesuaikan tinggi iframe setelah konten dimuat
     const adjustIframeHeight = () => {
         const iframe = iframeRef.current;
         if (iframe && iframe.contentWindow) {
@@ -34,11 +38,9 @@ const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
         }
     };
 
-
-
+    // Fungsi untuk mencetak struk
     const handlePrint = () => {
         if (htmlContent) {
-            // Membuat iframe untuk mencetak konten tanpa membuka window baru
             const iframe = document.createElement('iframe');
             iframe.style.position = 'absolute';
             iframe.style.width = '0';
@@ -48,42 +50,29 @@ const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
 
             const iframeDoc = iframe.contentWindow.document;
             iframeDoc.open();
-            iframeDoc.write('<html><head>');
-            iframeDoc.write('<script src="https://cdn.tailwindcss.com"></script>');
-            iframeDoc.write('<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />');
-            iframeDoc.write('<style>');
-            iframeDoc.write('@page { size: auto; margin: 0mm; }');  // Mengatur margin halaman menjadi 0
-            iframeDoc.write('.content {');
-            iframeDoc.write('  margin: auto;'); // Margin auto untuk center
-            iframeDoc.write('  width: 15%;');  // Atur lebar konten sesuai kebutuhan
-            iframeDoc.write('  transform: scale(0.6);'); // Atur skala konten
-            iframeDoc.write('  transform-origin: 0 0;'); // Set titik asal transformasi
-            iframeDoc.write('}');
-            iframeDoc.write('</style>');
-            iframeDoc.write('</head><body>');
-            iframeDoc.write('<div class="content">'); // Pembungkus untuk konten
-            iframeDoc.write(htmlContent); // Isi HTML yang sudah Anda ambil dari API
-            iframeDoc.write('</div>');
-            iframeDoc.write('</body></html>');
+            // iframeDoc.write('<html><head>');
+            // iframeDoc.write('<script src="https://cdn.tailwindcss.com"></script>');
+            // iframeDoc.write('<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />');
+            // iframeDoc.write('<style>');
+            // iframeDoc.write('@page { size: auto; margin: 0mm; }');
+            // iframeDoc.write('.content { margin: auto; width: 15%; transform: scale(0.6); transform-origin: 0 0; }');
+            // iframeDoc.write('</style>');
+            // iframeDoc.write('</head><body>');
+            // iframeDoc.write('<div class="content">');
+            iframeDoc.write(htmlContent);
+            // iframeDoc.write('</div>');
+            // iframeDoc.write('</body></html>');
             iframeDoc.close();
 
-            // Menunggu konten iframe selesai dimuat
             iframe.onload = () => {
-                // Setelah iframe selesai dimuat, panggil print
                 iframe.contentWindow.focus();
                 iframe.contentWindow.print();
-                document.body.removeChild(iframe); // Menghapus iframe setelah cetak
+                document.body.removeChild(iframe);
             };
         } else {
             console.log("HTML content kosong");
         }
     };
-
-
-
-
-
-
 
     return (
         <DialogContent className="sm:max-w-[638px] my-[20px] grid gap-[16px]">
@@ -106,19 +95,23 @@ const Struk = ({ setIsOpen, setcontenstep, idDaftarOrder }) => {
                 </Button>
             </DialogHeader>
             <div className='flex flex-col items-center justify-center bg-gray-100 py-[20px]'>
-                <div style={{ width: '100%' }}>
-                    <iframe
-                        ref={iframeRef}
-                        srcDoc={htmlContent}
-                        title="HTML Content Preview"
-                        style={{
-                            width: '100%',
-                            border: 'none',
-                            overflow: 'hidden',
-                        }}
-                        onLoad={adjustIframeHeight} // Menyesuaikan tinggi saat konten dimuat
-                    />
-                </div>
+                {loading ? (
+                    <div className="loading">Loading...</div> // Indikator loading
+                ) : (
+                    <div style={{ width: '390px' }}>
+                        <iframe
+                            ref={iframeRef}
+                            srcDoc={htmlContent}
+                            title="HTML Content Preview"
+                            style={{
+                                width: '390px',
+                                border: 'none',
+                                overflow: 'hidden',
+                            }}
+                            onLoad={adjustIframeHeight}
+                        />
+                    </div>
+                )}
             </div>
         </DialogContent>
     );

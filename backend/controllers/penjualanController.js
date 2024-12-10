@@ -484,117 +484,274 @@ GROUP BY
 // };
 
 // Get Card Penjualan berdasarkan outletId
+// exports.getCardPenjualan = async (req, res) => {
+//   const { outletId } = req.params;
+//   const { start_date, end_date } = req.query; // Ambil start_date dan end_date dari query parameter
+
+//   try {
+//     let query = `
+//     SELECT 
+//     -- Total Penjualan: Jumlah seluruh kolom total pada tabel transaksis untuk outlet tertentu
+//     (SELECT 
+//         SUM(transaksis.total) 
+//      FROM 
+//         transaksis
+//      WHERE 
+//         transaksis.outletsId = :outletId
+//         AND transaksis.deletedAt IS NULL
+//     `;
+
+//     // Tambahkan filter tanggal pada query Total Penjualan
+//     if (start_date && end_date) {
+//       query += ` AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date`;
+//     } else if (!start_date && !end_date) {
+//       // Tidak menambahkan filter tanggal
+//     } else {
+//       query += ` AND DATE(t.createdAt) = DATE(NOW())`; // Filter berdasarkan hari ini
+//     }
+
+//     query += `
+//     ) AS Total_Penjualan,
+
+//     -- Produk Terjual: Jumlah seluruh kolom stok pada tabel detailtransaksis untuk outlet tertentu
+//     (SELECT 
+//         SUM(detailtransaksis.stok) 
+//      FROM 
+//         detailtransaksis
+//      JOIN 
+//         transaksis ON detailtransaksis.transaksisId = transaksis.id
+//      WHERE 
+//         transaksis.outletsId = :outletId
+//         AND transaksis.deletedAt IS NULL
+//     `;
+
+//     // Tambahkan filter tanggal pada query Produk Terjual
+//     if (start_date && end_date) {
+//       query += ` AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date`;
+//     } else if (!start_date && !end_date) {
+//       // Tidak menambahkan filter tanggal
+//     } else {
+//       query += ` AND DATE(transaksis.createdAt) = DATE(NOW())`; // Filter berdasarkan hari ini
+//     }
+
+//     query += `
+//     ) AS Produk_Terjual,
+
+//     -- Pembayaran Paling Sering: Tipe pembayaran yang paling sering digunakan untuk outlet tertentu
+//     (SELECT 
+//         transaksis.tipeBayar 
+//      FROM 
+//         transaksis
+//      WHERE 
+//         transaksis.outletsId = :outletId
+//         AND transaksis.deletedAt IS NULL
+//     `;
+
+//     // Tambahkan filter tanggal pada query Pembayaran Paling Sering
+//     if (start_date && end_date) {
+//       query += ` AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date`;
+//     } else if (!start_date && !end_date) {
+//       // Tidak menambahkan filter tanggal
+//     } else {
+//       query += ` AND DATE(transaksis.createdAt) = DATE(NOW())`; // Filter berdasarkan hari ini
+//     }
+
+//     query += `
+//     GROUP BY 
+//         transaksis.tipeBayar
+//     ORDER BY 
+//         COUNT(transaksis.tipeBayar) DESC
+//     LIMIT 1
+//     ) AS Pembayaran_Paling_Sering,
+
+//     -- Produk Terlaris: Produk dengan stok terjual terbanyak untuk outlet tertentu
+//     (SELECT 
+//         products.name 
+//      FROM 
+//         detailtransaksis
+//      JOIN 
+//         products ON detailtransaksis.productsId = products.id
+//      JOIN 
+//         transaksis ON detailtransaksis.transaksisId = transaksis.id
+//      WHERE 
+//         transaksis.outletsId = :outletId
+//         AND transaksis.deletedAt IS NULL
+//     `;
+
+//     // Tambahkan filter tanggal pada query Produk Terlaris
+//     if (start_date && end_date) {
+//       query += ` AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date`;
+//     } else if (!start_date && !end_date) {
+//       // Tidak menambahkan filter tanggal
+//     } else {
+//       query += ` AND DATE(transaksis.createdAt) = DATE(NOW())`; // Filter berdasarkan hari ini
+//     }
+
+//     query += `
+//     GROUP BY 
+//         detailtransaksis.productsId
+//     ORDER BY 
+//         SUM(detailtransaksis.stok) DESC
+//     LIMIT 1
+//     ) AS Produk_Terlaris;
+//     `;
+
+//     // Eksekusi query menggunakan sequelize dan parameter outletId
+//     const data = await sequelize.query(query, {
+//       type: sequelize.QueryTypes.SELECT,
+//       replacements: { 
+//         outletId, 
+//         start_date, 
+//         end_date 
+//       }, // Menggantikan :outletId, :start_date, dan :end_date dengan parameter yang diterima
+//     });
+
+//     // Jika data ditemukan
+//     if (data.length > 0) {
+//       res.status(200).json(data[0]); // Mengembalikan baris pertama dari data
+//     } else {
+//       res.status(404).json({ error: 'Tidak ada data yang ditemukan untuk outlet tersebut' });
+//     }
+//   } catch (error) {
+//     res.status(400).json({ error: error.message }); // Menangani error
+//   }
+// };
+
 exports.getCardPenjualan = async (req, res) => {
   const { outletId } = req.params;
   const { start_date, end_date } = req.query; // Ambil start_date dan end_date dari query parameter
 
   try {
     let query = `
-    SELECT 
-    -- Total Penjualan: Jumlah seluruh kolom total pada tabel transaksis untuk outlet tertentu
+    SELECT
+    -- Total Penjualan dan Rata-rata Penjualan Per Hari
     (SELECT 
         SUM(transaksis.total) 
-     FROM 
+    FROM 
         transaksis
-     WHERE 
+    WHERE 
         transaksis.outletsId = :outletId
         AND transaksis.deletedAt IS NULL
-    `;
-
-    // Tambahkan filter tanggal pada query Total Penjualan
-    if (start_date && end_date) {
-      query += ` AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date`;
-    } else if (!start_date && !end_date) {
-      // Tidak menambahkan filter tanggal
-    } else {
-      query += ` AND DATE(t.createdAt) = DATE(NOW())`; // Filter berdasarkan hari ini
-    }
-
-    query += `
+        AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date
     ) AS Total_Penjualan,
 
-    -- Produk Terjual: Jumlah seluruh kolom stok pada tabel detailtransaksis untuk outlet tertentu
+    (SELECT 
+        ROUND(SUM(transaksis.total) / (DATEDIFF(:end_date, :start_date) + 1)) 
+    FROM 
+        transaksis
+    WHERE 
+        transaksis.outletsId = :outletId
+        AND transaksis.deletedAt IS NULL
+        AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date
+    ) AS Rata_Rata_Total_Penjualan_Per_Hari,
+
+    -- Produk Terjual dan Rata-rata Produk Terjual Per Hari
     (SELECT 
         SUM(detailtransaksis.stok) 
-     FROM 
+    FROM 
         detailtransaksis
-     JOIN 
+    JOIN 
         transaksis ON detailtransaksis.transaksisId = transaksis.id
-     WHERE 
+    WHERE 
         transaksis.outletsId = :outletId
         AND transaksis.deletedAt IS NULL
-    `;
-
-    // Tambahkan filter tanggal pada query Produk Terjual
-    if (start_date && end_date) {
-      query += ` AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date`;
-    } else if (!start_date && !end_date) {
-      // Tidak menambahkan filter tanggal
-    } else {
-      query += ` AND DATE(transaksis.createdAt) = DATE(NOW())`; // Filter berdasarkan hari ini
-    }
-
-    query += `
+        AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date
     ) AS Produk_Terjual,
 
-    -- Pembayaran Paling Sering: Tipe pembayaran yang paling sering digunakan untuk outlet tertentu
     (SELECT 
-        transaksis.tipeBayar 
-     FROM 
-        transaksis
-     WHERE 
+        ROUND(SUM(detailtransaksis.stok) / (DATEDIFF(:end_date, :start_date) + 1)) 
+    FROM 
+        detailtransaksis
+    JOIN 
+        transaksis ON detailtransaksis.transaksisId = transaksis.id
+    WHERE 
         transaksis.outletsId = :outletId
         AND transaksis.deletedAt IS NULL
-    `;
+        AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date
+    ) AS Rata_Rata_Produk_Terjual_Per_Hari,
 
-    // Tambahkan filter tanggal pada query Pembayaran Paling Sering
-    if (start_date && end_date) {
-      query += ` AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date`;
-    } else if (!start_date && !end_date) {
-      // Tidak menambahkan filter tanggal
-    } else {
-      query += ` AND DATE(transaksis.createdAt) = DATE(NOW())`; // Filter berdasarkan hari ini
-    }
-
-    query += `
+    -- Pembayaran Paling Sering
+    (SELECT 
+        transaksis.tipeBayar 
+    FROM 
+        transaksis
+    WHERE 
+        outletsId = :outletId
+        AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date
+        AND deletedAt IS NULL
     GROUP BY 
         transaksis.tipeBayar
     ORDER BY 
         COUNT(transaksis.tipeBayar) DESC
-    LIMIT 1
-    ) AS Pembayaran_Paling_Sering,
+    LIMIT 1) AS Pembayaran_Paling_Sering,
 
-    -- Produk Terlaris: Produk dengan stok terjual terbanyak untuk outlet tertentu
     (SELECT 
-        products.name 
-     FROM 
+        COUNT(transaksis.tipeBayar) 
+    FROM 
+        transaksis
+    WHERE 
+        outletsId = :outletId
+        AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date
+        AND deletedAt IS NULL
+    GROUP BY 
+        transaksis.tipeBayar
+    ORDER BY 
+        COUNT(transaksis.tipeBayar) DESC
+    LIMIT 1) AS Transaksi_Pembayaran_Paling_Sering,
+
+    -- Produk Terlaris
+    (SELECT 
+        products.name
+    FROM 
         detailtransaksis
-     JOIN 
+    JOIN 
         products ON detailtransaksis.productsId = products.id
-     JOIN 
+    JOIN 
         transaksis ON detailtransaksis.transaksisId = transaksis.id
-     WHERE 
+    WHERE 
         transaksis.outletsId = :outletId
         AND transaksis.deletedAt IS NULL
-    `;
-
-    // Tambahkan filter tanggal pada query Produk Terlaris
-    if (start_date && end_date) {
-      query += ` AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date`;
-    } else if (!start_date && !end_date) {
-      // Tidak menambahkan filter tanggal
-    } else {
-      query += ` AND DATE(transaksis.createdAt) = DATE(NOW())`; // Filter berdasarkan hari ini
-    }
-
-    query += `
+        AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date
     GROUP BY 
         detailtransaksis.productsId
     ORDER BY 
         SUM(detailtransaksis.stok) DESC
-    LIMIT 1
-    ) AS Produk_Terlaris;
-    `;
+    LIMIT 1) AS Produk_Terlaris,
+
+    (SELECT 
+        SUM(detailtransaksis.stok) 
+    FROM 
+        detailtransaksis
+    JOIN 
+        products ON detailtransaksis.productsId = products.id
+    JOIN 
+        transaksis ON detailtransaksis.transaksisId = transaksis.id
+    WHERE 
+        transaksis.outletsId = :outletId
+        AND transaksis.deletedAt IS NULL
+        AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date
+    GROUP BY 
+        detailtransaksis.productsId
+    ORDER BY 
+        SUM(detailtransaksis.stok) DESC
+    LIMIT 1) AS Stok_Produk_Terjual,
+
+    (SELECT 
+        COUNT(transaksis.id) 
+    FROM 
+        detailtransaksis
+    JOIN 
+        transaksis ON detailtransaksis.transaksisId = transaksis.id
+    WHERE 
+        transaksis.outletsId = :outletId
+        AND transaksis.deletedAt IS NULL
+        AND DATE(transaksis.createdAt) BETWEEN :start_date AND :end_date
+    GROUP BY 
+        detailtransaksis.productsId
+    ORDER BY 
+        SUM(detailtransaksis.stok) DESC
+    LIMIT 1) AS Transaksi_Produk_Terlaris;    
+    `
 
     // Eksekusi query menggunakan sequelize dan parameter outletId
     const data = await sequelize.query(query, {

@@ -2,17 +2,13 @@ import React from 'react'
 import { PresentionChart, Bag2, Box1, I3DRotate, ArrowRight } from 'iconsax-react';
 import { Link } from 'react-router-dom';
 
-const DataCard = () => {
-    const dataSum = [
-        { id: 656, nama: 'Outlet 1', pendapatan: 400000000, Pnaikturun: -20, order: 200, Onaikturun: +20, produk: 'QRIS', stokhabis: 10 }
-        // { id: 656, nama: 'Outlet 1', pendapatan: 0, Pnaikturun: null, order: 0, Onaikturun: null, produk: 0, stokhabis: null }
-    ];
+const DataCard = ({dataSum}) => {
+    
 
     return (
         <div className="container mx-auto">
             <div className="flex flex-wrap -m-4">
-                {dataSum.map((data) => (
-                    <React.Fragment key={data.id}>
+             
                         <div className="lg:w-1/4 md:w-1/2 p-4 w-full">
                             <div className=' border-2 rounded-[8px] grid gap-[8px] p-[24px]'>
                                 <div className='flex justify-between'>
@@ -20,10 +16,10 @@ const DataCard = () => {
                                     <PresentionChart size="16" color="#717179" />
                                 </div>
                                 <div className='grid gap-[4px]'>
-                                    <p className='text-[24px] font-semibold'> {data.pendapatan > 0 ? `Rp ${data.pendapatan.toLocaleString('id-ID')}` : '0'}</p>
-                                    {data.Pnaikturun !== null && (
-                                        <p className={`text-[12px] font-medium ${data.Pnaikturun > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                                            {data.Pnaikturun > 0 ? `+${data.Pnaikturun}%` : `${data.Pnaikturun}%`} dari kemarin
+                                    <p className='text-[24px] font-semibold'> {dataSum.Total_Penjualan > 0 ? `Rp ${Number(dataSum.Total_Penjualan).toLocaleString('id-ID')}` : '0'}</p>
+                                    {dataSum.Rata_Rata_Total_Penjualan_Per_Hari !== null && (
+                                        <p className={`text-[12px] font-medium ${dataSum.Rata_Rata_Total_Penjualan_Per_Hari > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                                            Rp {Number(dataSum.Rata_Rata_Total_Penjualan_Per_Hari).toLocaleString('id-ID')} Rata-Rata Perhari
                                         </p>
                                     )}
                                 </div>
@@ -36,10 +32,10 @@ const DataCard = () => {
                                     <Bag2 size="16" color="#717179" />
                                 </div>
                                 <div className='grid gap-[4px]'>
-                                    <p className='text-[24px] font-semibold'>{data.order || 0}</p>
-                                    {data.Onaikturun !== null && (
-                                        <p className={`text-[12px] font-medium ${data.Onaikturun > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                                            {data.Onaikturun > 0 ? `+${data.Onaikturun}%` : `${data.Onaikturun}%`} dari kemarin
+                                    <p className='text-[24px] font-semibold'>{dataSum.Produk_Terjual || 0}</p>
+                                    {dataSum.Rata_Rata_Produk_Terjual_Per_Hari !== null && (
+                                        <p className={`text-[12px] font-medium ${dataSum.Rata_Rata_Produk_Terjual_Per_Hari > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                                            {dataSum.Rata_Rata_Produk_Terjual_Per_Hari } Rata-Rata Perhari
                                         </p>
                                     )}
                                 </div>
@@ -52,8 +48,10 @@ const DataCard = () => {
                                     <Box1 size="16" color="#717179" />
                                 </div>
                                 <div className='grid gap-[4px]'>
-                                    <p className='text-[24px] font-semibold'>{data.produk || 0}</p>
-                                    <p className='text-[12px] font-medium text-emerald-500'>{data.Onaikturun > 0 ? `+${data.Onaikturun}%` : `${data.Onaikturun}%`} dari kemarin</p>
+                                    <p className='text-[24px] font-semibold'>{dataSum.Pembayaran_Paling_Sering || '-'}</p>
+                                    {dataSum.Transaksi_Pembayaran_Paling_Sering !== null && (
+                                    <p className='text-[12px] font-medium text-emerald-500'>{dataSum.Transaksi_Pembayaran_Paling_Sering} transaksi</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -64,13 +62,14 @@ const DataCard = () => {
                                     <Box1 size="16" color="#717179" />
                                 </div>
                                 <div className='grid gap-[4px]'>
-                                    <p className='text-[24px] font-semibold'>Cappucino</p>
-                                    <p className='text-[12px] font-medium text-emerald-500'>{data.Onaikturun > 0 ? `+${data.Onaikturun}%` : `${data.Onaikturun}%`} dari kemarin</p>
+                                    <p className='text-[24px] font-semibold'>{dataSum.Produk_Terlaris || '-'}</p>
+                                    {dataSum.Transaksi_Produk_Terlaris !== null && (
+                                    <p className='text-[12px] font-medium text-emerald-500'>{dataSum.Transaksi_Produk_Terlaris} transaksi</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
-                    </React.Fragment>
-                ))}
+                
             </div>
         </div>
     );

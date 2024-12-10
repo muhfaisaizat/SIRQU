@@ -286,6 +286,71 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), readTransaksib
 router.get('/view-struk/:id', transaksiStruk.getTransaksiStrukMobile);
 
 
+/**
+ * @swagger
+ * /api/transaksi/view-struk/{id}/download:
+ *   get:
+ *     summary: Mendapatkan HTML yang menampilkan informasi struk transaksi
+ *     tags:
+ *       - Transaksi
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID transaksi yang ingin ditampilkan
+ *     responses:
+ *       200:
+ *         description: HTML struk transaksi berhasil diambil
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ *               example: |
+ *                 <html>
+ *                     <body>
+ *                         <div>
+ *                             <h1>Nama Toko</h1>
+ *                             <p>Alamat Toko</p>
+ *                             <p>Kontak Toko</p>
+ *                             <div class="order-details">
+ *                                 <p>No. Order: #0001</p>
+ *                                 <p>Waktu: 12 Feb 2024, 08.30</p>
+ *                                 <p>Kasir: Nama Kasir</p>
+ *                                 <p>Pembayaran: Tunai</p>
+ *                             </div>
+ *                             <div class="item-list">
+ *                                 <p>1. Nama Barang - Rp 10.000</p>
+ *                             </div>
+ *                             <div class="total">
+ *                                 <p>Sub Total: Rp 30.000</p>
+ *                                 <p>Pajak 10%: Rp 3.000</p>
+ *                                 <p>Diskon: -Rp 13.000</p>
+ *                                 <p>Total: Rp 20.000</p>
+ *                                 <p>Bayar: Rp 20.000</p>
+ *                                 <p>Kembalian: Rp 0</p>
+ *                             </div>
+ *                         </div>
+ *                     </body>
+ *                 </html>
+ *       500:
+ *         description: Terjadi kesalahan pada server saat mengambil data transaksi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Terjadi kesalahan saat mengambil data struk
+ */
+router.get('/view-struk/:id/download', transaksiStruk.getTransaksiStruk);
+
+
 
 
 
