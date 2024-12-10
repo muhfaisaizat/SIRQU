@@ -250,9 +250,9 @@ exports.getViewStrukMobile = async (req, res) => {
                         `<img src="${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
                         :''
                         : ''}
-                    ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
-                    ${showAlamat ? `<p class="text-[14px] text-center font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
-                    ${showKontak ? `<p class="text-[14px] text-center font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
+                    ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px] w-[290px] break-words">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
+                    ${showAlamat ? `<p class="text-[14px] text-center font-medium w-[290px] break-words">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
+                    ${showKontak ? `<p class="text-[14px] text-center font-medium w-[290px] break-words">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
                      <!-- <p class="text-[14px] font-medium">www.kopikita.com</p> -->
                 </div>
 
@@ -324,7 +324,7 @@ exports.getViewStrukMobile = async (req, res) => {
                        ${sosialMediaContent}
                     </div>
                   ` : ''}
-                ${showCatatan ? `<p class="text-[14px] font-medium text-center w-[250px]">${textCatatan?.text && textCatatan.text !== 'null'? textCatatan.text : ''}</p>` : ''}
+                ${showCatatan ? `<p class="text-[14px] font-medium text-center w-[250px]  break-words">${textCatatan?.text && textCatatan.text !== 'null'? textCatatan.text : ''}</p>` : ''}
                     <p class="text-[10px] font-medium text-slate-500 mt-[24px]">Powered by Sirqu POS</p>
                 </div>
 
@@ -568,9 +568,9 @@ exports.getTransaksiStruk = async (req, res) => {
                         `<img src="${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
                         :''
                         : ''}
-                        ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
-                        ${showAlamat ? `<p class="text-[14px] text-center font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
-                        ${showKontak ? `<p class="text-[14px] text-center font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
+                    ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px] w-[290px] break-words">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
+                    ${showAlamat ? `<p class="text-[14px] text-center font-medium w-[290px] break-words">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
+                    ${showKontak ? `<p class="text-[14px] text-center font-medium w-[290px] break-words">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
                      <!-- <p class="text-[14px] font-medium">www.kopikita.com</p> -->
                 </div>
 
@@ -616,7 +616,7 @@ exports.getTransaksiStruk = async (req, res) => {
                        ${sosialMediaContent}
                     </div>
                   ` : ''}
-                ${showCatatan ? `<p class="text-[14px] font-medium text-center w-[250px]">${textCatatan?.text && textCatatan.text !== 'null'? textCatatan.text : ''}</p>` : ''}
+                  ${showCatatan ? `<p class="text-[14px] font-medium text-center w-[250px]  break-words">${textCatatan?.text && textCatatan.text !== 'null'? textCatatan.text : ''}</p>` : ''}
                     <p class="text-[10px] font-medium text-slate-500 mt-[24px]">Powered by Sirqu POS</p>
                 </div>
 
@@ -890,9 +890,9 @@ exports.getTransaksiStrukMobile = async (req, res) => {
                         `<img src="${logo}" alt="Logo" class="w-[84px] h-[84px]" />` 
                         :''
                         : ''}
-                        ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px]">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
-                        ${showAlamat ? `<p class="text-[14px] text-center font-medium">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
-                        ${showKontak ? `<p class="text-[14px] text-center font-medium">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
+                    ${showNamaToko ? `<h1 class="text-[20px] text-center font-semibold py-[8px] w-[290px] break-words">${textNamaToko?.text && textNamaToko.text !== 'null' ? textNamaToko.text : ''}</h1>` : ''}
+                    ${showAlamat ? `<p class="text-[14px] text-center font-medium w-[290px] break-words">${textAlamat?.text && textAlamat.text !== 'null'? textAlamat.text : ''}</p>` : ''}
+                    ${showKontak ? `<p class="text-[14px] text-center font-medium w-[290px] break-words">${textKontak?.text && textKontak.text !== 'null'? textKontak.text : ''}</p>` : ''}
                      <!-- <p class="text-[14px] font-medium">www.kopikita.com</p> -->
                 </div>
 
@@ -938,7 +938,7 @@ exports.getTransaksiStrukMobile = async (req, res) => {
                        ${sosialMediaContent}
                     </div>
                   ` : ''}
-                ${showCatatan ? `<p class="text-[14px] font-medium text-center w-[250px]">${textCatatan?.text && textCatatan.text !== 'null'? textCatatan.text : ''}</p>` : ''}
+                  ${showCatatan ? `<p class="text-[14px] font-medium text-center w-[250px]  break-words">${textCatatan?.text && textCatatan.text !== 'null'? textCatatan.text : ''}</p>` : ''}
                     <p class="text-[10px] font-medium text-slate-500 mt-[24px]">Powered by Sirqu POS</p>
                 </div>
 
