@@ -19,17 +19,90 @@ import axios from 'axios';
 import { API_URL } from "../../../helpers/networt";
 
 const Dashboard = ({ handlemenu }) => {
-  const DataKategori = [
-    { id: "m5gr84i9", name: 'Semua' },
-    { id: "m5gr84ig", name: 'Kategori 1' },
-    { id: "m5gr84i7", name: 'Kategori 2' },
-    { id: "m5gr84i8", name: 'Kategori 3' },
-  ];
+  const [DataKategori, setDataKategori] = useState([
+    // { id: "m5gr84i9", name: 'Makanan' },
+    // { id: "m5gr84i7", name: 'Buah' },
+    // { id: "m5gr84i8", name: 'Sayuran' }
+])
+
+const formatkategoriData = (apiData) => {
+    return {
+        id: apiData.id_kategori.toString(),
+        name: apiData.nama_kategori
+    };
+};
+
+const fetchDataKategori = async () => {
+    const token = localStorage.getItem("token");
+    try {
+        const response = await axios.get(`${API_URL}/api/categories`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+       // Log untuk memastikan data yang diterima
+
+        // Pastikan response.data adalah array
+        if (Array.isArray(response.data.data)) {
+            const formattedData = response.data.data.map(formatkategoriData);
+           
+            setDataKategori(formattedData);
+            // console.log(formattedData)
+            // setOriginalData(formattedData); // Set originalData di sini
+        } else {
+            console.error("Data yang diterima bukan array");
+        }
+    } catch (error) {
+        console.error("Error fetching data", error);
+    }
+};
+
+
+useEffect(() => {
+    fetchDataKategori();
+}, []);
+
   const [DataOutlet, setDataOutlet] = useState([
     // { id: "m5gr84i9", name: 'Cabang 1' },
     // { id: "m5gr84i7", name: 'Cabang 2' },
     // { id: "m5gr84i8", name: 'Cabang 3' },
 ]);
+
+const [dataSum, setDataSum] = useState([]);
+
+const fetchDataCardOutlet = async (id) => {
+  const token = localStorage.getItem("token");
+  try {
+      const response = await axios.get(`${API_URL}/api/dashboard/${id}`, {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+
+      setDataSum(response.data.data)
+
+  } catch (error) {
+      console.error("Error fetching data", error);
+  }
+};
+
+const fetchDataCardDays = async (hari) => {
+  const token = localStorage.getItem("token");
+  try {
+      const response = await axios.get(`${API_URL}/api/dashboard/${selectedOutlet.id}?periode=${hari}`, {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+
+      setDataSum(response.data.data)
+
+  } catch (error) {
+      console.error("Error fetching data", error);
+  }
+};
+
   const [selectedOutlet, setSelectedOutlet] = useState(DataOutlet[0]);
   const formatOutletData = (apiData) => {
     return {
@@ -66,18 +139,31 @@ const fetchDataOutlet = async () => {
 useEffect(() => {
     fetchDataOutlet();
 }, []);
+
   const handleSelectOutlet = (outlet) => {
     setSelectedOutlet(outlet);
+    fetchDataCardOutlet(outlet.id);
   };
   const Datahari = [
-    { id: "m5gr84i9", name: 'Hari ini' },
-    { id: "m5gr84i7", name: 'Minngu ini' },
-    { id: "m5gr84i8", name: 'Bulan ini' }
+    { id: "hari-ini", name: 'Hari ini' },
+    { id: "minggu-ini", name: 'Minngu ini' },
+    { id: "bulan-ini", name: 'Bulan ini' },
+    { id: "tahun-ini", name: 'Tahun ini' }
   ];
   const [selectedHari, setSelectedHari] = useState(Datahari[0]);
   const handleSelectHari = (hari) => {
     setSelectedHari(hari);
+    fetchDataCardDays(hari.id)
   };
+
+  useEffect(() => {
+    if (selectedOutlet) {
+      fetchDataCardDays(selectedHari.id);
+    }
+}, [selectedHari, selectedOutlet]);
+
+  
+
 
   return (
     <ScrollArea className='w-full h-[100%]'>
@@ -131,7 +217,7 @@ useEffect(() => {
           </div>
         </div>
         <div className='grid gap-[26px]'>
-          <Card handlemenu={handlemenu} />
+          <Card handlemenu={handlemenu} dataSum={dataSum}/>
           <div className='flex gap-[16px]'>
             <Garfik selectedOutlet={selectedOutlet}/>
             <DataPenjualan DataKategori={DataKategori} />

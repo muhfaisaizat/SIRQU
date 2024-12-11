@@ -10,7 +10,7 @@ const DataCard = ({dataSum}) => {
             <div className="flex flex-wrap -m-4">
              
                         <div className="lg:w-1/4 md:w-1/2 p-4 w-full">
-                            <div className=' border-2 rounded-[8px] grid gap-[8px] p-[24px]'>
+                            <div className=' border-2 rounded-[8px] grid gap-[8px] p-[24px] h-full'>
                                 <div className='flex justify-between'>
                                     <h1 className='text-[14px] font-semibold'>Total Penjualan</h1>
                                     <PresentionChart size="16" color="#717179" />
@@ -26,7 +26,7 @@ const DataCard = ({dataSum}) => {
                             </div>
                         </div>
                         <div className="lg:w-1/4 md:w-1/2 p-4 w-full">
-                            <div className=' border-2 rounded-[8px] grid gap-[8px] p-[24px]'>
+                            <div className=' border-2 rounded-[8px] grid gap-[8px] p-[24px] h-full'>
                                 <div className='flex justify-between'>
                                     <h1 className='text-[14px] font-semibold'>Produk Terjual</h1>
                                     <Bag2 size="16" color="#717179" />
@@ -42,7 +42,7 @@ const DataCard = ({dataSum}) => {
                             </div>
                         </div>
                         <div className="lg:w-1/4 md:w-1/2 p-4 w-full">
-                            <div className=' border-2 rounded-[8px] grid gap-[8px] p-[24px]'>
+                            <div className=' border-2 rounded-[8px] grid gap-[8px] p-[24px] h-full'>
                                 <div className='flex justify-between'>
                                     <h1 className='text-[14px] font-semibold'>Pembayaran Paling Sering</h1>
                                     <Box1 size="16" color="#717179" />
@@ -56,7 +56,7 @@ const DataCard = ({dataSum}) => {
                             </div>
                         </div>
                         <div className="lg:w-1/4 md:w-1/2 p-4 w-full">
-                            <div className=' border-2 rounded-[8px] grid gap-[8px] p-[24px]'>
+                            <div className=' border-2 rounded-[8px] grid gap-[8px] p-[24px] h-full'>
                                 <div className='flex justify-between'>
                                     <h1 className='text-[14px] font-semibold'>Produk Terlaris</h1>
                                     <Box1 size="16" color="#717179" />
