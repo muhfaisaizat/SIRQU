@@ -41,12 +41,20 @@ const DataPenjualan = ({ DataKategori }) => {
                 <h1 className='text-[16px] font-semibold'>Penjualan Tertinggi</h1>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className=" w-[120px] h-[36px] text-[14px] flex justify-between">
+                        <Button variant="outline" className=" w-auto h-[36px] text-[14px] flex justify-between">
                             <ChevronDown size={16} className="mr-2" />
-                            {selectedKategori ? selectedKategori.name : "Pilih outlet"}
+                            {selectedKategori ? selectedKategori.name : "Semua"}
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className='w-[130px]'>
+                            <DropdownMenuCheckboxItem
+                               
+                                className="capitalize p-[12px]"
+                                onClick={() => handleSelectKategoei({id:'semua', name:'Semua'})}
+                                checked={selectedKategori?.id === 'semua'}
+                            >
+                                <span className="ml-[12px] text-[14px]">Semua</span>
+                            </DropdownMenuCheckboxItem>
                         {DataKategori.map((kategori) => (
                             <DropdownMenuCheckboxItem
                                 key={kategori.id}
