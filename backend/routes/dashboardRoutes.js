@@ -129,10 +129,10 @@ router.get(
  *         description: The ID of the outlet
  *       - in: query
  *         name: categoriesId
- *         required: true
+ *         required: false
  *         schema:
  *           type: integer
- *         description: The ID of the category
+ *         description: The ID of the category (optional)
  *     responses:
  *       200:
  *         description: Top selling products for the outlet and category

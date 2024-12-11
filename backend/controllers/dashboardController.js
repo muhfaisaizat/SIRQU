@@ -41,29 +41,37 @@ const getDashboardData = async (req, res) => {
         filterDate = {
           createdAt: { [Op.between]: [todayStart, todayEnd] },
         };
-        produkBaruFilter = { createdAt: { [Op.between]: [todayStart, todayEnd] } };
+        produkBaruFilter = {
+          createdAt: { [Op.between]: [todayStart, todayEnd] },
+        };
         totalDays = 1;
         break;
       case "minggu-ini":
         filterDate = { createdAt: { [Op.gte]: weekStart } };
-        produkBaruFilter = { createdAt: { [Op.gte]: weekStart, [Op.lt]: todayEnd } };
+        produkBaruFilter = {
+          createdAt: { [Op.gte]: weekStart, [Op.lt]: todayEnd },
+        };
         totalDays = 7;
         break;
       case "bulan-ini":
         filterDate = { createdAt: { [Op.gte]: monthStart } };
-        produkBaruFilter = { createdAt: { [Op.gte]: monthStart, [Op.lt]: todayEnd } };
+        produkBaruFilter = {
+          createdAt: { [Op.gte]: monthStart, [Op.lt]: todayEnd },
+        };
         totalDays = new Date().getDate();
         break;
       case "tahun-ini":
         filterDate = { createdAt: { [Op.gte]: yearStart } };
-        produkBaruFilter = { createdAt: { [Op.gte]: yearStart, [Op.lt]: todayEnd } };
+        produkBaruFilter = {
+          createdAt: { [Op.gte]: yearStart, [Op.lt]: todayEnd },
+        };
         totalDays = Math.ceil(
           (new Date() - new Date(new Date().getFullYear(), 0, 1)) /
-          (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24)
         );
         break;
       default:
-        filterDate = {}; 
+        filterDate = {};
         produkBaruFilter = {};
     }
 
@@ -101,7 +109,6 @@ const getDashboardData = async (req, res) => {
         pengingatStok,
       },
     });
-
   } catch (error) {
     console.error(error);
     res
@@ -206,17 +213,22 @@ const getTopSellingProducts = async (req, res) => {
         .json({ success: false, message: "Outlet tidak ditemukan" });
     }
 
-    // Validasi kategori
-    const category = await CategoriesOutlet.findOne({
-      where: {
-        outletsId,
-        categoriesId,
-      },
-    });
-    if (!category) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Kategori tidak ditemukan di outlet ini" });
+    // Jika categoriesId diberikan, validasi kategori
+    if (categoriesId) {
+      const category = await CategoriesOutlet.findOne({
+        where: {
+          outletsId,
+          categoriesId,
+        },
+      });
+      if (!category) {
+        return res
+          .status(404)
+          .json({
+            success: false,
+            message: "Kategori tidak ditemukan di outlet ini",
+          });
+      }
     }
 
     // Ambil data produk terlaris berdasarkan transaksi dan stok yang terjual
@@ -231,6 +243,13 @@ const getTopSellingProducts = async (req, res) => {
             `(SELECT id FROM transaksis WHERE outletsId = ${outletsId})`
           ),
         },
+        ...(categoriesId && {
+          productsId: {
+            [Op.in]: Sequelize.literal(
+              `(SELECT id FROM products WHERE categoriesId = ${categoriesId})`
+            ),
+          },
+        }),
       },
       group: ["productsId"],
       order: [[Sequelize.fn("SUM", Sequelize.col("stok")), "DESC"]],
