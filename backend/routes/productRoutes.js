@@ -44,7 +44,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *                   type: string
  *                   description: Error message
  */
-router.get('/stock-habis', roleMiddleware(['Admin', 'Manager']),  productController.getStockHabis);
+router.get('/stock-habis', roleMiddleware(['Admin', 'Manager', 'Kasir']),  productController.getStockHabis);
 
 
 /**
@@ -129,7 +129,7 @@ router.get('/stock-habis', roleMiddleware(['Admin', 'Manager']),  productControl
  *       500:
  *         description: Internal server error
  */
-router.get('/menu', roleMiddleware(['Admin', 'Manager']), productController.getProductMenu);
+router.get('/menu', roleMiddleware(['Admin', 'Manager', 'Kasir']), productController.getProductMenu);
 
 /**
  * @swagger
@@ -170,7 +170,7 @@ router.get('/menu', roleMiddleware(['Admin', 'Manager']), productController.getP
  *       400:
  *         description: Permintaan tidak valid
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), productController.createProduct);
+router.post('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), productController.createProduct);
 
 // /**
 //  * @swagger
@@ -240,7 +240,7 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), productController.createP
  *       404:
  *         description: Produk tidak ditemukan
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), productController.getProductById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productController.getProductById);
 
 /**
  * @swagger
@@ -280,7 +280,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), productController.getPr
  *       400:
  *         description: Permintaan tidak valid
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), productController.updateProduct);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productController.updateProduct);
 
 
 /**
@@ -302,7 +302,7 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), productController.updat
  *       404:
  *         description: Produk tidak ditemukan
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), productController.deleteProduct);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productController.deleteProduct);
 
 /**
  * @swagger
@@ -363,7 +363,7 @@ router.delete('/:id', roleMiddleware(['Admin', 'Manager']), productController.de
  *                   type: string
  *                   description: Error message
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), productController.getProducts);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), productController.getProducts);
 
 /**
  * @swagger
@@ -430,7 +430,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productController.getProdu
  *         description: Internal server error
  */
 
-router.put('/:id/status', roleMiddleware(['Admin', 'Manager']), productController.updateProductStatus);
+router.put('/:id/status', roleMiddleware(['Admin', 'Manager', 'Kasir']), productController.updateProductStatus);
 
 
 

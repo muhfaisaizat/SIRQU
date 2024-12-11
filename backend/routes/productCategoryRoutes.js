@@ -29,7 +29,7 @@ const roleMiddleware = require('../middleware/roleMiddleware')
  *       400:
  *         description: Bad Request
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), productCategoryController.createProductCategory);
+router.post('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), productCategoryController.createProductCategory);
 
 /**
  * @swagger
@@ -43,7 +43,7 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), productCategoryController
  *       400:
  *         description: Bad Request
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), productCategoryController.getProductCategories);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), productCategoryController.getProductCategories);
 
 /**
  * @swagger
@@ -66,7 +66,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productCategoryController.
  *       400:
  *         description: Bad Request
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), productCategoryController.getProductCategoryById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productCategoryController.getProductCategoryById);
 
 /**
  * @swagger
@@ -102,7 +102,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), productCategoryControll
  *       400:
  *         description: Bad Request
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), productCategoryController.updateProductCategory);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productCategoryController.updateProductCategory);
 
 /**
  * @swagger
@@ -125,6 +125,6 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), productCategoryControll
  *       400:
  *         description: Bad Request
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), productCategoryController.deleteProductCategory);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productCategoryController.deleteProductCategory);
 
 module.exports = router;

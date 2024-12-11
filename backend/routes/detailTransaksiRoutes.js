@@ -116,7 +116,7 @@ router.put('/:transaksi_id/:detailTransaksi_id', roleMiddleware(['Admin', 'Manag
  *       500:
  *         description: Terjadi kesalahan internal
  */
-router.delete('/:transaksi_id/:detailTransaksi_id', roleMiddleware(['Admin', 'Manager']), deleteDetailTransaksi);
+router.delete('/:transaksi_id/:detailTransaksi_id', roleMiddleware(['Admin', 'Manager', 'Kasir']), deleteDetailTransaksi);
 
 
 module.exports = router;

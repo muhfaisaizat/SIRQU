@@ -37,7 +37,7 @@ const roleMiddleware = require('../middleware/roleMiddleware')
  *       400:
  *         description: Bad request or invalid data
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), productOutletController.createProductOutlet);
+router.post('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), productOutletController.createProductOutlet);
 
 /**
  * @swagger
@@ -57,7 +57,7 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), productOutletController.c
  *       400:
  *         description: Error fetching relationships
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), productOutletController.getProductOutlets);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), productOutletController.getProductOutlets);
 
 /**
  * @swagger
@@ -84,7 +84,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productOutletController.ge
  *       400:
  *         description: Error fetching the relationship
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), productOutletController.getProductOutletById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productOutletController.getProductOutletById);
 
 /**
  * @swagger
@@ -127,7 +127,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), productOutletController
  *       400:
  *         description: Error updating the relationship
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), productOutletController.updateProductOutlet);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productOutletController.updateProductOutlet);
 
 /**
  * @swagger
@@ -150,6 +150,6 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), productOutletController
  *       400:
  *         description: Bad Request
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), productOutletController.deleteProductOutlet);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productOutletController.deleteProductOutlet);
 
 module.exports = router;

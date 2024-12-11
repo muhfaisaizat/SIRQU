@@ -19,7 +19,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *               items:
  *                 $ref: '#/components/schemas/Kasir'
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), kasirController.getKasirList);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), kasirController.getKasirList);
 
 /**
  * @swagger
@@ -44,7 +44,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), kasirController.getKasirLi
  *       404:
  *         description: Kasir tidak ditemukan
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), kasirController.getKasirById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), kasirController.getKasirById);
 
 /**
  * @swagger
@@ -73,7 +73,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), kasirController.getKasi
  *             schema:
  *               $ref: '#/components/schemas/Kasir'
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), kasirController.createKasir);
+router.post('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), kasirController.createKasir);
 
 /**
  * @swagger
@@ -107,6 +107,6 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), kasirController.createKas
  *       404:
  *         description: Kasir tidak ditemukan
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), kasirController.updateKasir);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), kasirController.updateKasir);
 
 module.exports = router;

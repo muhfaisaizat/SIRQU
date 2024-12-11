@@ -85,7 +85,7 @@ const upload = require('../middleware/multer'); // Import multer middleware
  *       500:
  *         description: Terjadi kesalahan pada server
  */
-router.post('/', upload.none(), roleMiddleware(['Admin', 'Manager']), createPromosi);
+router.post('/', upload.none(), roleMiddleware(['Admin', 'Manager', 'Kasir']), createPromosi);
 
 /**
  * @swagger
@@ -156,7 +156,7 @@ router.post('/', upload.none(), roleMiddleware(['Admin', 'Manager']), createProm
  *                     format: date-time
  *                     description: The timestamp when the promotion was deleted (if applicable)
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']),  getAllPromosi);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']),  getAllPromosi);
 
 /**
  * @swagger
@@ -226,7 +226,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']),  getAllPromosi);
  *                     format: date-time
  *                     description: The timestamp when the promotion was deleted (if applicable)
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), getPromosiById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), getPromosiById);
 
 /**
  * @swagger
@@ -318,7 +318,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), getPromosiById);
  *       500:
  *         description: Terjadi kesalahan pada server
  */
-router.put('/:id', upload.none(), roleMiddleware(['Admin', 'Manager']), updatePromosi);
+router.put('/:id', upload.none(), roleMiddleware(['Admin', 'Manager', 'Kasir']), updatePromosi);
 
 /**
  * @swagger
@@ -339,6 +339,6 @@ router.put('/:id', upload.none(), roleMiddleware(['Admin', 'Manager']), updatePr
  *       404:
  *         description: Promosi tidak ditemukan
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), deletePromosi);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), deletePromosi);
 
 module.exports = router;

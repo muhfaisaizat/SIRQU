@@ -47,7 +47,7 @@ const uploadOutlet = require('../middleware/uploadImageOutlet'); // Middleware u
  *       500:
  *         description: Internal server error
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), uploadOutlet, outletController.createOutlet);
+router.post('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), uploadOutlet, outletController.createOutlet);
 
 /**
  * @swagger
@@ -89,7 +89,7 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), uploadOutlet, outletContr
  *                     format: date-time
  *                     description: The timestamp when the outlet was last updated
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), outletController.getOutlets);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), outletController.getOutlets);
 
 /**
  * @swagger
@@ -138,7 +138,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), outletController.getOutlet
  *       404:
  *         description: Outlet not found
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), outletController.getOutletById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), outletController.getOutletById);
 
 /**
  * @swagger
@@ -181,7 +181,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), outletController.getOut
  *       404:
  *         description: Outlet not found
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), uploadOutlet, outletController.updateOutlet);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), uploadOutlet, outletController.updateOutlet);
 
 /**
  * @swagger
@@ -202,7 +202,7 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), uploadOutlet, outletCon
  *       404:
  *         description: Outlet not found
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), outletController.deleteOutlet);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), outletController.deleteOutlet);
 
 /**
  * @swagger
@@ -254,7 +254,7 @@ router.delete('/:id', roleMiddleware(['Admin', 'Manager']), outletController.del
  *       500:
  *         description: Internal server error
  */
-router.put('/:id/koordinator', roleMiddleware(['Admin', 'Manager']), outletController.updateOutletCoordinator);
+router.put('/:id/koordinator', roleMiddleware(['Admin', 'Manager', 'Kasir']), outletController.updateOutletCoordinator);
 
 /**
  * @swagger
@@ -350,7 +350,7 @@ router.post('/product-outlets',  outletController.createProductOutletsForAllProd
  *       500:
  *         description: Internal server error
  */
-router.put('/syarat-ketentuan/:id', roleMiddleware(['Admin', 'Manager']), outletController.updateSyaratKetentuan);
+router.put('/syarat-ketentuan/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), outletController.updateSyaratKetentuan);
 
 
 module.exports = router;

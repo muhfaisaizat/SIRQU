@@ -45,7 +45,7 @@ const upload = require('../middleware/uploadImage'); // Middleware upload
  *       500:
  *         description: Internal server error
  */
-router.post('/', upload, roleMiddleware(['Admin']), createUser);
+router.post('/', upload, roleMiddleware(['Admin', 'Manajer', 'Kasir']), createUser);
 
 /**
  * @swagger
@@ -59,7 +59,7 @@ router.post('/', upload, roleMiddleware(['Admin']), createUser);
  *       500:
  *         description: Server error
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), getAllUsers);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), getAllUsers);
 
 /**
  * @swagger
@@ -82,7 +82,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), getAllUsers);
  *       500:
  *         description: Server error
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), getUserById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), getUserById);
 
 /**
  * @swagger
@@ -127,7 +127,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), getUserById);
  *       500:
  *         description: Server error
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), upload, updateUser);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), upload, updateUser);
 
 /**
  * @swagger
@@ -150,7 +150,7 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), upload, updateUser);
  *       500:
  *         description: Server error
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), deleteUser);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), deleteUser);
 
 /**
  * @swagger
@@ -198,7 +198,7 @@ router.delete('/:id', roleMiddleware(['Admin', 'Manager']), deleteUser);
  *       500:
  *         description: Internal server error
  */
-router.put('/:id/status', roleMiddleware(['Admin', 'Manager']), updateUserStatus);
+router.put('/:id/status', roleMiddleware(['Admin', 'Manager', 'Kasir']), updateUserStatus);
 
 /**
  * @swagger
@@ -240,6 +240,6 @@ router.put('/:id/status', roleMiddleware(['Admin', 'Manager']), updateUserStatus
  *       500:
  *         description: Internal server error
  */
-router.put('/:id/generate-token', roleMiddleware(['Admin', 'Manager']), generateTokenLogin);
+router.put('/:id/generate-token', roleMiddleware(['Admin', 'Manager', 'Kasir']), generateTokenLogin);
 
 module.exports = router;

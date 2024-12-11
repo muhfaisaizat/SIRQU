@@ -159,7 +159,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), readPenjualan);
  *       400:
  *         description: Invalid request
  */
-router.get('/outlet/:outletId', roleMiddleware(['Admin', 'Manager']), getCardPenjualan);
+router.get('/outlet/:outletId', roleMiddleware(['Admin', 'Manager', 'Kasir']), getCardPenjualan);
 
 
 module.exports = router;

@@ -56,7 +56,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *                   type: string
  *                   example: "Invalid input data"
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), categoryOutletController.createCategoryOutlet);
+router.post('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoryOutletController.createCategoryOutlet);
 
 
 /**
@@ -77,7 +77,7 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), categoryOutletController.
  *       400:
  *         description: Error fetching relationships
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), categoryOutletController.getCategoryOutlets);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoryOutletController.getCategoryOutlets);
 
 
 
@@ -106,7 +106,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), categoryOutletController.g
  *       400:
  *         description: Error fetching the relationship
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), categoryOutletController.getCategoryOutletById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoryOutletController.getCategoryOutletById);
 
 /**
  * @swagger
@@ -149,7 +149,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), categoryOutletControlle
  *       400:
  *         description: Error updating the relationship
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), categoryOutletController.updateCategoryOutlet);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoryOutletController.updateCategoryOutlet);
 
 /**
  * @swagger
@@ -172,6 +172,6 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), categoryOutletControlle
  *       400:
  *         description: Error deleting the relationship
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), categoryOutletController.deleteCategoryOutlet);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoryOutletController.deleteCategoryOutlet);
 
 module.exports = router;

@@ -31,6 +31,7 @@ const MainPanel = () => {
     const location = useLocation();
     const [showAddToko, setShowAddToko] = useState(false);
     const syarat_ketentuan = localStorage.getItem("syarat_ketentuan");
+    const role = localStorage.getItem("role");
     const savedLink = localStorage.getItem('activeLink');
 
     const handleRedirect = () => {
@@ -224,15 +225,18 @@ const MainPanel = () => {
                                     <span className="font-medium text-[14px]">Penjualan</span>
                                 </Link>
                             </li>
+                            {role !== "Kasir" && (
                             <li className={`flex items-center ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px] ${activeLink === 'belanja' ? 'bg-black hover:bg-slate-950 text-white' : ''}`} onClick={() => {handlemenu('belanja'); navigate('/admin-panel/belanja'); }}>
                                 <Link className='flex gap-3 justify-center'>
                                     <EmptyWalletChange size={16} />
                                     <span className="font-medium text-[14px]">Belanja</span>
                                 </Link>
                             </li>
+                            )}
                         </ul>
 
                         <ul>
+                        {role !== "Kasir" && (
                             <li>
                                 <Link
                                     className={`flex justify-between ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px]`}
@@ -271,6 +275,7 @@ const MainPanel = () => {
                                     </ul>
                                 )}
                             </li>
+                        )}
                             <li>
                                 <Link
                                     className={`flex justify-between ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px]`}
@@ -288,6 +293,8 @@ const MainPanel = () => {
                                 </Link>
                                 {isOpen && (
                                     <ul>
+                                        {role !== "Kasir" && (
+                                            <>
                                         <li className='pl-[25px]'>
                                             <Link
                                                 className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'kategori' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
@@ -306,6 +313,8 @@ const MainPanel = () => {
                                                 <span className='font-medium text-[14px]'>Produk</span>
                                             </Link>
                                         </li>
+                                        </>
+                                        )}
                                         <li className='pl-[25px]'>
                                             <Link
                                                 className={`flex gap-3 ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 rounded-[6px] ${activeLink === 'stok' ? 'bg-black hover:bg-slate-950 text-white' : ''}`}
@@ -318,6 +327,8 @@ const MainPanel = () => {
                                     </ul>
                                 )}
                             </li>
+                            {role !== "Kasir" && (
+                                <>
                             <li>
                                 <Link
                                     className={`flex justify-between ps-3 px-3 pt-[10px] pb-[10px] hover:bg-slate-100 cursor-pointer rounded-[6px]`}
@@ -361,6 +372,8 @@ const MainPanel = () => {
                                     <span className="font-medium text-[14px]">Kelola Outlet</span>
                                 </Link>
                             </li>
+                            </>
+                            )}
                         </ul>
                     </div>
                 </ScrollArea>

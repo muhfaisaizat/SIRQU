@@ -47,7 +47,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *       400:
  *         description: Invalid request
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), belanjaController.createBelanja);
+router.post('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), belanjaController.createBelanja);
 
 /**
  * @swagger
@@ -88,7 +88,7 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), belanjaController.createB
  *                   deletedAt:
  *                     type: string
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), belanjaController.getAllBelanja);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), belanjaController.getAllBelanja);
 
 /**
  * @swagger
@@ -109,7 +109,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), belanjaController.getAllBe
  *       404:
  *         description: Belanja not found
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), belanjaController.getBelanjaById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), belanjaController.getBelanjaById);
 
 /**
  * @swagger
@@ -153,7 +153,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), belanjaController.getBe
  *       400:
  *         description: Invalid request
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), belanjaController.updateBelanja);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), belanjaController.updateBelanja);
 
 /**
  * @swagger
@@ -174,7 +174,7 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), belanjaController.updat
  *       404:
  *         description: Belanja not found
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), belanjaController.deleteBelanja);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), belanjaController.deleteBelanja);
 
 /**
  * @swagger
@@ -220,7 +220,7 @@ router.delete('/:id', roleMiddleware(['Admin', 'Manager']), belanjaController.de
  *       400:
  *         description: Invalid request
  */
-router.get('/outlet/:outletId', roleMiddleware(['Admin', 'Manager']), belanjaController.getCardBelanja);
+router.get('/outlet/:outletId', roleMiddleware(['Admin', 'Manager', 'Kasir']), belanjaController.getCardBelanja);
 
 
 module.exports = router;

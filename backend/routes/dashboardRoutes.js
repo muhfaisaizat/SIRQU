@@ -64,7 +64,7 @@ const roleMiddleware = require("../middleware/roleMiddleware");
  */
 router.get(
   "/dashboard/:outletsId",
-  roleMiddleware(["Admin", "Manager"]),
+  roleMiddleware(['Admin', 'Manager', 'Kasir']),
   getDashboardData
 );
 
@@ -111,7 +111,7 @@ router.get(
  */
 router.get(
   "/dashboard/sales-graph/:outletsId",
-  roleMiddleware(["Admin", "Manager"]),
+  roleMiddleware(['Admin', 'Manager', 'Kasir']),
   getSalesGraphData
 );
 /**
@@ -165,7 +165,7 @@ router.get(
  */
 router.get(
   "/dashboard/top-selling-products/:outletsId",
-  roleMiddleware(["Admin", "Manager"]),
+  roleMiddleware(['Admin', 'Manager', 'Kasir']),
   getTopSellingProducts
 );
 

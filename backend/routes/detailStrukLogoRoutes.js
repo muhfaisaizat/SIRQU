@@ -31,7 +31,7 @@ const uploadLogo = require('../middleware/uploadImageLogo');
  *       400:
  *         description: Invalid request
  */
-router.post('/detail-struk-logo', roleMiddleware(['Admin', 'Manager']), uploadLogo, Controller.createDetailStrukLogo);
+router.post('/detail-struk-logo', roleMiddleware(['Admin', 'Manager', 'Kasir']), uploadLogo, Controller.createDetailStrukLogo);
 
 /**
  * @swagger
@@ -66,7 +66,7 @@ router.post('/detail-struk-logo', roleMiddleware(['Admin', 'Manager']), uploadLo
  *       404:
  *         description: detail-struk-logo image not found
  */
-router.put('/detail-struk-logo/:id', roleMiddleware(['Admin', 'Manager']), uploadLogo, Controller.updateDetailStrukLogo);
+router.put('/detail-struk-logo/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), uploadLogo, Controller.updateDetailStrukLogo);
 
 
 /**

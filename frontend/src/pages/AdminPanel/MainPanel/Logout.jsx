@@ -52,6 +52,7 @@ const Logout = () => {
                   localStorage.removeItem("syarat_ketentuan");
                   localStorage.removeItem("idTokoUtama");
                   localStorage.removeItem("tokenGeneratedTime");
+                  localStorage.removeItem("role");
                   navigate("/");
                 }} className="py-3 px-[19px] gap-[12px] text-[14px] font-semibold"> <IconLogout variant='Bold'/>Logout</DropdownMenuItem>
             </DropdownMenuContent>

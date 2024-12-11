@@ -39,6 +39,7 @@ const Login = () => {
             localStorage.setItem("email", response.data.user.email);
             localStorage.setItem("id", response.data.user.id);
             localStorage.setItem("foto", response.data.user.image);
+            localStorage.setItem("role", userRole);
             
             const Outlet = await axios.get(`${API_URL}/api/outlets`, {
                 headers: {

@@ -31,7 +31,7 @@ const uploadProduct = require('../middleware/uploadImageProduct'); // Middleware
  *       400:
  *         description: Invalid request
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), uploadProduct, productImageController.createProductImage);
+router.post('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), uploadProduct, productImageController.createProductImage);
 
 /**
  * @swagger
@@ -65,7 +65,7 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), uploadProduct, productIma
  *                     type: string
  *                     format: date-time
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), productImageController.getProductImages);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), productImageController.getProductImages);
 
 /**
  * @swagger
@@ -86,7 +86,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), productImageController.get
  *       404:
  *         description: Product image not found
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), productImageController.getProductImageById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productImageController.getProductImageById);
 
 /**
  * @swagger
@@ -121,7 +121,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), productImageController.
  *       404:
  *         description: Product image not found
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), uploadProduct, productImageController.updateProductImage);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), uploadProduct, productImageController.updateProductImage);
 
 /**
  * @swagger
@@ -142,6 +142,6 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), uploadProduct, productI
  *       404:
  *         description: Product image not found
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), productImageController.deleteProductImage);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), productImageController.deleteProductImage);
 
 module.exports = router;

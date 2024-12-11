@@ -28,7 +28,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *       400:
  *         description: Invalid request
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), categoriesBelanjaController.createCategoriesBelanja);
+router.post('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoriesBelanjaController.createCategoriesBelanja);
 
 /**
  * @swagger
@@ -66,7 +66,7 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), categoriesBelanjaControll
  *                   deletedAt:
  *                     type: string
  */
-router.get('/outlet/:id', roleMiddleware(['Admin', 'Manager']), categoriesBelanjaController.getCategoriesByOutletId);
+router.get('/outlet/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoriesBelanjaController.getCategoriesByOutletId);
 
 /**
  * @swagger
@@ -87,7 +87,7 @@ router.get('/outlet/:id', roleMiddleware(['Admin', 'Manager']), categoriesBelanj
  *       404:
  *         description: Categories belanja not found
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), categoriesBelanjaController.getCategoriesBelanjaById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoriesBelanjaController.getCategoriesBelanjaById);
 
 /**
  * @swagger
@@ -121,7 +121,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), categoriesBelanjaContro
  *       400:
  *         description: Invalid request
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), categoriesBelanjaController.updateCategoriesBelanja);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoriesBelanjaController.updateCategoriesBelanja);
 
 /**
  * @swagger
@@ -142,6 +142,6 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), categoriesBelanjaContro
  *       404:
  *         description: Categories belanja not found
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), categoriesBelanjaController.deleteCategoriesBelanja);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoriesBelanjaController.deleteCategoriesBelanja);
 
 module.exports = router;

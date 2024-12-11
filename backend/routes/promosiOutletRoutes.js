@@ -53,7 +53,7 @@ const roleMiddleware = require('../middleware/roleMiddleware')
  *                   type: string
  *                   example: "Error fetching Promosi-Outlet relationships."
  */
-router.get('/outlets', roleMiddleware(['Admin', 'Manager']),  promosiOutletController.getPromosiOutlet);
+router.get('/outlets', roleMiddleware(['Admin', 'Manager', 'Kasir']),  promosiOutletController.getPromosiOutlet);
 
 
 /**
@@ -90,7 +90,7 @@ router.get('/outlets', roleMiddleware(['Admin', 'Manager']),  promosiOutletContr
  *       400:
  *         description: Bad request or invalid data
  */
-router.post('/outlets', roleMiddleware(['Admin', 'Manager']), promosiOutletController.createPromosiOutlet);
+router.post('/outlets', roleMiddleware(['Admin', 'Manager', 'Kasir']), promosiOutletController.createPromosiOutlet);
 
 
 
@@ -119,7 +119,7 @@ router.post('/outlets', roleMiddleware(['Admin', 'Manager']), promosiOutletContr
  *       400:
  *         description: Error fetching the relationship
  */
-router.get('/outlets/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController.getPromosiOutletById);
+router.get('/outlets/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), promosiOutletController.getPromosiOutletById);
 
 /**
  * @swagger
@@ -162,7 +162,7 @@ router.get('/outlets/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletCo
  *       400:
  *         description: Error updating the relationship
  */
-router.put('/outlets/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController.updatePromosiOutlet);
+router.put('/outlets/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), promosiOutletController.updatePromosiOutlet);
 
 /**
  * @swagger
@@ -185,6 +185,6 @@ router.put('/outlets/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletCo
  *       400:
  *         description: Bad Request
  */
-router.delete('/outlets/:id', roleMiddleware(['Admin', 'Manager']), promosiOutletController.deletePromosiOutlet);
+router.delete('/outlets/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), promosiOutletController.deletePromosiOutlet);
 
 module.exports = router;

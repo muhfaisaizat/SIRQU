@@ -28,7 +28,7 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *       400:
  *         description: Invalid request
  */
-router.post('/', roleMiddleware(['Admin', 'Manager']), categoryController.createCategory);
+router.post('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoryController.createCategory);
 
 /**
  * @swagger
@@ -65,7 +65,7 @@ router.post('/', roleMiddleware(['Admin', 'Manager']), categoryController.create
  *                     format: date-time
  *                     description: The timestamp when the category was deleted (if applicable)
  */
-router.get('/', roleMiddleware(['Admin', 'Manager']), categoryController.getCategories);
+router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoryController.getCategories);
 
 /**
  * @swagger
@@ -86,7 +86,7 @@ router.get('/', roleMiddleware(['Admin', 'Manager']), categoryController.getCate
  *       404:
  *         description: Category not found
  */
-router.get('/:id', roleMiddleware(['Admin', 'Manager']), categoryController.getCategoryById);
+router.get('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoryController.getCategoryById);
 
 /**
  * @swagger
@@ -118,7 +118,7 @@ router.get('/:id', roleMiddleware(['Admin', 'Manager']), categoryController.getC
  *       400:
  *         description: Invalid request
  */
-router.put('/:id', roleMiddleware(['Admin', 'Manager']), categoryController.updateCategory);
+router.put('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoryController.updateCategory);
 
 /**
  * @swagger
@@ -139,6 +139,6 @@ router.put('/:id', roleMiddleware(['Admin', 'Manager']), categoryController.upda
  *       404:
  *         description: Category not found
  */
-router.delete('/:id', roleMiddleware(['Admin', 'Manager']), categoryController.deleteCategory);
+router.delete('/:id', roleMiddleware(['Admin', 'Manager', 'Kasir']), categoryController.deleteCategory);
 
 module.exports = router;
