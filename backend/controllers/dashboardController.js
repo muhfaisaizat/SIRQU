@@ -222,12 +222,10 @@ const getTopSellingProducts = async (req, res) => {
         },
       });
       if (!category) {
-        return res
-          .status(404)
-          .json({
-            success: false,
-            message: "Kategori tidak ditemukan di outlet ini",
-          });
+        return res.status(404).json({
+          success: false,
+          message: "Kategori tidak ditemukan di outlet ini",
+        });
       }
     }
 
@@ -246,7 +244,7 @@ const getTopSellingProducts = async (req, res) => {
         ...(categoriesId && {
           productsId: {
             [Op.in]: Sequelize.literal(
-              `(SELECT id FROM products WHERE categoriesId = ${categoriesId})`
+              `(SELECT productsId FROM productscategories WHERE categoriesId = ${categoriesId})`
             ),
           },
         }),
@@ -268,7 +266,7 @@ const getTopSellingProducts = async (req, res) => {
       attributes: ["id", "name"],
       include: [
         {
-          model: require("../models/productImage"), // Pastikan model productimages diimpor
+          model: require("../models/productImage"), // Pastikan model productImage diimpor
           attributes: ["image"], // Ambil kolom gambar
         },
       ],
@@ -297,5 +295,6 @@ const getTopSellingProducts = async (req, res) => {
     });
   }
 };
+
 
 module.exports = { getDashboardData, getSalesGraphData, getTopSellingProducts };
