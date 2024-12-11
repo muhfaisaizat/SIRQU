@@ -17,24 +17,11 @@ import {
     AvatarImage,
 } from "@/components/ui/avatar"
 import { Folder2 } from 'iconsax-react';
+import { API_URL } from "../../../helpers/networt";
 
-const DataPenjualan = ({ DataKategori }) => {
-    const [selectedKategori, setSelectedKategori] = useState(DataKategori[0]);
-    const handleSelectKategoei = (kategori) => {
-        setSelectedKategori(kategori);
-    };
-    const DataProdukTerjual = [
-        // { id: '00001', nama: 'Sate Taichan', terjual: 50, foto: 'https://github.com/shadcn.png' },
-        // { id: '00002', nama: 'Nasi Goreng', terjual: 35, foto: 'https://github.com/shadcn.png' },
-        // { id: '00003', nama: 'Mie Ayam', terjual: 60, foto: 'https://github.com/shadcn.png' },
-        // { id: '00004', nama: 'Bakso', terjual: 45, foto: 'https://github.com/shadcn.png' },
-        // { id: '00005', nama: 'Soto Ayam', terjual: 30, foto: 'https://github.com/shadcn.png' },
-        // { id: '00006', nama: 'Ayam Geprek', terjual: 80, foto: 'https://github.com/shadcn.png' },
-        // { id: '00007', nama: 'Pecel Lele', terjual: 20, foto: 'https://github.com/shadcn.png' },
-        // { id: '00008', nama: 'Ikan Bakar', terjual: 25, foto: 'https://github.com/shadcn.png' },
-        // { id: '00009', nama: 'Rendang', terjual: 55, foto: 'https://github.com/shadcn.png' },
-        // { id: '00010', nama: 'Gado-Gado', terjual: 40, foto: 'https://github.com/shadcn.png' }
-    ];
+const DataPenjualan = ({ DataKategori, DataProdukTerjual, selectedKategori, setSelectedKategori, handleSelectKategoei, fetchDataPenjualanTertinggiAll }) => {
+    
+
     return (
         <div className='border-2 rounded-[8px] h-[352px] w-[33%] p-[24px]'>
             <div className='flex justify-between w-full mb-[24px]' >
@@ -50,7 +37,7 @@ const DataPenjualan = ({ DataKategori }) => {
                             <DropdownMenuCheckboxItem
                                
                                 className="capitalize p-[12px]"
-                                onClick={() => handleSelectKategoei({id:'semua', name:'Semua'})}
+                                onClick={() => {handleSelectKategoei({id:'semua', name:'Semua'}); fetchDataPenjualanTertinggiAll();}}
                                 checked={selectedKategori?.id === 'semua'}
                             >
                                 <span className="ml-[12px] text-[14px]">Semua</span>
@@ -72,10 +59,10 @@ const DataPenjualan = ({ DataKategori }) => {
                 {DataProdukTerjual.length > 0 ? (
                     <div className='grid w-full gap-[16px]'>
                         {DataProdukTerjual.map((produk) => (
-                            <div key={produk.id} className='flex justify-between w-full h-[36px] items-center'>
+                            <div key={produk.nama} className='flex justify-between w-full h-[36px] items-center'>
                                 <div className='flex items-center gap-[12px]'>
                                     <Avatar>
-                                        <AvatarImage src={produk.foto} alt={produk.nama} />
+                                        <AvatarImage  src={produk.foto ? `${API_URL}/images/${produk.foto}` : "https://github.com/shadcn.png"} alt={produk.nama} />
                                         <AvatarFallback>{produk.nama[0]}</AvatarFallback>
                                     </Avatar>
                                     <h3 className='text-[14px] font-medium'>{produk.nama}</h3>

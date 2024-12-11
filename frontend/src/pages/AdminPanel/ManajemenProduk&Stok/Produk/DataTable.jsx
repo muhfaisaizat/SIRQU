@@ -1153,7 +1153,7 @@ const DataTableDemo = ({ data, setData, originalData, setOriginalData, fetchData
                         onChange={(event) =>
                             table.getColumn("name")?.setFilterValue(event.target.value)
                         }
-                        className="w-[266px] h-[36px]"
+                        className="w-[266px] h-[36px] text-[14px]"
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>

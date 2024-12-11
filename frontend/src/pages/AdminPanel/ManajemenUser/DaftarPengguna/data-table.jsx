@@ -606,7 +606,7 @@ const DataTableDemo = ({data, setData, fetchData, originalData, setOriginalData}
                         onChange={(event) =>
                             table.getColumn("email")?.setFilterValue(event.target.value)
                         }
-                        className="w-[266px] h-[32px]"
+                        className="w-[266px] h-[32px] text-[14px]"
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>

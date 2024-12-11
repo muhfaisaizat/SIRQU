@@ -354,7 +354,7 @@ const DataTable = () => {
                 <div className='flex gap-[12px] w-[416px]'>
                     <Input
                         placeholder="Cari"
-                        className="w-[266px] h-[36px] border-slate-300"
+                        className="w-[266px] h-[36px] text-[14px] border-slate-300"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -423,7 +423,7 @@ const DataTable = () => {
                                         </Badge>
                                     </div>
                                     <h1 className='text-[16px] font-semibold'>{item.nama}</h1>
-                                    <h1 className='text-[14px] font-medium'>Stok : {item.stok !== null ? item.stok : "-"}</h1>
+                                    <h1 className='text-[14px] font-medium'>Stok : {item.stok !== null ? item.stok : "Tidak terbatas"}</h1>
                                 </div>
                             </div>
                             <Button variant="outline" className="ml-auto h-[32px] w-full text-[14px] border-slate-300" onClick={() => handleEditClick(item.id)}>

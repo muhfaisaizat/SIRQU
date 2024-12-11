@@ -286,7 +286,7 @@ const DataTableHistory = ({data, fetchDataCard, fetchDataKategori, columnFilters
                         onChange={(event) =>
                             table.getColumn("nama")?.setFilterValue(event.target.value)
                         }
-                        className="w-[266px] h-[36px]"
+                        className="w-[266px] h-[36px] text-[14px]"
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
