@@ -10,7 +10,7 @@ import { ArrowRight2, } from 'iconsax-react';
 import AddKategori from './AddKategori';
 import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
-
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const Kategori = () => {
    // data
@@ -143,6 +143,7 @@ useEffect(() => {
     fetchData();
 }, []);
   return (
+    <ScrollArea className='h-[100%] pb-[10px]'>
     <div className="px-[24px]">
       <div className='grid gap-2 pt-[40px]  pb-[36px]'>
         <Breadcrumb>
@@ -172,6 +173,7 @@ useEffect(() => {
 
       <DataTableDemo data={data} setData={setData} originalData={originalData} setOriginalData={setOriginalData} fetchData={fetchData}/>
     </div>
+    </ScrollArea>
   )
 }
 

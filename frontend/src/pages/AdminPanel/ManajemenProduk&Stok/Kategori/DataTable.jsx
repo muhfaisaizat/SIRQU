@@ -154,7 +154,7 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData, fetchData}
     const [columnFilters, setColumnFilters] = useState([])
     const [columnVisibility, setColumnVisibility] = useState({})
     const [rowSelection, setRowSelection] = useState({})
-    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
+    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
 
     // Tentukan jumlah halaman berdasarkan total data dan pageSize
@@ -556,7 +556,7 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData, fetchData}
                             .getAllColumns()
                             .filter((column) => column.getCanHide() && column.id !== 'id')
                             .map((column) => (
-                                <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]">
+                                <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]"  onClick={() => column.toggleVisibility(!column.getIsVisible())}>
                                     <Checkbox
                                             
                                             className="capitalize"

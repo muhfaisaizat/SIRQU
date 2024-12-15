@@ -10,6 +10,7 @@ import { ArrowRight2, } from 'iconsax-react';
 import AddProduk from './AddProduk';
 import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 const Produk = () => {
@@ -70,6 +71,7 @@ const Produk = () => {
  }, []);
 
   return (
+    <ScrollArea className='h-[100%] pb-[10px]'>
     <div className="px-[24px]">
       <div className='grid gap-2 pt-[40px]  pb-[36px]'>
         <Breadcrumb>
@@ -98,6 +100,7 @@ const Produk = () => {
 
       <DataTableDemo data={data} setData={setData} originalData={originalData} setOriginalData={setOriginalData} fetchDataProduk={fetchData}/>
     </div>
+    </ScrollArea>
   )
 }
 

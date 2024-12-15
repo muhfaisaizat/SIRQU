@@ -9,6 +9,7 @@ import { ArrowRight2, } from 'iconsax-react';
 import { Button } from '@/components/ui/button';
 import DataTableAktif from './DataTableAktif';
 import DataTableHistory from './DataTableHistory';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 const DaftarOrder = () => {
@@ -18,6 +19,7 @@ const DaftarOrder = () => {
     setActiveTab(tab);
   };
   return (
+    <ScrollArea className='h-[100%] pb-[10px]'>
     <div className="px-[24px]">
       <div className='grid gap-2 pt-[40px]  pb-[16px]'>
         <Breadcrumb>
@@ -59,6 +61,7 @@ const DaftarOrder = () => {
       </div>
       {activeTab === 'aktif' ? <DataTableAktif /> : <DataTableHistory />}
     </div>
+    </ScrollArea>
   )
 }
 

@@ -183,7 +183,7 @@ const DataTableHistory = ({data, fetchDataCard, fetchDataKategori, columnFilters
     const [selectedId, setSelectedId] = useState(null);
     const [columnVisibility, setColumnVisibility] = useState({})
     const [rowSelection, setRowSelection] = useState({})
-    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });;
+    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });;
 
 
     // Tentukan jumlah halaman berdasarkan total data dan pageSize
@@ -342,7 +342,7 @@ const DataTableHistory = ({data, fetchDataCard, fetchDataKategori, columnFilters
                             .getAllColumns()
                             .filter((column) => column.getCanHide() && column.id !== 'id' && column.id !== 'outlet')
                             .map((column) => (
-                                <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]">
+                                <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]"  onClick={() => column.toggleVisibility(!column.getIsVisible())}>
                                     <Checkbox
                                         
                                         className="capitalize"
