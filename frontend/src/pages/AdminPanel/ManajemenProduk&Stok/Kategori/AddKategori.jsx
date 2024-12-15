@@ -29,7 +29,7 @@ import { X } from "lucide-react"
 import axios from 'axios';
 import { API_URL } from "../../../../helpers/networt";
 
-const AddKategori = ({ buttonProps, title, showIcon }) => {
+const AddKategori = ({ buttonProps, title, showIcon, fetchData }) => {
     const { toast } = useToast();
     const [isOpen, setIsOpen] = useState(false);
     const [kategori, setKategori] = useState('');
@@ -164,6 +164,8 @@ const AddKategori = ({ buttonProps, title, showIcon }) => {
                 description: "Kategori berhasil ditambahkan.",
                 action: <ToastAction altText="Try again">Cancel</ToastAction>,
             });
+
+            fetchData();
            
         } catch (error) {
             console.error('Error adding user:', error);

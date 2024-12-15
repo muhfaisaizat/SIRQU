@@ -165,7 +165,7 @@ useEffect(() => {
         </Breadcrumb>
         <div className='flex justify-between'>
         <h2 className='text-[36px] font-semibold '>Kategori</h2>
-        <AddKategori buttonProps={{ className: 'gap-2 h-[36px] text-[14px] font-medium' }}  title="Tambah kategori" showIcon={true} />
+        <AddKategori buttonProps={{ className: 'gap-2 h-[36px] text-[14px] font-medium' }}  title="Tambah kategori" showIcon={true}  fetchData={fetchData}/>
         </div>
         
       </div>

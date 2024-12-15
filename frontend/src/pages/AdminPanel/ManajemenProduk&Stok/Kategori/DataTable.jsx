@@ -572,7 +572,7 @@ const DataTableDemo = ({data, setData, originalData, setOriginalData, fetchData}
                 </DropdownMenu>
             </div>
             {pageData.length === 0 ? (
-                <NoData />
+                <NoData fetchData={fetchData}/>
             ) : (
                 <div className="">
                     <Table>
