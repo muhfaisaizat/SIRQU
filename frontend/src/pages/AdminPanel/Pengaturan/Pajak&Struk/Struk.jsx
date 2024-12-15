@@ -156,12 +156,24 @@ const PengaturanStruk = () => {
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImage(reader.result);
-                setUrlImage(URL.createObjectURL(file));
-            };
-            reader.readAsDataURL(file);
+            const maxFileSize = 5 * 1024 * 1024; // 5 MB dalam byte
+            if (file.size > maxFileSize) {
+                toast({
+                    variant: "destructive",
+                    title: 'File terlalu besar',
+                    description: 'Ukuran file maksimal adalah 5 MB.',
+                    status: 'error',
+                    action: <ToastAction altText="Try again">Cancel</ToastAction>,
+                });
+               return; // Hentikan proses jika ukuran file lebih dari 5 MB
+            } else{
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setImage(reader.result);
+                    setUrlImage(URL.createObjectURL(file));
+                };
+                reader.readAsDataURL(file);
+            } 
         }
         const token = localStorage.getItem("token");
         if (dataLogo) {
