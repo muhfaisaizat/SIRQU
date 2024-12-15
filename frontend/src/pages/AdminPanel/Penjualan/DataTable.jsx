@@ -127,9 +127,30 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
         {
             accessorKey: "date",
             header: "Waktu & Tanggal",
-            cell: ({ row }) => (
-                <div className="capitalize font-medium">{row.getValue("date").length > 23 ? `${row.getValue("date").slice(0, 23)}...` : row.getValue("date")}</div>
-            ),
+            cell: ({ row }) => {
+                const rawDate = row.getValue("date");
+        
+                // Pisahkan tanggal dan waktu
+                const [datePart, timePart] = rawDate.split(", ");
+        
+                // Format tanggal
+                const formattedDate = new Date(datePart).toLocaleDateString("id-ID", {
+                    day: "numeric", // Menampilkan hari tanpa 0 di depan
+                    month: "short", // Menggunakan bulan singkat
+                    year: "numeric", // Menampilkan tahun
+                });
+        
+                // Gabungkan tanggal yang sudah diformat dengan waktu
+                const formattedDateWithTime = `${formattedDate}, ${timePart}`;
+        
+                // Potong jika panjangnya lebih dari 23 karakter
+                const displayDate = formattedDateWithTime.length > 23
+                    ? `${formattedDateWithTime.slice(0, 23)}...`
+                    : formattedDateWithTime;
+        
+                return <div className="capitalize font-medium">{displayDate}</div>;
+            },
+        
         },
         {
             accessorKey: "outlet",

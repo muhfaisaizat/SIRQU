@@ -108,9 +108,29 @@ const DataTableHistory = ({data, fetchDataCard, fetchDataKategori, columnFilters
         {
             accessorKey: "date",
             header: "Waktu & Tanggal",
-            cell: ({ row }) => (
-                <div className="capitalize font-medium">{row.getValue("date").length > 18 ? `${row.getValue("date").slice(0, 18)}...` : row.getValue("date")}</div>
-            ),
+            cell: ({ row }) => {
+                const rawDate = row.getValue("date");
+                
+                // Pisahkan bagian tanggal dan waktu
+                const [datePart, timePart] = rawDate.split(", ");
+                
+                // Format bagian tanggal
+                const formattedDate = new Date(datePart).toLocaleDateString("id-ID", {
+                    day: "2-digit", // Menampilkan hari dalam 2 digit
+                    month: "short", // Menampilkan bulan dalam format singkat
+                    year: "numeric", // Menampilkan tahun dalam format numerik
+                });
+        
+                // Gabungkan tanggal yang sudah diformat dengan waktu
+                const formattedDateWithTime = `${formattedDate}, ${timePart}`;
+        
+                // Potong jika panjangnya lebih dari 18 karakter
+                const displayDate = formattedDateWithTime.length > 18
+                    ? `${formattedDateWithTime.slice(0, 18)}...`
+                    : formattedDateWithTime;
+        
+                return <div className="capitalize font-medium">{displayDate}</div>;
+            },
         },
         {
             accessorKey: "id",
