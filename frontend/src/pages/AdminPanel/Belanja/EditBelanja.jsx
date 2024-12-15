@@ -310,7 +310,7 @@ const EditBelanja = ({ isOpen, setIsOpen, idOutlet, fetchDataBelanja, formDataBe
         }
 
         try {
-            const formattedDate = new Date(date).toISOString().split('T')[0];
+            const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
             const response = await axios.put(`${API_URL}/api/belanja/${formDataBelanja.id}`, {
                 outletsId: idOutlet,
