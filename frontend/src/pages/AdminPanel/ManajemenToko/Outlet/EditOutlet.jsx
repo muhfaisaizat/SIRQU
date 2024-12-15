@@ -134,6 +134,36 @@ const EditOutlet = ({ outlet, onSave , fetchData}) => {
         setIsOpen(false);
     };
 
+    const Delete = async (id) => {
+        const token = localStorage.getItem("token");
+    
+        try {
+          // Send a DELETE request to the API endpoint
+          await axios.delete(`${API_URL}/api/outlets/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          toast({
+            title: "Sukses!",
+            description: "Outlet berhasil dihapus.",
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
+        fetchData();
+        } catch (error) {
+          console.error("Error deleting data:", error);
+          const errorMessage = error.response ? error.response.data.message : "Something went wrong";
+          toast({
+            variant: "destructive",
+            title: "Error!",
+            description: errorMessage,
+            action: <ToastAction altText="Try again">Cancel</ToastAction>,
+        });
+        }
+        setIsOpen(false);
+      };
+
     if (!outlet) return null;
 
     return (
@@ -240,14 +270,22 @@ const EditOutlet = ({ outlet, onSave , fetchData}) => {
                             />
                         </div>
                     </div>
-                    <DialogFooter className="flex gap-[12px]">
+                    <div  className={`flex ${outletData.outlet === "Toko Utama" ? "justify-end" : "justify-between"}`}>
+                        {outletData.outlet !== "Toko Utama" && (
+                            <Button onClick={() => Delete(outletData.id)} className='text-[14px] h-[36px] bg-red-500 hover:bg-red-400'>
+                                Hapus
+                            </Button>
+                        )}
+                        <div className='flex gap-[12px]'>
                         <DialogClose asChild>
                             <Button type="button" variant="outline" className='text-[14px] h-[36px]'>
                                 Batal
                             </Button>
                         </DialogClose>
                         <Button onClick={handleSave} className='text-[14px] h-[36px]'>Simpan Perubahan</Button>
-                    </DialogFooter>
+                        </div>
+                       
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>
