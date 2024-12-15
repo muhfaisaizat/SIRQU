@@ -168,7 +168,7 @@ const Penjualan = () => {
             item: apiData.detailtransaksi.map((item) => item.product_name).join(', '),
             harga: apiData.total,
             bayar: apiData.tipe_bayar,
-            date: formatDate(apiData.createdAt),
+            tanggal: formatDate(apiData.createdAt),
             outlet: apiData.outlet_name,
 
         };

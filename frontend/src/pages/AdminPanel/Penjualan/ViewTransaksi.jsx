@@ -48,7 +48,7 @@ const ViewTransaksi = ({ isOpen, setIsOpen, dataEdit }) => {
             </div>
             <div className='flex text-[14px] h-[36px] items-center'>
               <p className='w-[150px] text-slate-500'>Waktu & Tanggal</p>
-              <p>{dataEdit?.date || "Tidak tersedia"}</p>
+              <p>{dataEdit?.tanggal || "Tidak tersedia"}</p>
             </div>
           </div>
           <div className='border' />

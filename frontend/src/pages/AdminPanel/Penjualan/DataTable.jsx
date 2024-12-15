@@ -125,10 +125,10 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
             ),
         },
         {
-            accessorKey: "date",
+            accessorKey: "tanggal",
             header: "Waktu & Tanggal",
             cell: ({ row }) => {
-                const rawDate = row.getValue("date");
+                const rawDate = row.getValue("tanggal");
         
                 // Pisahkan tanggal dan waktu
                 const [datePart, timePart] = rawDate.split(", ");
@@ -197,7 +197,7 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
    
     const [columnVisibility, setColumnVisibility] = useState({})
     const [rowSelection, setRowSelection] = useState({})
-    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });;
+    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });;
 
 
     // Tentukan jumlah halaman berdasarkan total data dan pageSize
@@ -286,16 +286,16 @@ const DataTableHistory = ({data, setData, columnFilters, setColumnFilters, DataB
                             .getAllColumns()
                             .filter((column) => column.getCanHide()&& column.id !== 'outlet')
                             .map((column) => (
-                                <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]">
+                                <DropdownMenuItem key={column.id} className="h-[36px] p-[12px]"  onClick={() => column.toggleVisibility(!column.getIsVisible())}>
                                     <Checkbox
-                                        
+                                         id={column.id} 
                                         className="capitalize"
                                         checked={column.getIsVisible()}
                                         onCheckedChange={(value) =>
                                             column.toggleVisibility(!!value)
                                         }
                                     />
-                                    <span className="ml-[8px] text-[14px]">{column.id}</span>
+                                    <span   className="ml-[8px] text-[14px]">{column.id}</span>
                                 </DropdownMenuItem>
                             ))}
                     </DropdownMenuContent>
