@@ -703,7 +703,7 @@ const Bayar = ({ Transaksi, setTransaksi, fetchDataDaftarOrder, setDaftarOrder, 
                                         </div>
                                     </div>
                                     <DialogFooter className="h-[168px] flex justify-end items-end py-[16px]">
-                                        <Button type="submit" className="w-full h-[36px] text-[17px]" onClick={handleSubmitOrder}>Bayar</Button>
+                                        <Button type="submit" className="w-full h-[36px] text-[17px]" onClick={handleSubmitOrder}  disabled={(Number(uang) - totalAkhir) < 0}>Bayar</Button>
                                     </DialogFooter>
                                 </div>
                             </div>
