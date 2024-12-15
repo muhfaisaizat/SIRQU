@@ -100,6 +100,7 @@ const Bayar = ({ Transaksi, setTransaksi, fetchDataDaftarOrder, setDaftarOrder, 
          diskon: apiData.bonus,
         };
     };
+    const [selectedDisconts, setSelectedDisconts] = useState([]);
 
     const fetchDataDiskon = async () => {
         const token = localStorage.getItem("token");
@@ -111,8 +112,11 @@ const Bayar = ({ Transaksi, setTransaksi, fetchDataDaftarOrder, setDaftarOrder, 
             });
 
             if (Array.isArray(response.data.data)) {
+                const filteredData = response.data.data.filter(item => item.tipe_aktivasi === "Otomatis");
+                const formattedDataOtomatis = filteredData.map(formatDataDiskon);
                 const formattedData = response.data.data.map(formatDataDiskon);
                 setDiscont(formattedData);
+                setSelectedDisconts(formattedDataOtomatis);
             } else {
                 console.error("Data yang diterima bukan array");
             }
@@ -124,11 +128,7 @@ const Bayar = ({ Transaksi, setTransaksi, fetchDataDaftarOrder, setDaftarOrder, 
     useEffect(() => {
         fetchDataPajak();
         fetchDataDiskon();
-    }, []);
-    
-
-
-    const [selectedDisconts, setSelectedDisconts] = useState([]);
+    }, []); 
 
     const handleSelectDiskon = (diskon) => {
         setSelectedDisconts((prevSelected) => {
