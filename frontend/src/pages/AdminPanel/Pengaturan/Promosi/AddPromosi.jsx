@@ -612,7 +612,17 @@ const AddPromosi = ({ isOpen, setIsOpen, fetchDataPromosi }) => {
                                         <Calendar
                                             mode="single"
                                             selected={date}
-                                            onSelect={setDate}
+                                            onSelect={(selectedDate) => {
+                                                if (datefinis && selectedDate > datefinis) {
+                                                    toast({
+                                                        variant: "destructive",
+                                                        title: "Tanggal Tidak Valid",
+                                                        description: "Tanggal Mulai tidak boleh melebihi Tanggal Berakhir.",
+                                                    });
+                                                    return;
+                                                }
+                                                setDate(selectedDate);
+                                            }}
                                             initialFocus
                                         />
                                     </PopoverContent>
@@ -637,7 +647,17 @@ const AddPromosi = ({ isOpen, setIsOpen, fetchDataPromosi }) => {
                                         <Calendar
                                             mode="single"
                                             selected={datefinis}
-                                            onSelect={setDatefinis}
+                                            onSelect={(selectedDate) => {
+                                                if (date && selectedDate < date) {
+                                                    toast({
+                                                        variant: "destructive",
+                                                        title: "Tanggal Tidak Valid",
+                                                        description: "Tanggal Berakhir tidak boleh kurang dari Tanggal Mulai.",
+                                                    });
+                                                    return;
+                                                }
+                                                setDatefinis(selectedDate);
+                                            }}
                                             initialFocus
                                         />
                                     </PopoverContent>
