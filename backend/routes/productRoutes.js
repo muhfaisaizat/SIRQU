@@ -10,12 +10,19 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  * @swagger
  * /api/products/stock-habis:
  *   get:
- *     summary: Get Stock Habis
- *     description: Retrieve the count of products with limited stock that are almost out of stock.
+ *     summary: Get Stock Habis by Outlet
+ *     description: Retrieve the count of products with limited stock that are almost out of stock, filtered by the outlet ID.
  *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: outletId
+ *         required: true
+ *         description: The ID of the outlet to filter the stock count
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
- *         description: The total count of products with limited stock that are almost out of stock
+ *         description: The total count of products with limited stock that are almost out of stock for the given outlet
  *         content:
  *           application/json:
  *             schema:
@@ -29,7 +36,18 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *                   properties:
  *                     stock_habis:
  *                       type: integer
- *                       description: The count of products with limited stock and stock between 0 to 2
+ *                       description: The count of products with limited stock and stock between 0 to 2 for the given outlet
+ *       400:
+ *         description: Outlet ID is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
  *       500:
  *         description: Internal server error
  *         content:
@@ -39,12 +57,12 @@ const roleMiddleware = require('../middleware/roleMiddleware');
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: Indicates if the operation was successful
  *                 message:
  *                   type: string
  *                   description: Error message
  */
-router.get('/stock-habis', roleMiddleware(['Admin', 'Manager', 'Kasir']),  productController.getStockHabis);
+router.get('/stock-habis', roleMiddleware(['Admin', 'Manager', 'Kasir']), productController.getStockHabis);
+
 
 
 /**

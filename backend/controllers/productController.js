@@ -475,25 +475,57 @@ ORDER BY
 
 exports.getStockHabis = async (req, res) => {
   try {
-    // Query manual untuk menghitung jumlah stock habis
+    const { outletId } = req.query;
+
+    if (!outletId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Outlet ID is required',
+      });
+    }
+
+    // Check if outletId exists in the outlets table
+    const outletExists = await Product.sequelize.query(
+      `SELECT COUNT(*) AS outlet_exists FROM outlets WHERE id = :outletId`,
+      {
+        replacements: { outletId },
+        type: Product.sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (outletExists[0].outlet_exists === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Outlet with ID ${outletId} does not exist.`,
+      });
+    }
+
+    // Query to count stock habis for the specified outlet
     const stockHabis = await Product.sequelize.query(
       `
       SELECT 
           COUNT(*) AS stock_habis
       FROM 
           products p
+      JOIN 
+          productsoutlets po ON p.id = po.productsId
+      JOIN
+          outlets o ON po.outletsId = o.id
       WHERE 
           p.unlimited_stock = 0
           AND p.stock BETWEEN 0 AND 2
-          AND p.deletedAt IS NULL;
+          AND p.deletedAt IS NULL
+          AND o.id = :outletId;
       `,
-      { type: Product.sequelize.QueryTypes.SELECT }
+      {
+        replacements: { outletId },
+        type: Product.sequelize.QueryTypes.SELECT,
+      }
     );
 
-    // Response ke client
     res.status(200).json({
       success: true,
-      data: stockHabis[0], // Mengembalikan hasil query
+      data: stockHabis[0],
     });
   } catch (error) {
     console.error('Error fetching stock habis:', error);
