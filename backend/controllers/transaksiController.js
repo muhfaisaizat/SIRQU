@@ -472,3 +472,31 @@ GROUP BY
     });
   }
 };
+
+exports.getTipeBayar = async (req, res) => {
+  try {
+    // Query SQL untuk mendapatkan tipeBayar yang unik dari tabel transaksis
+    const query = `
+      SELECT DISTINCT tipeBayar
+      FROM transaksis
+      WHERE tipeBayar IS NOT NULL;  -- Pastikan tipeBayar tidak NULL
+    `;
+
+    // Jalankan query untuk mendapatkan tipeBayar
+    const [tipeBayar] = await sequelize.query(query);
+
+    // Mengembalikan response dengan data tipeBayar
+    return res.status(200).json({
+      success: true,
+      message: 'Data tipeBayar berhasil diambil',
+      data: tipeBayar,
+    });
+  } catch (error) {
+    console.error('Error fetching tipeBayar:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan saat mengambil data tipeBayar',
+      error: error.message,
+    });
+  }
+};

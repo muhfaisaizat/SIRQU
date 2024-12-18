@@ -1,8 +1,30 @@
 const express = require('express');
-const { createTransaksi, updateTransaksi, deleteTransaksi, readTransaksi, readTransaksiDate, readTransaksibyid } = require('../controllers/transaksiController');
+const { createTransaksi, updateTransaksi, deleteTransaksi, readTransaksi, readTransaksiDate, readTransaksibyid, getTipeBayar } = require('../controllers/transaksiController');
 const transaksiStruk= require('../controllers/viewStrukController');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const router = express.Router();
+
+
+/**
+ * @swagger
+ * /api/transaksi/tipe-bayar:
+ *   get:
+ *     summary: Get all unique tipeBayar
+ *     tags: [Transaksi]
+ *     responses:
+ *       200:
+ *         description: A list of unique tipeBayar
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   tipeBayar:
+ *                     type: string
+ */
+router.get('/tipe-bayar', getTipeBayar);
 
 /**
  * @swagger
