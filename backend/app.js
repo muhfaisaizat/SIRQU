@@ -29,6 +29,8 @@ const struksRoutes = require('./routes/struksRoutes');
 const pajaksRoutes = require('./routes/pajaksRoutes');
 const penjualanRoutes = require('./routes/penjualanRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const rekeningRoutes = require('./routes/rekeningRoutes');
+const ewalletRoutes = require('./routes/ewalletRoutes');
 const seedRoles = require("./seeders/roleSeeder"); // Impor seeder
 const swaggerDocs = require("./swagger");
 const path = require('path'); 
@@ -81,6 +83,8 @@ app.use('/api/setting-struk',  struksRoutes );
 app.use('/api/pajaks',  pajaksRoutes );
 app.use('/api/penjualan', penjualanRoutes);
 app.use('/api/promosi/outlets', promosiOutletRoutes);
+app.use('/api/rekening', rekeningRoutes);
+app.use('/api/ewallet', ewalletRoutes);
 app.use('/api', dashboardRoutes);
 
 // Swagger Documentation
