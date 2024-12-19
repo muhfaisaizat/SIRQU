@@ -20,7 +20,7 @@ exports.createUploadInvoice = async (req, res) => {
     }
 
     // Menyimpan path gambar jika ada
-    const imagePath = req.file ? `Transaksi_${transaksisId}_${req.file.originalname}` : null;
+    const imagePath = req.file ? `Invoice_${transaksisId}_${req.file.originalname}` : null;
 
     if (!imagePath) {
       return res.status(400).json({ message: 'Image file is required' });
