@@ -114,7 +114,7 @@ exports.updateUploadInvoice = async (req, res) => {
     }
 
     // Menyimpan path gambar baru jika ada
-    const newImagePath = req.file ? `Transaksi_${transaksisId}_${req.file.originalname}` : null;
+    const newImagePath = req.file ? `Invoice_${transaksisId}_${req.file.originalname}` : null;
 
     if (!newImagePath) {
       return res.status(400).json({ message: 'Image file is required' });
