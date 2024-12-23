@@ -517,8 +517,12 @@ exports.readTransaksiStatistik = async (req, res) => {
     WHERE DATE_ADD(tanggal, INTERVAL 1 MONTH) <= DATE_FORMAT(CURDATE(), '%Y-12-01')
 )
 SELECT 
+    (SELECT COALESCE(SUM(total), 0) 
+     FROM transaksis 
+     WHERE YEAR(createdAt) = YEAR(CURDATE()) 
+       AND outletsId = ${id_outlet}) AS maxSumbu_x, 
     MONTHNAME(calendar.tanggal) AS bulan,
-    COALESCE(SUM(transaksis.total), 0) AS totalBulanan
+    COALESCE(SUM(transaksis.total), 0) AS total
 FROM 
     calendar
 LEFT JOIN 
@@ -537,7 +541,7 @@ ORDER BY
     else if (status === 'bulan ini') {
       statistik =
       `
-     WITH RECURSIVE calendar AS (
+    WITH RECURSIVE calendar AS (
     SELECT DATE_FORMAT(CURDATE(), '%Y-%m-01') AS tanggal
     UNION ALL
     SELECT DATE_ADD(tanggal, INTERVAL 1 DAY)
@@ -545,8 +549,13 @@ ORDER BY
     WHERE DATE_ADD(tanggal, INTERVAL 1 DAY) <= LAST_DAY(CURDATE())
 )
 SELECT 
+     (SELECT COALESCE(SUM(transaksis.total), 0) 
+     FROM transaksis 
+     WHERE MONTH(transaksis.createdAt) = MONTH(CURDATE())
+       AND YEAR(transaksis.createdAt) = YEAR(CURDATE())
+       AND transaksis.outletsId = ${id_outlet}) AS maxSumbu_x,
     calendar.tanggal, 
-    COALESCE(SUM(transaksis.total), 0) AS totalHarian
+    COALESCE(SUM(transaksis.total), 0) AS total
 FROM 
     calendar
 LEFT JOIN 
