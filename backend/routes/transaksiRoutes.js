@@ -1,5 +1,5 @@
 const express = require('express');
-const { createTransaksi, updateTransaksi, deleteTransaksi, readTransaksi, readTransaksiDate, readTransaksibyid, getTipeBayar } = require('../controllers/transaksiController');
+const { createTransaksi, updateTransaksi, deleteTransaksi, readTransaksi, readTransaksiDate, readTransaksibyid, getTipeBayar, readTransaksiStatistik } = require('../controllers/transaksiController');
 const transaksiStruk= require('../controllers/viewStrukController');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const router = express.Router();
@@ -218,6 +218,35 @@ router.delete('/:id', roleMiddleware(['Admin', 'Manager','Kasir']), deleteTransa
  *         description: Internal server error
  */
 router.get('/', roleMiddleware(['Admin', 'Manager', 'Kasir']), readTransaksiDate);
+
+/**
+ * @swagger
+ * /api/transaksi/statistik:
+ *   get:
+ *     summary: Retrieve a list of transactions
+ *     tags: [Transaksi]
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [tahun ini, bulan ini]
+ *         description: Pilihan status statistik transaksi
+ *       - in: query
+ *         name: id_outlet
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           description: masukan id outlet
+ *           example: 0
+ *     responses:
+ *       200:
+ *         description: List of transactions retrieved successfully
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/statistik', roleMiddleware(['Admin', 'Manager', 'Kasir']), readTransaksiStatistik);
 
 
 /**

@@ -500,3 +500,84 @@ exports.getTipeBayar = async (req, res) => {
     });
   }
 };
+
+
+exports.readTransaksiStatistik = async (req, res) => {
+  const { status, id_outlet } = req.query;
+  try {
+    let statistik;
+    if (status === 'tahun ini') {
+      statistik =
+      `
+      WITH RECURSIVE calendar AS (
+    SELECT DATE_FORMAT(CURDATE(), '%Y-01-01') AS tanggal
+    UNION ALL
+    SELECT DATE_ADD(tanggal, INTERVAL 1 MONTH)
+    FROM calendar
+    WHERE DATE_ADD(tanggal, INTERVAL 1 MONTH) <= DATE_FORMAT(CURDATE(), '%Y-12-01')
+)
+SELECT 
+    MONTHNAME(calendar.tanggal) AS bulan,
+    COALESCE(SUM(transaksis.total), 0) AS totalBulanan
+FROM 
+    calendar
+LEFT JOIN 
+    transaksis 
+ON 
+    MONTH(transaksis.createdAt) = MONTH(calendar.tanggal)
+    AND YEAR(transaksis.createdAt) = YEAR(calendar.tanggal)
+    AND transaksis.outletsId = ${id_outlet}
+GROUP BY 
+    MONTH(calendar.tanggal), 
+    MONTHNAME(calendar.tanggal)
+ORDER BY 
+    MONTH(calendar.tanggal);
+      `;
+    }
+    else if (status === 'bulan ini') {
+      statistik =
+      `
+     WITH RECURSIVE calendar AS (
+    SELECT DATE_FORMAT(CURDATE(), '%Y-%m-01') AS tanggal
+    UNION ALL
+    SELECT DATE_ADD(tanggal, INTERVAL 1 DAY)
+    FROM calendar
+    WHERE DATE_ADD(tanggal, INTERVAL 1 DAY) <= LAST_DAY(CURDATE())
+)
+SELECT 
+    calendar.tanggal, 
+    COALESCE(SUM(transaksis.total), 0) AS totalHarian
+FROM 
+    calendar
+LEFT JOIN 
+    transaksis 
+ON 
+    DATE(transaksis.createdAt) = calendar.tanggal
+    AND transaksis.outletsId = ${id_outlet}
+GROUP BY 
+    calendar.tanggal
+ORDER BY 
+    calendar.tanggal;
+      `;
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Status yang diberikan tidak valid. Gunakan "tahun ini" atau "bulan ini".',
+      });
+    }
+
+    const [transaksis] = await sequelize.query(statistik);
+    return res.status(200).json({
+      success: true,
+      message: 'Data statistik berhasil diambil',
+      data: transaksis,
+    });
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan saat mengambil data statistik transaksi',
+      error: error.message,
+    });
+  }
+}
