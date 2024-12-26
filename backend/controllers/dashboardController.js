@@ -7,6 +7,7 @@ const ProductOutlet = require("../models/productsOutlets");
 const Product = require("../models/products");
 const CategoriesOutlet = require("../models/categoriesOutlets");
 const DetailTransaksi = require("../models/detailTransaksis");
+const sequelize = require('../config/database');
 
 const getDashboardData = async (req, res) => {
   try {
@@ -133,6 +134,14 @@ const getDashboardDataMobile = async (req, res) => {
 
     // Periode waktu berdasarkan query
     let filterDate = {};
+    let presentase={};
+    let jumlahPelanggan =`SELECT 
+    COALESCE(COUNT(DISTINCT name), 0) AS jumlahPelanggan
+FROM 
+    transaksis
+WHERE 
+    outletsId = 19;
+`;
     let produkBaruFilter = {};
     const todayStart = Sequelize.literal("DATE(NOW())"); // Awal hari (00:00:00)
     const todayEnd = Sequelize.literal("DATE_ADD(DATE(NOW()), INTERVAL 1 DAY)"); // Akhir hari (23:59:59)
@@ -156,6 +165,45 @@ const getDashboardDataMobile = async (req, res) => {
           createdAt: { [Op.between]: [todayStart, todayEnd] },
         };
         totalDays = 1;
+        presentase =`
+        SELECT 
+    COALESCE(
+        CASE 
+            WHEN t1.total IS NULL AND t2.total IS NULL THEN '0%'
+            ELSE CONCAT(
+                CASE 
+                    WHEN ((t1.total - t2.total) / t2.total * 100) > 0 THEN '+' 
+                    ELSE '' 
+                END,
+                ROUND(
+                    LEAST(ABS((t1.total - t2.total) / t2.total * 100), 100), 0
+                ),
+                '%'
+            )
+        END,
+        '0%'
+    ) AS persentase
+FROM (
+    SELECT 
+        outletsId, 
+        COALESCE(SUM(total), 0) AS total 
+    FROM transaksis
+    WHERE DATE(createdAt) = CURDATE() -- Hari ini
+    GROUP BY outletsId
+) t1
+LEFT JOIN (
+    SELECT 
+        outletsId, 
+        COALESCE(SUM(total), 0) AS total 
+    FROM transaksis
+    WHERE DATE(createdAt) = CURDATE() - INTERVAL 1 DAY -- Kemarin
+    GROUP BY outletsId
+) t2
+ON t1.outletsId = t2.outletsId
+WHERE t1.outletsId = ${outletsId}
+;
+
+        `;
         break;
       case "minggu-ini":
         filterDate = { createdAt: { [Op.gte]: weekStart } };
@@ -163,6 +211,42 @@ const getDashboardDataMobile = async (req, res) => {
           createdAt: { [Op.gte]: weekStart, [Op.lt]: todayEnd },
         };
         totalDays = 7;
+        presentase =`
+       SELECT 
+    CASE 
+        WHEN t1.total IS NULL AND t2.total IS NULL THEN '0%' -- Jika keduanya NULL
+        ELSE CONCAT(
+            CASE 
+                WHEN ((t1.total - t2.total) / t2.total * 100) > 0 THEN '+' 
+                ELSE '' 
+            END,
+            ROUND(
+                LEAST(ABS((t1.total - t2.total) / t2.total * 100), 100), 0
+            ),
+            '%'
+        )
+    END AS persentase
+FROM (
+    SELECT 
+        outletsId, 
+        SUM(total) AS total 
+    FROM transaksis
+    WHERE YEARWEEK(createdAt, 1) = YEARWEEK(CURDATE(), 1) -- Minggu ini
+    GROUP BY outletsId
+) t1
+LEFT JOIN (
+    SELECT 
+        outletsId, 
+        SUM(total) AS total 
+    FROM transaksis
+    WHERE YEARWEEK(createdAt, 1) = YEARWEEK(CURDATE(), 1) - 1 -- Minggu lalu
+    GROUP BY outletsId
+) t2
+ON t1.outletsId = t2.outletsId
+WHERE t1.outletsId = ${outletsId}
+;
+
+        `;
         break;
       case "bulan-ini":
         filterDate = { createdAt: { [Op.gte]: monthStart } };
@@ -170,6 +254,46 @@ const getDashboardDataMobile = async (req, res) => {
           createdAt: { [Op.gte]: monthStart, [Op.lt]: todayEnd },
         };
         totalDays = new Date().getDate();
+        presentase =`
+        SELECT 
+    COALESCE(
+        CASE 
+            WHEN t1.total IS NULL AND t2.total IS NULL THEN '0%'
+            ELSE CONCAT(
+                CASE 
+                    WHEN ((t1.total - t2.total) / t2.total * 100) > 0 THEN '+' 
+                    ELSE '' 
+                END,
+                ROUND(
+                    LEAST(ABS((t1.total - t2.total) / t2.total * 100), 100), 0
+                ),
+                '%'
+            )
+        END,
+        '0%'
+    ) AS persentase
+FROM (
+    SELECT 
+        outletsId, 
+        COALESCE(SUM(total), 0) AS total 
+    FROM transaksis
+    WHERE YEAR(createdAt) = YEAR(CURDATE()) AND MONTH(createdAt) = MONTH(CURDATE()) -- Bulan ini
+    GROUP BY outletsId
+) t1
+LEFT JOIN (
+    SELECT 
+        outletsId, 
+        COALESCE(SUM(total), 0) AS total 
+    FROM transaksis
+    WHERE YEAR(createdAt) = YEAR(CURDATE() - INTERVAL 1 MONTH) 
+      AND MONTH(createdAt) = MONTH(CURDATE() - INTERVAL 1 MONTH) -- Bulan lalu
+    GROUP BY outletsId
+) t2
+ON t1.outletsId = t2.outletsId
+WHERE t1.outletsId = ${outletsId}
+;
+
+        `;
         break;
       case "tahun-ini":
         filterDate = { createdAt: { [Op.gte]: yearStart } };
@@ -180,6 +304,45 @@ const getDashboardDataMobile = async (req, res) => {
           (new Date() - new Date(new Date().getFullYear(), 0, 1)) /
             (1000 * 60 * 60 * 24)
         );
+        presentase =`
+        SELECT 
+    COALESCE(
+        CASE 
+             WHEN t1.total IS NULL AND t2.total IS NULL THEN '0%' -- Jika keduanya NULL
+            ELSE CONCAT(
+                CASE 
+                    WHEN ((t1.total - t2.total) / t2.total * 100) > 0 THEN '+' 
+                    ELSE '' 
+                END,
+                ROUND(
+                    LEAST(ABS((t1.total - t2.total) / t2.total * 100), 100), 0
+                ),
+                '%'
+            )
+        END,
+        '0%'
+    ) AS persentase
+FROM (
+    SELECT 
+        outletsId, 
+        COALESCE(SUM(total), 0) AS total 
+    FROM transaksis
+    WHERE YEAR(createdAt) = YEAR(CURDATE()) -- Tahun ini
+    GROUP BY outletsId
+) t1
+LEFT JOIN (
+    SELECT 
+        outletsId, 
+        COALESCE(SUM(total), 0) AS total 
+    FROM transaksis
+    WHERE YEAR(createdAt) = YEAR(CURDATE() - INTERVAL 1 YEAR) -- Tahun lalu
+    GROUP BY outletsId
+) t2
+ON t1.outletsId = t2.outletsId
+WHERE t1.outletsId = ${outletsId}
+;
+
+        `;
         break;
       default:
         filterDate = {};
@@ -208,6 +371,12 @@ const getDashboardDataMobile = async (req, res) => {
     const jumlahTransaksi = totalTransaksi.length;
     const rataRataPendapatan = totalPendapatan / totalDays;
     const rataRataTransaksi = jumlahTransaksi / totalDays;
+    const totalPresentase = await sequelize.query(presentase, {
+      type: sequelize.QueryTypes.SELECT,
+  });
+    const totalPelanggan = await sequelize.query(jumlahPelanggan, {
+      type: sequelize.QueryTypes.SELECT,
+  });
 
     res.status(200).json({
       success: true,
@@ -219,6 +388,8 @@ const getDashboardDataMobile = async (req, res) => {
         jumlahProduk,
         produkBaru,
         pengingatStok,
+        totalPresentase: totalPresentase.length > 0 ? totalPresentase[0].persentase : '0%',
+        totalPelanggan: totalPelanggan.length > 0 ? totalPelanggan[0].jumlahPelanggan : 0
       },
     });
   } catch (error) {
