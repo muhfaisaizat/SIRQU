@@ -135,13 +135,7 @@ const getDashboardDataMobile = async (req, res) => {
     // Periode waktu berdasarkan query
     let filterDate = {};
     let presentase={};
-    let jumlahPelanggan =`SELECT 
-    COALESCE(COUNT(DISTINCT name), 0) AS jumlahPelanggan
-FROM 
-    transaksis
-WHERE 
-    outletsId = 19;
-`;
+    let jumlahPelanggan ={};
     let produkBaruFilter = {};
     const todayStart = Sequelize.literal("DATE(NOW())"); // Awal hari (00:00:00)
     const todayEnd = Sequelize.literal("DATE_ADD(DATE(NOW()), INTERVAL 1 DAY)"); // Akhir hari (23:59:59)
@@ -204,6 +198,15 @@ WHERE t1.outletsId = ${outletsId}
 ;
 
         `;
+        jumlahPelanggan =`SELECT 
+    COALESCE(COUNT(DISTINCT name), 0) AS jumlahPelanggan
+FROM 
+    transaksis
+WHERE 
+    outletsId = ${outletsId}
+    AND DATE(createdAt) = CURDATE();  -- Filter untuk hari ini
+
+`;
         break;
       case "minggu-ini":
         filterDate = { createdAt: { [Op.gte]: weekStart } };
@@ -247,6 +250,15 @@ WHERE t1.outletsId = ${outletsId}
 ;
 
         `;
+        jumlahPelanggan =`SELECT 
+        COALESCE(COUNT(DISTINCT name), 0) AS jumlahPelanggan
+    FROM 
+        transaksis
+    WHERE 
+        outletsId = ${outletsId}
+        AND YEARWEEK(createdAt, 1) = YEARWEEK(CURDATE(), 1);
+    
+    `;
         break;
       case "bulan-ini":
         filterDate = { createdAt: { [Op.gte]: monthStart } };
@@ -294,6 +306,15 @@ WHERE t1.outletsId = ${outletsId}
 ;
 
         `;
+        jumlahPelanggan =`SELECT 
+        COALESCE(COUNT(DISTINCT name), 0) AS jumlahPelanggan
+    FROM 
+        transaksis
+    WHERE 
+        outletsId = ${outletsId}
+          AND MONTH(createdAt) = MONTH(CURDATE()) 
+    
+    `;
         break;
       case "tahun-ini":
         filterDate = { createdAt: { [Op.gte]: yearStart } };
@@ -343,6 +364,15 @@ WHERE t1.outletsId = ${outletsId}
 ;
 
         `;
+        jumlahPelanggan =`SELECT 
+        COALESCE(COUNT(DISTINCT name), 0) AS jumlahPelanggan
+    FROM 
+        transaksis
+    WHERE 
+        outletsId = ${outletsId}
+           AND YEAR(createdAt) = YEAR(CURDATE());
+    
+    `;
         break;
       default:
         filterDate = {};
@@ -377,6 +407,9 @@ WHERE t1.outletsId = ${outletsId}
     const totalPelanggan = await sequelize.query(jumlahPelanggan, {
       type: sequelize.QueryTypes.SELECT,
   });
+  const formattedPresentase = totalPresentase && totalPresentase.length > 0 && totalPresentase[0].persentase 
+    ? totalPresentase[0].persentase 
+    : '0%'
 
     res.status(200).json({
       success: true,
@@ -388,7 +421,7 @@ WHERE t1.outletsId = ${outletsId}
         jumlahProduk,
         produkBaru,
         pengingatStok,
-        totalPresentase: totalPresentase.length > 0 ? totalPresentase[0].persentase : '0%',
+        totalPresentase: formattedPresentase,
         totalPelanggan: totalPelanggan.length > 0 ? totalPelanggan[0].jumlahPelanggan : 0
       },
     });
