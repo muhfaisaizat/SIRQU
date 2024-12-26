@@ -2,6 +2,7 @@ const { Op, Sequelize } = require("sequelize");
 const Outlet = require("../models/outlets");
 const Transaksi = require("../models/transaksis");
 const Kasir = require("../models/kasirs");
+const Transaksis = require("../models/transaksis");
 const ProductOutlet = require("../models/productsOutlets");
 const Product = require("../models/products");
 const CategoriesOutlet = require("../models/categoriesOutlets");
@@ -103,6 +104,117 @@ const getDashboardData = async (req, res) => {
         totalPendapatan: totalPendapatan || 0,
         rataRataPendapatan,
         totalTransaksi: totalTransaksi || 0,
+        rataRataTransaksi,
+        jumlahProduk,
+        produkBaru,
+        pengingatStok,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Terjadi kesalahan pada server" });
+  }
+};
+
+const getDashboardDataMobile = async (req, res) => {
+  try {
+    const { outletsId } = req.params;
+    const { periode } = req.query;
+
+    // Validasi outlet
+    const outlet = await Outlet.findByPk(outletsId);
+    if (!outlet) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Outlet tidak ditemukan" });
+    }
+
+    // Periode waktu berdasarkan query
+    let filterDate = {};
+    let produkBaruFilter = {};
+    const todayStart = Sequelize.literal("DATE(NOW())"); // Awal hari (00:00:00)
+    const todayEnd = Sequelize.literal("DATE_ADD(DATE(NOW()), INTERVAL 1 DAY)"); // Akhir hari (23:59:59)
+    const weekStart = Sequelize.literal(
+      "DATE_SUB(CURRENT_DATE, INTERVAL WEEKDAY(CURRENT_DATE) DAY)"
+    );
+    const monthStart = Sequelize.literal(
+      'DATE_FORMAT(CURRENT_DATE, "%Y-%m-01")'
+    );
+    const yearStart = Sequelize.literal(
+      'DATE_FORMAT(CURRENT_DATE, "%Y-01-01")'
+    );
+
+    let totalDays = 1;
+    switch (periode) {
+      case "hari-ini":
+        filterDate = {
+          createdAt: { [Op.between]: [todayStart, todayEnd] },
+        };
+        produkBaruFilter = {
+          createdAt: { [Op.between]: [todayStart, todayEnd] },
+        };
+        totalDays = 1;
+        break;
+      case "minggu-ini":
+        filterDate = { createdAt: { [Op.gte]: weekStart } };
+        produkBaruFilter = {
+          createdAt: { [Op.gte]: weekStart, [Op.lt]: todayEnd },
+        };
+        totalDays = 7;
+        break;
+      case "bulan-ini":
+        filterDate = { createdAt: { [Op.gte]: monthStart } };
+        produkBaruFilter = {
+          createdAt: { [Op.gte]: monthStart, [Op.lt]: todayEnd },
+        };
+        totalDays = new Date().getDate();
+        break;
+      case "tahun-ini":
+        filterDate = { createdAt: { [Op.gte]: yearStart } };
+        produkBaruFilter = {
+          createdAt: { [Op.gte]: yearStart, [Op.lt]: todayEnd },
+        };
+        totalDays = Math.ceil(
+          (new Date() - new Date(new Date().getFullYear(), 0, 1)) /
+            (1000 * 60 * 60 * 24)
+        );
+        break;
+      default:
+        filterDate = {};
+        produkBaruFilter = {};
+    }
+
+    // Data berdasarkan periode
+    const totalPendapatan = await Transaksis.sum("total", {
+      where: { outletsId, ...filterDate },
+    });
+    const totalTransaksi = await Transaksis.findAll({
+      where: { outletsId, ...filterDate },
+    });
+    const jumlahProduk = await ProductOutlet.count({ where: { outletsId } });
+    const produkBaru = await ProductOutlet.count({
+      where: {
+        ...produkBaruFilter,
+        outletsId,
+      },
+    });
+    const pengingatStok = await Product.count({
+      where: { stock: { [Op.lt]: 3 } },
+    });
+
+    // Hitung rata-rata per hari
+    const jumlahTransaksi = totalTransaksi.length;
+    const rataRataPendapatan = totalPendapatan / totalDays;
+    const rataRataTransaksi = jumlahTransaksi / totalDays;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalPendapatan: totalPendapatan || 0,
+        rataRataPendapatan,
+        totalTransaksi: jumlahTransaksi || 0,
         rataRataTransaksi,
         jumlahProduk,
         produkBaru,
@@ -297,4 +409,4 @@ const getTopSellingProducts = async (req, res) => {
 };
 
 
-module.exports = { getDashboardData, getSalesGraphData, getTopSellingProducts };
+module.exports = { getDashboardData, getDashboardDataMobile, getSalesGraphData, getTopSellingProducts };
